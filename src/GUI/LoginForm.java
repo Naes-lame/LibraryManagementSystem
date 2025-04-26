@@ -1,0 +1,190 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package GUI;
+
+import Controller.UsersController;
+import Models.Users;
+import java.util.List;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
+
+    public LoginForm() {
+        initComponents();
+        scaleImage();
+    }
+          
+    private void scaleImage(){
+        String[] paths = {
+            "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\freepik3.jpg",
+            "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png"
+        };
+        
+        JLabel[] labels = { bgPic, jlbl_wlcmMssg2 };
+        scaleImages(paths, labels);
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jlbl_wlcm = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        txt_username = new javax.swing.JTextField();
+        btn_login = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        bgPic = new javax.swing.JLabel();
+        jlbl_wlcmMssg2 = new javax.swing.JLabel();
+        txt_password = new javax.swing.JPasswordField();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
+        setSize(new java.awt.Dimension(0, 0));
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setPreferredSize(new java.awt.Dimension(1011, 555));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jlbl_wlcm.setFont(new java.awt.Font("Century Gothic", 0, 24)); // NOI18N
+        jlbl_wlcm.setForeground(new java.awt.Color(72, 209, 204));
+        jlbl_wlcm.setText("SCC Library Management System");
+        jPanel1.add(jlbl_wlcm, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 6, -1, 53));
+
+        jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel1.setText("Login your account");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(703, 65, 170, 20));
+
+        txt_username.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jPanel1.add(txt_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(627, 118, 302, -1));
+
+        btn_login.setBackground(new java.awt.Color(0, 0, 255));
+        btn_login.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        btn_login.setForeground(new java.awt.Color(255, 255, 255));
+        btn_login.setText("Login");
+        btn_login.setBorder(null);
+        btn_login.setBorderPainted(false);
+        btn_login.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_loginActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btn_login, new org.netbeans.lib.awtextra.AbsoluteConstraints(627, 249, 302, 40));
+
+        jLabel3.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jLabel3.setText("Username:");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 120, -1, -1));
+
+        jLabel4.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jLabel4.setText("Password:");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 170, -1, 20));
+        jPanel1.add(bgPic, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 65, 460, 390));
+
+        jlbl_wlcmMssg2.setFont(new java.awt.Font("Century Gothic", 0, 24)); // NOI18N
+        jlbl_wlcmMssg2.setForeground(new java.awt.Color(72, 209, 204));
+        jPanel1.add(jlbl_wlcmMssg2, new org.netbeans.lib.awtextra.AbsoluteConstraints(539, 20, 40, 28));
+        jPanel1.add(txt_password, new org.netbeans.lib.awtextra.AbsoluteConstraints(627, 165, 302, -1));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
+        try{
+            if(txt_username.getText().trim().isEmpty()){
+                JOptionPane.showMessageDialog(this, "Error. Username is missing!","Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }if (txt_password.getText().trim().isEmpty()){
+                JOptionPane.showMessageDialog(this, "Error. Password is missing!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            
+            String username = txt_username.getText();
+            String password = txt_password.getText();
+            
+            List<Users> allUser = UsersController.getUser();
+            Users matchUser = null;
+            for (Users s : allUser){
+                if(s.getUsername().equals(username)&& s.getPassword().equals(password)){
+                    matchUser = s;
+                    break;
+                }
+            }
+                
+                if(matchUser !=null){
+                    JOptionPane.showMessageDialog(this, "User login successfully!");
+                    Dashboard db = new Dashboard();
+                    db.show();
+                    dispose();
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error. No user record detected. Please register.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            
+         }catch(Exception e){
+            System.out.println("Error"+ e.getMessage());
+        }
+    }//GEN-LAST:event_btn_loginActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new LoginForm().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel bgPic;
+    private javax.swing.JButton btn_login;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jlbl_wlcm;
+    private javax.swing.JLabel jlbl_wlcmMssg2;
+    private javax.swing.JPasswordField txt_password;
+    private javax.swing.JTextField txt_username;
+    // End of variables declaration//GEN-END:variables
+}
