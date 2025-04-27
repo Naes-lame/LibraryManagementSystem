@@ -8,9 +8,6 @@ import Controller.BooksController;
 import Models.Books;
 import java.util.List;
 import javax.swing.JLabel;
-import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -632,9 +629,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     }//GEN-LAST:event_btn_dshbrdActionPerformed
 
     private void btn_BRecordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BRecordsActionPerformed
-        BookRecords br = new BookRecords();
-        br.show();
-        dispose();
+     
     }//GEN-LAST:event_btn_BRecordsActionPerformed
 
     private void btn_trnsctActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_trnsctActionPerformed

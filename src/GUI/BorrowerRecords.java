@@ -6,8 +6,6 @@ package GUI;
 
 import Controller.BorrowersController;
 import Models.Borrowers;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -21,7 +19,6 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         initComponents();
         scaleImages();
         initializeButtons();
-        LoadBorrowerID();
         table();
     }
     
@@ -48,32 +45,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
     }
     
 }
-    
-     private void LoadBorrowerID(){
-        String SUrl = "jdbc:mysql://localhost:3306/lms_database?useSSL=false&serverTimezone=UTC";
-        String SUser = "root";
-        String SPass = "";
         
-        try{
-        java.sql.Connection con = DriverManager.getConnection(SUrl, SUser, SPass);
-               
-        String query = "SELECT borrower_id FROM borrowerrecords";
-        PreparedStatement ps = con.prepareStatement(query);
-        ResultSet rs = ps.executeQuery();
-        
-        cb_id.removeAllItems();
-        while(rs.next()){
-            cb_id.addItem(rs.getString("borrower_id"));
-        }
-        
-        rs.close();
-        ps.close();
-        con.close();
-                
-        }catch (SQLException ex) {
-            Logger.getLogger(BookRecords.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
      
      
     private void scaleImages() {
@@ -707,7 +679,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, true, true
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -719,6 +691,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
             tbl_borrowerrecords.getColumnModel().getColumn(0).setResizable(false);
             tbl_borrowerrecords.getColumnModel().getColumn(1).setResizable(false);
             tbl_borrowerrecords.getColumnModel().getColumn(3).setResizable(false);
+            tbl_borrowerrecords.getColumnModel().getColumn(4).setResizable(false);
         }
 
         jPanel17.setBackground(new java.awt.Color(224, 255, 255));
@@ -891,9 +864,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -940,9 +911,9 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_dshbrdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dshbrdActionPerformed
-        Dashboard db = new Dashboard();
+Dashboard db = new Dashboard();
         db.show();
-        dispose();
+        dispose();        
     }//GEN-LAST:event_btn_dshbrdActionPerformed
 
     private void btn_BRecordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BRecordsActionPerformed
@@ -958,9 +929,6 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
     }//GEN-LAST:event_btn_trnsctActionPerformed
 
     private void btn_BrwrRecordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BrwrRecordsActionPerformed
-        BorrowerRecords br = new BorrowerRecords();
-        br.show();
-        dispose();
 
     }//GEN-LAST:event_btn_BrwrRecordsActionPerformed
 

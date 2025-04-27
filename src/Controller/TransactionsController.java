@@ -22,7 +22,4 @@ public class TransactionsController {
         return dbo.getTransaction();
     }
     
-    public static String getStatus(int borrowerId){
-        return dbo.getStatus(borrowerId);
-    }
 }

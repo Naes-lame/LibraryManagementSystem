@@ -338,9 +338,6 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons{
     }//GEN-LAST:event_btn_trnsctActionPerformed
 
     private void btn_AccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AccActionPerformed
-        Account ac = new Account();
-        ac.show();
-        dispose();
     }//GEN-LAST:event_btn_AccActionPerformed
 
     /**

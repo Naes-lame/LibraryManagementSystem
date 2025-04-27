@@ -576,9 +576,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_dshbrdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dshbrdActionPerformed
-        Dashboard db = new Dashboard();
-        db.show();
-        dispose();
+       
     }//GEN-LAST:event_btn_dshbrdActionPerformed
 
     private void btn_trnsctActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_trnsctActionPerformed
@@ -592,7 +590,9 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
     }//GEN-LAST:event_btn_rtrndActionPerformed
 
     private void btn_issuedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_issuedActionPerformed
-        
+        IssuedBooksRecords ibr = new IssuedBooksRecords();
+        ibr.show();
+        dispose();
     }//GEN-LAST:event_btn_issuedActionPerformed
 
     private void btn_BRecordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BRecordsActionPerformed

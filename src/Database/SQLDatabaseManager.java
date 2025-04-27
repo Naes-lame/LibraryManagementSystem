@@ -29,11 +29,11 @@ public abstract class SQLDatabaseManager {
     
     public abstract boolean issue (Transactions transactions);
     
-    public abstract boolean updateStatToReturn(int transactionId);
-    
-    public abstract boolean transferToReturnTbl(int transactionId);
-    
+//    public abstract boolean updateStatToReturn(int transactionId);
+//    
+//    public abstract boolean transferToReturnTbl(int transactionId);
+//    
     public abstract boolean returnBook(Transactions transactions);
     
-    public abstract String getStatus(int borrowerId);
+   
 }

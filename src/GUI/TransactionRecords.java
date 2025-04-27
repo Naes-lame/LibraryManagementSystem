@@ -4,11 +4,10 @@
  */
 package GUI;
 
-//status update is not visible
+//can't add record if database is empty.
 //un-enable duplication of records
 import Models.Transactions;
 import Controller.TransactionsController;
-import static Controller.TransactionsController.*;
 import javax.swing.JLabel;
 import java.sql.*;
 import java.util.List;
@@ -372,11 +371,11 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Transaction ID", "Borrower", "Book", "Transaction Date", "Due/Return Date", "Status"
+                "Transaction ID", "Borrower", "Book", "Transaction Date", "Due Date", "Status"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false
@@ -390,6 +389,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 return canEdit [columnIndex];
             }
         });
+        TransacTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(TransacTable);
         if (TransacTable.getColumnModel().getColumnCount() > 0) {
             TransacTable.getColumnModel().getColumn(0).setResizable(false);
@@ -575,9 +575,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     }//GEN-LAST:event_btn_BrwrRecordsActionPerformed
 
     private void btn_trnsctActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_trnsctActionPerformed
-        TransactionRecords tr = new TransactionRecords();
-        tr.show();
-        dispose();
+       
     }//GEN-LAST:event_btn_trnsctActionPerformed
 
     private void btn_AccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AccActionPerformed
@@ -669,7 +667,9 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
             Timestamp dueDate = new Timestamp(System.currentTimeMillis()+(7L * 24 * 60 * 60 * 1000));
             //retrieving stats
-            String status = getStatus(borrowerId);
+            List<Transactions> transactions = TransactionsController.getTransaction();
+            String status = transactions.isEmpty() ? "No Transactions Found" : transactions.get(0).getStatus();
+
             
             //grouping transaction details into object for easier manage.
             Transactions tr= new Transactions(id, borrowerId, bookId, transactionDate, dueDate, status);
