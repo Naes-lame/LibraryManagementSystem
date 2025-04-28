@@ -541,6 +541,11 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         btn_ovrdue.setBorderPainted(false);
         btn_ovrdue.setContentAreaFilled(false);
         btn_ovrdue.setFocusPainted(false);
+        btn_ovrdue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_ovrdueActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
         jPanel16.setLayout(jPanel16Layout);
@@ -586,7 +591,9 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
     }//GEN-LAST:event_btn_trnsctActionPerformed
 
     private void btn_rtrndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_rtrndActionPerformed
-        // TODO add your handling code here:
+        ReturnedBooksRecords rbr = new ReturnedBooksRecords();
+        rbr.show();
+        dispose();
     }//GEN-LAST:event_btn_rtrndActionPerformed
 
     private void btn_issuedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_issuedActionPerformed
@@ -613,6 +620,12 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         ac.show();
         dispose();
     }//GEN-LAST:event_btn_AccActionPerformed
+
+    private void btn_ovrdueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ovrdueActionPerformed
+        OverdueBooksRecords obr = new OverdueBooksRecords();
+        obr.show();
+        dispose();
+    }//GEN-LAST:event_btn_ovrdueActionPerformed
 
     /**
      * @param args the command line arguments

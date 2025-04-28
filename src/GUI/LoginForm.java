@@ -135,8 +135,12 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
                     JOptionPane.showMessageDialog(this, "Error. No user record detected. Please register.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             
-         }catch(Exception e){
-            System.out.println("Error"+ e.getMessage());
+         }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }//GEN-LAST:event_btn_loginActionPerformed
 

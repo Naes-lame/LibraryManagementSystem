@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Timestamp;
+import javax.swing.JOptionPane;
 
 
 public class DatabaseOperations extends SQLDatabaseManager {
@@ -18,7 +18,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
     //user/admin ADD.
    @Override 
    public boolean addUser(Users users) {
-       try (Connection con = getConnection()){
+        try (Connection con = getConnection()){
            String query = "INSERT INTO user  (full_name, email, username, password) VALUES ( ?, ?, ?, ?)";
            PreparedStatement  ps = con.prepareStatement(query);
            
@@ -30,10 +30,11 @@ public class DatabaseOperations extends SQLDatabaseManager {
            int result = ps.executeUpdate();
            
            return result> 0;
-       } catch  (SQLException e) {
-               e.printStackTrace();
-               return false;
-               }
+        } catch  (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return false;
    }
    //user/admin RETRIEVE.
    public List<Users> getUser(){
@@ -55,6 +56,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
             }
            
        }catch(SQLException e){
+           JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
            e.printStackTrace();
        }
        return userList;
@@ -65,6 +67,20 @@ public class DatabaseOperations extends SQLDatabaseManager {
    @Override
     public boolean addBook(Books books) {
         try (Connection con = getConnection()) {
+            String checkQuery = " SELECT COUNT(*) FROM bookrecords WHERE Title = ? AND Author = ? AND Genre = ? AND ISBN = ?";
+            PreparedStatement check = con.prepareStatement(checkQuery);
+            check.setString(1, books.getTitle());
+            check.setString(2, books.getAuthor());
+            check.setString(3, books.getGenre());
+            check.setString(4, books.getIsbn());
+            
+            ResultSet rs = check.executeQuery();
+            rs.next();
+            
+            if (rs.getInt(1)>0){
+                JOptionPane.showMessageDialog(null, "Book already exists!","Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
             String query = "INSERT INTO bookrecords (Title, Author, Genre, ISBN, Quantity) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(query);
 
@@ -78,6 +94,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
 
             return result > 0;
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace(); 
             return false; 
         }
@@ -87,7 +104,8 @@ public class DatabaseOperations extends SQLDatabaseManager {
    @Override
     public boolean updateBook(Books books) {
         try (Connection con = getConnection()) {
-            String query = "UPDATE bookrecords SET Title = ?, Author = ?, Genre = ?, ISBN = ?, Quantity = ? WHERE BookID = ?";
+            
+            String query = "UPDATE bookrecords SET Title = ?, Author = ?, Genre = ?, ISBN = ?, Quantity = ? WHERE book_id = ?";
             PreparedStatement ps = con.prepareStatement(query);
 
             ps.setString(1, books.getTitle());
@@ -101,6 +119,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
 
             return result > 0;
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace(); 
             return false; 
         }
@@ -118,7 +137,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
             
             while (rs.next()){
                 Books books = new Books(
-                        rs.getInt("BookID"),
+                        rs.getInt("book_id"),
                         rs.getString("Title"),
                         rs.getString("Author"),
                         rs.getString("Genre"),
@@ -129,10 +148,13 @@ public class DatabaseOperations extends SQLDatabaseManager {
             }
             
         }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         return bookList;
     }
+    
+    
     
     //borrower ADD.
     @Override
@@ -150,6 +172,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
             return result > 0;
 
         } catch (SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         return false;
@@ -179,6 +202,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
             }
            
         }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
            e.printStackTrace();
         }
         return borrowerList;
@@ -202,6 +226,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
            return result > 0;
            
         }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
            e.printStackTrace();
         }
         return false;
@@ -220,6 +245,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
            int result = ps.executeUpdate();
            return result > 0;
         } catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
            e.printStackTrace();
         }
         return false;
@@ -227,41 +253,49 @@ public class DatabaseOperations extends SQLDatabaseManager {
   
    //transactions UPDATE/RETURN.
    @Override
-   public boolean returnBook(Transactions transactions){
-       try(Connection con = getConnection()){
-           //updating status from the transactions DB table.
-           String updateQuery = "UPDATE transactions SET status = 'Returned' WHERE transaction_id = ?";
-           PreparedStatement ps = con.prepareStatement(updateQuery);
+    public boolean returnBook(Transactions transactions){
+        try(Connection con = getConnection()){
+            con.setAutoCommit(false);
+            
+           //Deleting from issuedbooks table in DB.
+           String deleteQuery = "DELETE FROM issuedbooks WHERE transaction_id = ?";
+           PreparedStatement ps = con.prepareStatement(deleteQuery);
            
            ps.setInt(1, transactions.getTransactionId());
            ps.executeUpdate();
            
            //inserting updated data to returnbooks BD table.
            String insertQuery = "INSERT INTO returned_books (transaction_id, borrower_id, book_id, date_returned, status) " +
-                             "SELECT transaction_id, borrower_id, book_id, NOW(), 'Returned' FROM transactions WHERE transaction_id = ?";
-           PreparedStatement ps2 = con.prepareStatement(insertQuery);
-           ps2.setInt(1, transactions.getTransactionId());
-           int result = ps2.executeUpdate();
-           return result > 0;
+                     "SELECT transaction_id, borrower_id, book_id, NOW(), 'Returned' FROM transactions WHERE transaction_id = ? " +
+                     "AND NOT EXISTS (SELECT 1 FROM returned_books WHERE transaction_id = ?)";
+            PreparedStatement ps2 = con.prepareStatement(insertQuery);
+            ps2.setInt(1, transactions.getTransactionId());
+            ps2.setInt(2, transactions.getTransactionId()); // Second parameter to avoid duplication.
+
+            int result = ps2.executeUpdate();
+            
+            con.commit();//apply changes
+            return result > 0;
+
            
-           
-       }catch(SQLException e){
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
            e.printStackTrace();
-       }
-       return false;
-   }
+        }
+        return false;
+    }
    
    //transactions FETCH DATA.
     public List<Transactions> getTransaction(){
        List<Transactions> transactionList = new ArrayList<>();
        String query = "SELECT * FROM transactions";
        
-       try{
+        try{
            Connection con = getConnection();
            PreparedStatement ps = con.prepareStatement(query);
            ResultSet rs = ps.executeQuery();
            
-           while (rs.next()){
+            while (rs.next()){
                 Transactions transaction = new Transactions(
                     rs.getInt("transaction_id"),
                     rs.getInt("borrower_id"),
@@ -271,13 +305,14 @@ public class DatabaseOperations extends SQLDatabaseManager {
                     rs.getString("status")
                 );
                transactionList.add(transaction);
-           }
+            }
            
-       }catch(SQLException e){
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
            e.printStackTrace();
-       }
-       return transactionList;
-   } 
+        }
+        return transactionList;
+    } 
     
     //issued books FETCH DATA.
     public List<IssuedBooks> getIssuedBooks(){
@@ -302,8 +337,38 @@ public class DatabaseOperations extends SQLDatabaseManager {
             }
             
         }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         return issuedBooksList;
+    }
+    
+    //return FETCH RETURNED BOOKS.
+    public List<ReturnedBooks> getReturnedBooks(){
+        List<ReturnedBooks> returnedBooksList = new ArrayList<>();
+        String query = "SELECT * FROM returned_books";
+        
+        try{
+            Connection con = getConnection();
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()){
+                ReturnedBooks returnedBooks = new ReturnedBooks(
+                        rs.getInt("transaction_id"),
+                        rs.getInt("borrower_id"),
+                        rs.getInt("book_id"),
+                        rs.getTimestamp("date_returned"),
+                        rs.getString("status")
+                );
+                
+                returnedBooksList.add(returnedBooks);
+            }
+            
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return returnedBooksList;
     }
 }

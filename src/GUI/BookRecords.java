@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package GUI;
-
+//All goods!
 import Controller.BooksController;
 import Models.Books;
 import java.util.List;
@@ -19,30 +19,41 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         scaleImages();
         initializeButtons();
         getId();
-        table();
+        table("");
     }
     
-    private void table() {
-        List<Books> books = BooksController.getBooks();
-        
-        DefaultTableModel model = (DefaultTableModel) tbl_bookRecords.getModel();
-        
-        model.setRowCount(0);
-        
-        for (Books book : books){
-            model.addRow(new Object[]{
-                book.getBookId(),
-                book.getTitle(),
-                book.getAuthor(),
-                book.getGenre(),
-                book.getIsbn(),
-                book.getQuantity()
-            });
-        } 
-    }
+    private void table(String keyword) {
+     List<Books> books = BooksController.getBooks(); 
+     DefaultTableModel model = (DefaultTableModel) tbl_bookRecords.getModel();
+
+     model.setRowCount(0); // Clear the table before reloading
+     boolean dataFound = false;//validate existing datas
+     
+     for (Books book : books) {
+         if (keyword == null || keyword.trim().isEmpty() || // If no keyword is provided, show all books
+             book.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
+             book.getAuthor().toLowerCase().contains(keyword.toLowerCase()) ||
+             book.getGenre().toLowerCase().contains(keyword.toLowerCase()) ||
+             book.getIsbn().toLowerCase().contains(keyword.toLowerCase())) {
+
+             model.addRow(new Object[]{
+                 book.getBookId(),
+                 book.getTitle(),
+                 book.getAuthor(),
+                 book.getGenre(),
+                 book.getIsbn(),
+                 book.getQuantity()
+             });
+         }
+     }
+
+     tbl_bookRecords.setModel(model); // Ensure the table uses the updated model
+     tbl_bookRecords.revalidate(); // Refresh UI
+ }
 
 
-    
+
+//    
     private void getId(){
         try{
             //fetch data
@@ -64,6 +75,8 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
             JOptionPane.showMessageDialog(this, "Error: "+e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+
 
     private void scaleImages() {
         String[] paths = {
@@ -88,6 +101,8 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -127,11 +142,18 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         btn_search = new javax.swing.JButton();
         isbn = new javax.swing.JLabel();
         txt_isbn = new javax.swing.JTextField();
+        txt_search = new javax.swing.JTextField();
+        btn_search2 = new javax.swing.JButton();
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane2.setViewportView(jTextArea1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel3.setBackground(new java.awt.Color(224, 255, 255));
 
@@ -339,6 +361,8 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 .addContainerGap(349, Short.MAX_VALUE))
         );
 
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, -1, -1));
+
         jPanel2.setBackground(new java.awt.Color(25, 25, 112));
 
         jlbl_wlcm.setFont(new java.awt.Font("Century Gothic", 0, 18)); // NOI18N
@@ -367,8 +391,12 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
         tbl_bookRecords.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
@@ -399,8 +427,11 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
             tbl_bookRecords.getColumnModel().getColumn(5).setResizable(false);
         }
 
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(538, 120, 552, 490));
+
         jLabel1.setFont(new java.awt.Font("Calibri", 3, 24)); // NOI18N
         jLabel1.setText("BOOK RECORDS");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 80, -1, -1));
 
         jPanel6.setBackground(new java.awt.Color(224, 255, 255));
         jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(25, 25, 112)));
@@ -574,38 +605,25 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 .addContainerGap(154, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 552, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel1)
-                        .addGap(10, 10, 10)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-        );
+        jPanel1.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 120, -1, 490));
+
+        txt_search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_searchActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txt_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 80, 380, -1));
+
+        btn_search2.setBackground(new java.awt.Color(25, 25, 112));
+        btn_search2.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
+        btn_search2.setForeground(new java.awt.Color(255, 255, 255));
+        btn_search2.setText("Search");
+        btn_search2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_search2ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btn_search2, new org.netbeans.lib.awtextra.AbsoluteConstraints(936, 80, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -668,32 +686,48 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         try{
+            StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
+            boolean error = false;
             if(txt_title.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Title field is empty","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("Title field is empty!\n");
+                error = true;//confirm error.
             }if(txt_author.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Author ifield is empty","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("Author field is empty!\n");
+                error = true;
             }if(txt_genre.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Genre field is empty","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("Genre field is empty!\n");
+                error = true;
             }if(txt_isbn.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this,"Error. ISBN field is empty","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("ISBN field is empty!\n");
+                error = true;
             }if(txt_quantity.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Quantity field is empty","Error",JOptionPane.ERROR_MESSAGE);
+                errorMessage.append("Quantity field is empty!");
+                error = true;
+            }if (error){
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);//error message for a specific field.
+                return;
             }
-            
-            int bookId = Integer.parseInt(cb_id.getSelectedItem().toString());
-            String title = txt_title.getText();
-            String author = txt_author.getText();
-            String genre = txt_genre.getText();
-            String isbn = txt_isbn.getText();
-            int quantity = Integer.parseInt(txt_quantity.getText());
-
+                        
+            Object selectedID = cb_id.getSelectedItem();
+            int bookId = (selectedID != null) ? Integer.parseInt(selectedID.toString()) : 0; // Default to 0
+            String title = txt_title.getText().trim();
+            String author = txt_author.getText().trim();
+            String genre = txt_genre.getText().trim();
+            String isbn = txt_isbn.getText().trim();
+            if(! Books.isbnValidation(isbn)){
+                JOptionPane.showMessageDialog(this, "Invalid ISBN! Please enter the right 13-digit code.","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }          
+            int quantity;
+            try{
+               quantity = Integer.parseInt(txt_quantity.getText());
+            } catch (NumberFormatException e) {//validation for 'Quantity'
+            JOptionPane.showMessageDialog(this, "Invalid! Whole number only for 'Quantity'.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+            }
+                     
             Books b = new Books(bookId, title, author, genre,isbn,quantity);
             boolean success = BooksController.addBook(b);
-
 
             if (success){
                 JOptionPane.showMessageDialog(this, "Book added successfully!");
@@ -702,15 +736,14 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 txt_genre.setText("");
                 txt_isbn.setText("");   
                 txt_quantity.setText("");
-                table();
+                table("");
             }else{
                 JOptionPane.showMessageDialog(this, "Failed to add book.");
             }
         
-        } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Error. Numeric value only for Quantity.", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error. " + e.getMessage());
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred."+e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
         
     }//GEN-LAST:event_btn_addActionPerformed
@@ -727,7 +760,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
             List<Books> bookList = BooksController.getBooks();
             
             Books matchBook = bookList.stream()
-                    .filter(book -> book.getBookId() == selectedBookID).findFirst().orElse(null);
+               .filter(book -> book.getBookId() == selectedBookID).findFirst().orElse(null);
             
             //display details
             if(matchBook !=null){
@@ -737,10 +770,12 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 txt_isbn.setText(matchBook.getIsbn());
                 txt_quantity.setText(Integer.toString(matchBook.getQuantity()));
             } else{
-                JOptionPane.showMessageDialog(this, "No record detected.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No record detected.");
+                return;
             }
-        }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(this, "Invalid.", "Error", JOptionPane.ERROR_MESSAGE);
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
         
     }//GEN-LAST:event_btn_searchActionPerformed
@@ -755,28 +790,44 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
         try{
+            StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
+            boolean error = false;
             if(txt_title.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Title field is empty","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("Title field is empty!\n");
+                error = true;//confirm error.
             }if(txt_author.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Author ifield is empty","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("Author field is empty!\n");
+                error = true;
             }if(txt_genre.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Genre field is empty","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("Genre field is empty!\n");
+                error = true;
             }if(txt_isbn.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this,"Error. ISBN field is empty","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("ISBN field is empty!\n");
+                error = true;
             }if(txt_quantity.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Quantity field is empty","Error",JOptionPane.ERROR_MESSAGE);
+                errorMessage.append("Quantity firld is empty!");
+                error = true;
+            }if (error){
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);//error message for a specific field.
+                return;
             }
-            
-            int bookId = Integer.parseInt(cb_id.getSelectedItem().toString());
-            String title = txt_title.getText();
-            String author = txt_author.getText();
-            String genre = txt_genre.getText();
-            String isbn = txt_isbn.getText();
-            int quantity = Integer.parseInt(txt_quantity.getText());
+            Object selectedID = cb_id.getSelectedItem();
+            int bookId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
+            String title = txt_title.getText().trim();
+            String author = txt_author.getText().trim();
+            String genre = txt_genre.getText().trim();
+            String isbn = txt_isbn.getText().trim();
+            if(! Books.isbnValidation(isbn)){
+                JOptionPane.showMessageDialog(this, "Invalid ISBN! Please enter the right 13-digit code.","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int quantity;
+                    try{
+                        quantity = Integer.parseInt(txt_quantity.getText().trim());
+                    }catch(NumberFormatException e){
+                        JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Quantity'.","Error",JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
             Books b = new Books(bookId, title, author, genre, isbn, quantity);
             boolean success = BooksController.updateBook(b);
@@ -788,14 +839,15 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 txt_genre.setText("");
                 txt_isbn.setText("");   
                 txt_quantity.setText("");
-                table();
+                table("");
             }else{
                 JOptionPane.showMessageDialog(this, "Failed to update book.");
             }
         } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Error. Numeric value only for Quantity.");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error. " + e.getMessage());
+        JOptionPane.showMessageDialog(this, "Error! Numeric value only for 'Quantity'.");
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred."+e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
         
     }//GEN-LAST:event_btn_updateActionPerformed
@@ -803,6 +855,16 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     private void btn_searchKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btn_searchKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_btn_searchKeyTyped
+
+    private void txt_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_searchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_searchActionPerformed
+
+    private void btn_search2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_search2ActionPerformed
+        String searchText = txt_search.getText().trim();
+        table(searchText);
+        
+    }//GEN-LAST:event_btn_search2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -851,6 +913,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_dshbrd;
     private javax.swing.JButton btn_search;
+    private javax.swing.JButton btn_search2;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.JButton btn_update;
     private javax.swing.JComboBox<String> cb_id;
@@ -867,6 +930,8 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JLabel jlbl_wlcm;
     private javax.swing.JLabel logo;
     private javax.swing.JTable tbl_bookRecords;
@@ -878,6 +943,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     private javax.swing.JTextField txt_isbn;
     private javax.swing.JLabel txt_q;
     private javax.swing.JTextField txt_quantity;
+    private javax.swing.JTextField txt_search;
     private javax.swing.JTextField txt_title;
     private javax.swing.JLabel txt_trnscID;
     // End of variables declaration//GEN-END:variables

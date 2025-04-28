@@ -20,31 +20,52 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         scaleImages();
         initializeButtons();
         table();
+        getId();
     }
     
 
     
     private void table() {
-    List<Borrowers> borrowers = BorrowersController.getBorrower();
-    
-    DefaultTableModel model = (DefaultTableModel) tbl_borrowerrecords.getModel();
-    model.setRowCount(0);
-    
-    SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-    
-    for (Borrowers b : borrowers){
-        String formattedDate = df.format(b.getMembershipDate());
-        model.addRow(new Object[]{
-            b.getBorrowerId(),
-            b.getName(),
-            b.getAddress(),
-            b.getPhone(),
-            b.getEmail(),
-            formattedDate
-        });
+        List<Borrowers> borrowers = BorrowersController.getBorrower();
+
+        DefaultTableModel model = (DefaultTableModel) tbl_borrowerrecords.getModel();
+        model.setRowCount(0);
+
+        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+
+        for (Borrowers b : borrowers){
+            String formattedDate = df.format(b.getMembershipDate());
+            model.addRow(new Object[]{
+                b.getBorrowerId(),
+                b.getName(),
+                b.getAddress(),
+                b.getPhone(),
+                b.getEmail(),
+                formattedDate
+            });
+        }
+
     }
     
-}
+    private void getId(){
+        try{
+            List<Borrowers> borrowerList = BorrowersController.getBorrower();
+            
+            if(borrowerList.isEmpty()){
+                JOptionPane.showMessageDialog(this, "No records detected!","Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            cb_id.removeAllItems();
+            
+            for (Borrowers b : borrowerList){
+                cb_id.addItem(String.valueOf(b.getBorrowerId()));
+            }
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "Error: "+e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+        }
+    }
         
      
      
@@ -130,6 +151,8 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         btn_update1 = new javax.swing.JButton();
         btn_add1 = new javax.swing.JButton();
         btn_search = new javax.swing.JButton();
+        txt_search = new javax.swing.JTextField();
+        btn_search2 = new javax.swing.JButton();
 
         jPanel2.setBackground(new java.awt.Color(25, 25, 112));
 
@@ -429,6 +452,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel3.setBackground(new java.awt.Color(224, 255, 255));
 
@@ -636,6 +660,8 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 .addContainerGap(349, Short.MAX_VALUE))
         );
 
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, -1, -1));
+
         jPanel16.setBackground(new java.awt.Color(25, 25, 112));
 
         jlbl_wlcm8.setFont(new java.awt.Font("Century Gothic", 0, 18)); // NOI18N
@@ -664,8 +690,11 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jPanel1.add(jPanel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
         jLabel1.setFont(new java.awt.Font("Calibri", 3, 24)); // NOI18N
         jLabel1.setText("BORROWER RECORDS");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 80, -1, -1));
 
         tbl_borrowerrecords.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -686,13 +715,18 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 return canEdit [columnIndex];
             }
         });
+        tbl_borrowerrecords.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tbl_borrowerrecords);
         if (tbl_borrowerrecords.getColumnModel().getColumnCount() > 0) {
             tbl_borrowerrecords.getColumnModel().getColumn(0).setResizable(false);
             tbl_borrowerrecords.getColumnModel().getColumn(1).setResizable(false);
+            tbl_borrowerrecords.getColumnModel().getColumn(2).setResizable(false);
             tbl_borrowerrecords.getColumnModel().getColumn(3).setResizable(false);
             tbl_borrowerrecords.getColumnModel().getColumn(4).setResizable(false);
+            tbl_borrowerrecords.getColumnModel().getColumn(5).setResizable(false);
         }
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 313, 820, 300));
 
         jPanel17.setBackground(new java.awt.Color(224, 255, 255));
         jPanel17.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(25, 25, 112)));
@@ -860,40 +894,25 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel1)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 814, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(52, 52, 52))))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+        jPanel1.add(jPanel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 122, -1, 185));
+
+        txt_search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_searchActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txt_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 80, 380, -1));
+
+        btn_search2.setBackground(new java.awt.Color(25, 25, 112));
+        btn_search2.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
+        btn_search2.setForeground(new java.awt.Color(255, 255, 255));
+        btn_search2.setText("Search");
+        btn_search2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_search2ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btn_search2, new org.netbeans.lib.awtextra.AbsoluteConstraints(936, 80, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -993,8 +1012,12 @@ Dashboard db = new Dashboard();
                 JOptionPane.showMessageDialog(this, "Failed to add borrower. Please try again");
             }
             
-        }catch( Exception e){
-            JOptionPane.showMessageDialog(this, "Error "+ e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
+       }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
 
     }//GEN-LAST:event_btn_add1ActionPerformed
@@ -1007,14 +1030,10 @@ Dashboard db = new Dashboard();
             
             int selectedID = Integer.parseInt(cb_id.getSelectedItem().toString());
             
-            List<Borrowers> allBorrowers = BorrowersController.getBorrower();
-            Borrowers matchBorrower = null;
-            for(Borrowers b : allBorrowers){
-                if(b.getBorrowerId() == selectedID){
-                matchBorrower = b;
-                break;
-            }
-        }
+            List<Borrowers> borrowerList = BorrowersController.getBorrower();
+            
+            Borrowers matchBorrower = borrowerList.stream()
+                    .filter(borrower -> borrower.getBorrowerId() == selectedID).findFirst().orElse(null);
             if(matchBorrower != null){
                 txt_name.setText(matchBorrower.getName());
                 txt_address.setText(matchBorrower.getAddress());
@@ -1023,8 +1042,12 @@ Dashboard db = new Dashboard();
             } else{
                 JOptionPane.showMessageDialog(this, "No record detected!","Error", JOptionPane.ERROR_MESSAGE);
             }
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }catch(Exception e){
-            JOptionPane.showMessageDialog(this, e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
 
     }//GEN-LAST:event_btn_searchActionPerformed
@@ -1062,10 +1085,24 @@ Dashboard db = new Dashboard();
                 JOptionPane.showMessageDialog(this, "Failed to update borrower. Please try again");
             }
             
-        }catch( Exception e){
-            JOptionPane.showMessageDialog(this, "Error "+ e.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }//GEN-LAST:event_btn_update1ActionPerformed
+
+    private void txt_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_searchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_searchActionPerformed
+
+    private void btn_search2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_search2ActionPerformed
+//        String searchText = txt_search.getText().trim();
+//        table(searchText);
+
+    }//GEN-LAST:event_btn_search2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1114,6 +1151,7 @@ Dashboard db = new Dashboard();
     private javax.swing.JButton btn_add1;
     private javax.swing.JButton btn_dshbrd;
     private javax.swing.JButton btn_search;
+    private javax.swing.JButton btn_search2;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.JButton btn_update;
     private javax.swing.JButton btn_update1;
@@ -1164,6 +1202,7 @@ Dashboard db = new Dashboard();
     private javax.swing.JTextField txt_email;
     private javax.swing.JTextField txt_name;
     private javax.swing.JTextField txt_phone;
+    private javax.swing.JTextField txt_search;
     private javax.swing.JLabel txt_trasctnDate;
     private javax.swing.JLabel txt_trnscID;
     // End of variables declaration//GEN-END:variables

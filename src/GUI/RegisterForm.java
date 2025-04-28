@@ -195,8 +195,12 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
                 JOptionPane.showMessageDialog(this, "Error. User failed to register. Please try again.","Error", JOptionPane.ERROR_MESSAGE);
             }
             
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }catch(Exception e){
-            System.out.println("Error"+ e.getMessage());
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }//GEN-LAST:event_jbtn_signUpActionPerformed
 

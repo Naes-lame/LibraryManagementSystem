@@ -10,6 +10,7 @@ import Models.Transactions;
 import Controller.TransactionsController;
 import javax.swing.JLabel;
 import java.sql.*;
+import java.util.Calendar;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -60,8 +61,12 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             for(Transactions tr : transactionList){
                 cb_id.addItem(String.valueOf(tr.getTransactionId()));
             }
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "Error: "+ e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
     
@@ -607,8 +612,12 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             } else{
                 JOptionPane.showMessageDialog(this, "No record detected.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(this, "Invalid.", "Error", JOptionPane.ERROR_MESSAGE);
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }//GEN-LAST:event_btn_searchActionPerformed
 
@@ -642,8 +651,12 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 JOptionPane.showMessageDialog(this, "Failed to issue book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-        }catch (Exception e) {
-            System.out.println("Error "+ e.getMessage());
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
 
     }//GEN-LAST:event_btn_issueActionPerformed
@@ -665,7 +678,12 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             int bookId = Integer.parseInt(txt_bookid.getText().trim());
             //generating timestamps
             Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
-            Timestamp dueDate = new Timestamp(System.currentTimeMillis()+(7L * 24 * 60 * 60 * 1000));
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(transactionDate);
+            cal.add(Calendar.DATE, 7); // Adds 7 days
+
+            Timestamp dueDate = new Timestamp(cal.getTimeInMillis());
             //retrieving stats
             List<Transactions> transactions = TransactionsController.getTransaction();
             String status = transactions.isEmpty() ? "No Transactions Found" : transactions.get(0).getStatus();
@@ -678,14 +696,19 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
 
             if(success){
                 JOptionPane.showMessageDialog(this, "Book was returned successfully!");
-
+                txt_borrowerid.setText("");
+                txt_bookid.setText("");
                 table();
             } else{
-                JOptionPane.showMessageDialog(this, "Failed to return book. Please try agian.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to return book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-        }catch (Exception e){
-            System.out.println("Error "+ e.getMessage());
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }//GEN-LAST:event_btn_returnActionPerformed
 
