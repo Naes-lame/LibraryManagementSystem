@@ -65,15 +65,17 @@ public class Books {
     }
     
     public static boolean isbnValidation(String isbn){
-        //validate isbn legnth.
-        if(isbn == null || isbn.length()!= 13){
-        return false;
-    }
-        int sum = 0;//get numbers inputed
-        for(int i = 0; i < 13; i++) {
-            int digit = Character.getNumericValue(isbn.charAt(i));//convert char to int
-            sum += (i % 2 == 0)? digit : digit*3;//apply weight rule (even * 1 , odd * 3)
-        }
-        return sum % 10 == 0;//validate if isbn is divisible by 10.
+        return isbn != null && isbn.matches("\\d{13}");
+        
+//        //validate isbn legnth.
+//        if(isbn == null || isbn.length()!= 13){
+//        return false;
+//    }
+//        int sum = 0;//get numbers inputed
+//        for(int i = 0; i < 13; i++) {
+//            int digit = Character.getNumericValue(isbn.charAt(i));//convert char to int
+//            sum += (i % 2 == 0)? digit : digit*3;//apply weight rule (even * 1 , odd * 3)
+//        }
+//        return sum % 10 == 0;//validate if isbn is divisible by 10.
     }
 }

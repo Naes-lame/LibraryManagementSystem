@@ -4,14 +4,15 @@
  */
 package GUI;
 
-//can't add record if database is empty.
-//un-enable duplication of records
+//combo box issue. Other than that all goods na
 import Models.Transactions;
 import Controller.TransactionsController;
 import javax.swing.JLabel;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -20,54 +21,53 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     public TransactionRecords() {
         initComponents();
         ScaleImages();
-        table();
+        table("");
         getId();
     }
     
 
     
-    private void table() {
+    private void table(String keyword) {
     List<Transactions> transaction = TransactionsController.getTransaction();
     
-    DefaultTableModel model = (DefaultTableModel)TransacTable.getModel();
+    DefaultTableModel model = (DefaultTableModel)tbl_transactions.getModel();
     model.setRowCount(0);
     
+    SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+    
     for (Transactions tr : transaction){
-       String status = tr.getStatus();
-       model.addRow(new Object[]{
-           tr.getTransactionId(),
-           tr.getBorrowerId(),
-           tr.getBookId(),
-           tr.getTransactionDate(),
-           tr.getDueDate(),
-           tr.getStatus()
-        });
-      }  
+        String formattedDate = df.format(tr.getTransactionDate());
+        String status = tr.getStatus();
+        
+        if (keyword == null || keyword.trim().isEmpty()||
+                tr.getStatus().toLowerCase().contains(keyword.toLowerCase())){
+                model.addRow(new Object[]{
+                tr.getTransactionId(),
+                    tr.getBorrowerId(),
+                    tr.getBookId(),
+                    tr.getTransactionDate(),
+                    tr.getDueDate(),
+                    tr.getStatus()
+                });
+            }
+        }
+    tbl_transactions.setModel(model);
+    tbl_transactions.revalidate();
     }
 
     private void getId(){
-        try{
             List<Transactions> transactionList = TransactionsController.getTransaction();
-            
             //validation
             if(transactionList.isEmpty()){
-                JOptionPane.showMessageDialog(this, "No record detected!","Error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Transaction Records is currently empty.","Info",JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
-            
-            //clear to add.
+             //clear to add.
             cb_id.removeAllItems();
             
             for(Transactions tr : transactionList){
                 cb_id.addItem(String.valueOf(tr.getTransactionId()));
             }
-        }catch(NullPointerException e){
-            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
     }
     
     
@@ -113,8 +113,6 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         jlbl_wlcm8 = new javax.swing.JLabel();
         logo = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        TransacTable = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
         txt_brrwr = new javax.swing.JLabel();
         txt_bk = new javax.swing.JLabel();
@@ -125,6 +123,11 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         btn_search = new javax.swing.JButton();
         cb_id = new javax.swing.JComboBox<>();
         txt_brrwr1 = new javax.swing.JLabel();
+        btn_delete = new javax.swing.JButton();
+        txt_search = new javax.swing.JTextField();
+        btn_search2 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbl_transactions = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -368,43 +371,6 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         jLabel1.setFont(new java.awt.Font("Calibri", 3, 24)); // NOI18N
         jLabel1.setText("TRANSACTIONS");
 
-        TransacTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "Transaction ID", "Borrower", "Book", "Transaction Date", "Due Date", "Status"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        TransacTable.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(TransacTable);
-        if (TransacTable.getColumnModel().getColumnCount() > 0) {
-            TransacTable.getColumnModel().getColumn(0).setResizable(false);
-            TransacTable.getColumnModel().getColumn(1).setResizable(false);
-            TransacTable.getColumnModel().getColumn(2).setResizable(false);
-            TransacTable.getColumnModel().getColumn(3).setResizable(false);
-            TransacTable.getColumnModel().getColumn(4).setResizable(false);
-            TransacTable.getColumnModel().getColumn(5).setResizable(false);
-        }
-
         jPanel6.setBackground(new java.awt.Color(224, 255, 255));
         jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(25, 25, 112)));
 
@@ -461,6 +427,16 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         txt_brrwr1.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
         txt_brrwr1.setText("Transaction ID:");
 
+        btn_delete.setBackground(new java.awt.Color(25, 25, 112));
+        btn_delete.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        btn_delete.setForeground(new java.awt.Color(255, 255, 255));
+        btn_delete.setText("Delete");
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -480,10 +456,11 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                                 .addComponent(cb_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(29, 29, 29)
                                 .addComponent(btn_search))
-                            .addComponent(txt_bookid, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
-                            .addComponent(txt_borrowerid, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
-                            .addComponent(btn_issue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(17, Short.MAX_VALUE))
+                            .addComponent(txt_bookid)
+                            .addComponent(txt_borrowerid)
+                            .addComponent(btn_issue, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)))
+                    .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -506,8 +483,63 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 .addComponent(btn_issue, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btn_return, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        txt_search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_searchActionPerformed(evt);
+            }
+        });
+
+        btn_search2.setBackground(new java.awt.Color(25, 25, 112));
+        btn_search2.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
+        btn_search2.setForeground(new java.awt.Color(255, 255, 255));
+        btn_search2.setText("Search");
+        btn_search2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_search2ActionPerformed(evt);
+            }
+        });
+
+        tbl_transactions.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Transaction ID", "Borrower", "Book", "Transaction Date", "Due Date", "Status"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tbl_transactions.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(tbl_transactions);
+        if (tbl_transactions.getColumnModel().getColumnCount() > 0) {
+            tbl_transactions.getColumnModel().getColumn(0).setResizable(false);
+            tbl_transactions.getColumnModel().getColumn(1).setResizable(false);
+            tbl_transactions.getColumnModel().getColumn(2).setResizable(false);
+            tbl_transactions.getColumnModel().getColumn(3).setResizable(false);
+            tbl_transactions.getColumnModel().getColumn(4).setResizable(false);
+            tbl_transactions.getColumnModel().getColumn(5).setResizable(false);
+        }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -518,14 +550,18 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1)
-                        .addGap(15, 15, 15))
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(20, 20, 20)
-                        .addComponent(jLabel1)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jLabel1)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_search2))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 522, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -534,27 +570,38 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 488, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(21, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(20, 20, 20)
+                                .addComponent(jLabel1))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btn_search2))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE))))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -612,9 +659,6 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             } else{
                 JOptionPane.showMessageDialog(this, "No record detected.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }catch(NullPointerException e){
-            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }catch(Exception e){
             JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -624,36 +668,50 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     private void btn_issueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_issueActionPerformed
         try {
             //validation of fields.
-            if (txt_borrowerid.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Error: Borrower ID is empty!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }if (txt_bookid.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Error: Book ID is empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+            if(txt_borrowerid.getText().trim().isEmpty()){
+                errorMessage.append("Borrower ID field is empty!\n");
+                error = true;
+            }if(txt_bookid.getText().trim().isEmpty()){
+                errorMessage.append("Book ID field is empty!\n");
+                error = true;
+            }if (error){
+                JOptionPane.showMessageDialog(new JFrame(),errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            int id = Integer.parseInt(cb_id.getSelectedItem().toString());
-            int borrowerId = Integer.parseInt(txt_borrowerid.getText().trim());
-            int bookId = Integer.parseInt(txt_bookid.getText().trim());
+            Object selectedID = cb_id.getSelectedItem();
+            int transactionId = (selectedID != null)? Integer.parseInt(selectedID.toString()): null;
+            int borrowerId;
+            try{
+                borrowerId = Integer.parseInt(txt_borrowerid.getText());
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Borrower ID'","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int bookId;
+            try{
+                bookId = Integer.parseInt(txt_bookid.getText());
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Book ID'","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
             Timestamp dueDate = new Timestamp(System.currentTimeMillis()+(7L * 24 * 60 * 60 * 1000));
             String status = "Issued";
 
-            Transactions tr = new Transactions(id, borrowerId, bookId, transactionDate, dueDate, status);
-            boolean success = TransactionsController.issue(tr);
+            Transactions tr = new Transactions(transactionId, borrowerId, bookId, transactionDate, dueDate, status);
+            boolean success = TransactionsController.issueBook(tr);
 
             if(success){
                 JOptionPane.showMessageDialog(this, "Book was issued successfully!");
                 txt_borrowerid.setText("");
                 txt_bookid.setText("");
-                table();
+                table("");
             } else{
                 JOptionPane.showMessageDialog(this, "Failed to issue book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-        }catch(NullPointerException e){
-            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }catch(Exception e){
             JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -664,18 +722,38 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     private void btn_returnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_returnActionPerformed
         try{
             //validation
-            if (txt_borrowerid.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Error: Borrower ID and Book ID cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }if (txt_bookid.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Error: Book ID and Book ID cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+            if(txt_borrowerid.getText().trim().isEmpty()){
+                errorMessage.append("Borrower ID field is empty!\n");
+                error = true;
+            }if(txt_bookid.getText().trim().isEmpty()){
+                errorMessage.append("Book ID field is empty!\n");
+                error = true;
+            }if (error){
+                JOptionPane.showMessageDialog(new JFrame(),errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
             //retrieving id's
-            int id = Integer.parseInt(cb_id.getSelectedItem().toString());
-            int borrowerId = Integer.parseInt(txt_borrowerid.getText().trim());
-            int bookId = Integer.parseInt(txt_bookid.getText().trim());
+            Object selectedID = cb_id.getSelectedItem();
+            int transactionId = (selectedID != null)? Integer.parseInt(selectedID.toString()): null;
+           
+            int borrowerId;
+            try{
+                borrowerId = Integer.parseInt(txt_borrowerid.getText());
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Borrower ID'","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int bookId;
+            try{
+                bookId = Integer.parseInt(txt_bookid.getText());
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Book ID'","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             //generating timestamps
             Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
 
@@ -690,7 +768,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
 
             
             //grouping transaction details into object for easier manage.
-            Transactions tr= new Transactions(id, borrowerId, bookId, transactionDate, dueDate, status);
+            Transactions tr= new Transactions(transactionId, borrowerId, bookId, transactionDate, dueDate, status);
             //calling the returnBooks method through the controller.
             boolean success = TransactionsController.returnBooks(tr);
 
@@ -698,14 +776,10 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 JOptionPane.showMessageDialog(this, "Book was returned successfully!");
                 txt_borrowerid.setText("");
                 txt_bookid.setText("");
-                table();
+                table("");
             } else{
                 JOptionPane.showMessageDialog(this, "Failed to return book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-        }catch(NullPointerException e){
-            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }catch(Exception e){
             JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -713,12 +787,75 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     }//GEN-LAST:event_btn_returnActionPerformed
 
     private void txt_bookidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_bookidActionPerformed
-        // TODO add your handling code here:
+       
     }//GEN-LAST:event_txt_bookidActionPerformed
 
     private void txt_borroweridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_borroweridActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_txt_borroweridActionPerformed
+
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        try {
+            //validation of fields.
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+            if(txt_borrowerid.getText().trim().isEmpty()){
+                errorMessage.append("Borrower ID field is empty!\n");
+                error = true;
+            }if(txt_bookid.getText().trim().isEmpty()){
+                errorMessage.append("Book ID field is empty!\n");
+                error = true;
+            }if (error){
+                JOptionPane.showMessageDialog(new JFrame(),errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            Object selectedID = cb_id.getSelectedItem();
+            int transactionId = (selectedID != null)? Integer.parseInt(selectedID.toString()): null;
+            int borrowerId;
+            try{
+                borrowerId = Integer.parseInt(txt_borrowerid.getText());
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Borrower ID'","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int bookId;
+            try{
+                bookId = Integer.parseInt(txt_bookid.getText());
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Book ID'","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
+            Timestamp dueDate = new Timestamp(System.currentTimeMillis()+(7L * 24 * 60 * 60 * 1000));
+            String status = "Issued";
+
+            Transactions tr = new Transactions(transactionId, borrowerId, bookId, transactionDate, dueDate, status);
+            boolean success = TransactionsController.deleteTransaction(tr);
+
+            if(success){
+                JOptionPane.showMessageDialog(this, "Book was issued successfully!");
+                txt_borrowerid.setText("");
+                txt_bookid.setText("");
+                table("");
+            } else{
+                JOptionPane.showMessageDialog(this, "Failed to issue book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btn_deleteActionPerformed
+
+    private void txt_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_searchActionPerformed
+    
+    }//GEN-LAST:event_txt_searchActionPerformed
+
+    private void btn_search2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_search2ActionPerformed
+        String searchText = txt_search.getText().trim();
+        table(searchText);
+
+    }//GEN-LAST:event_btn_search2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -758,16 +895,17 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel AccIcon;
     private javax.swing.JLabel BrrwrIcon;
-    private javax.swing.JTable TransacTable;
     private javax.swing.JLabel TrnsactIcon;
     private javax.swing.JLabel bookIcon;
     private javax.swing.JButton btn_Acc;
     private javax.swing.JButton btn_BRecords;
     private javax.swing.JButton btn_BrwrRecords;
+    private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_dshbrd;
     private javax.swing.JButton btn_issue;
     private javax.swing.JButton btn_return;
     private javax.swing.JButton btn_search;
+    private javax.swing.JButton btn_search2;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<String> cb_id;
@@ -785,10 +923,12 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jlbl_wlcm8;
     private javax.swing.JLabel logo;
+    private javax.swing.JTable tbl_transactions;
     private javax.swing.JLabel txt_bk;
     private javax.swing.JTextField txt_bookid;
     private javax.swing.JTextField txt_borrowerid;
     private javax.swing.JLabel txt_brrwr;
     private javax.swing.JLabel txt_brrwr1;
+    private javax.swing.JTextField txt_search;
     // End of variables declaration//GEN-END:variables
 }

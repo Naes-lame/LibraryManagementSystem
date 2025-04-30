@@ -10,8 +10,8 @@ import java.util.List;
 public class TransactionsController {
     private static final DatabaseOperations dbo = new DatabaseOperations();
     
-    public static boolean issue(Transactions transactions){
-        return dbo.issue(transactions);
+    public static boolean issueBook(Transactions transactions){
+        return dbo.issueBook(transactions);
     }
     
     public static boolean returnBooks(Transactions transactions){
@@ -20,6 +20,10 @@ public class TransactionsController {
     
     public static List<Transactions> getTransaction(){
         return dbo.getTransaction();
+    }
+    
+    public static boolean deleteTransaction(Transactions transactions){
+        return dbo.deleteTransaction(transactions);
     }
     
 }

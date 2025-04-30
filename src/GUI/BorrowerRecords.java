@@ -2,6 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
+
+//All Goods!
 package GUI;
 
 import Controller.BorrowersController;
@@ -9,6 +11,7 @@ import Models.Borrowers;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -19,52 +22,57 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         initComponents();
         scaleImages();
         initializeButtons();
-        table();
+        table("");
         getId();
     }
     
 
     
-    private void table() {
-        List<Borrowers> borrowers = BorrowersController.getBorrower();
+   private void table(String keyword) {
+    List<Borrowers> borrowers = BorrowersController.getBorrower();
 
-        DefaultTableModel model = (DefaultTableModel) tbl_borrowerrecords.getModel();
-        model.setRowCount(0);
+    DefaultTableModel model = (DefaultTableModel) tbl_borrowerrecords.getModel();
+    model.setRowCount(0);
 
-        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+    SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
 
-        for (Borrowers b : borrowers){
-            String formattedDate = df.format(b.getMembershipDate());
+    for (Borrowers b : borrowers) {  // Loop through each Borrowers object
+        String formattedDate = df.format(b.getMembershipDate());
+
+        if (keyword == null || keyword.trim().isEmpty() ||
+            b.getName().toLowerCase().contains(keyword.toLowerCase()) ||
+            b.getAddress().toLowerCase().contains(keyword.toLowerCase()) ||
+            b.getEmail().toLowerCase().contains(keyword.toLowerCase())) {
+
             model.addRow(new Object[]{
-                b.getBorrowerId(),
+                b.getBorrowerId(), 
                 b.getName(),
                 b.getAddress(),
                 b.getPhone(),
                 b.getEmail(),
                 formattedDate
-            });
+                });
+            }
         }
-
+    tbl_borrowerrecords.setModel(model);
+    tbl_borrowerrecords.revalidate();
     }
+
     
     private void getId(){
-        try{
-            List<Borrowers> borrowerList = BorrowersController.getBorrower();
-            
-            if(borrowerList.isEmpty()){
-                JOptionPane.showMessageDialog(this, "No records detected!","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+        List<Borrowers> borrowerList = BorrowersController.getBorrower();
+        
+       if(borrowerList.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Borrower Records is currently empty.","Info",JOptionPane.INFORMATION_MESSAGE);
             }
             
+            //remove existing row to add id
             cb_id.removeAllItems();
             
-            for (Borrowers b : borrowerList){
+            //store new id
+            for(Borrowers b : borrowerList){
                 cb_id.addItem(String.valueOf(b.getBorrowerId()));
-            }
-            
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "Error: "+e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-        }
+            }   
     }
         
      
@@ -151,6 +159,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         btn_update1 = new javax.swing.JButton();
         btn_add1 = new javax.swing.JButton();
         btn_search = new javax.swing.JButton();
+        btn_delete = new javax.swing.JButton();
         txt_search = new javax.swing.JTextField();
         btn_search2 = new javax.swing.JButton();
 
@@ -817,6 +826,16 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
             }
         });
 
+        btn_delete.setBackground(new java.awt.Color(25, 25, 112));
+        btn_delete.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        btn_delete.setForeground(new java.awt.Color(255, 255, 255));
+        btn_delete.setText("Delete");
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
         jPanel17.setLayout(jPanel17Layout);
         jPanel17Layout.setHorizontalGroup(
@@ -849,23 +868,24 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                         .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txt_phone, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(39, 39, 39)
+                        .addGap(40, 40, 40)
                         .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btn_update1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_add1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btn_add1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel17Layout.createSequentialGroup()
                         .addGap(93, 93, 93)
                         .addComponent(btn_update)
                         .addGap(33, 33, 33)
                         .addComponent(btn_add)))
-                .addContainerGap(73, Short.MAX_VALUE))
+                .addContainerGap(72, Short.MAX_VALUE))
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel17Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel17Layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(jPanel17Layout.createSequentialGroup()
@@ -878,16 +898,21 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                             .addComponent(txt_brrwr)
                             .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txt_trasctnDate)
-                            .addComponent(txt_phone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(btn_update1, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_address, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_bk)
-                    .addComponent(txt_dd)
-                    .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_add1))
-                .addGap(484, 484, 484)
+                            .addComponent(txt_phone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(30, 30, 30)
+                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_address, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_bk)
+                            .addComponent(txt_dd)
+                            .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel17Layout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addComponent(btn_add1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btn_update1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btn_delete)))
+                .addGap(476, 476, 476)
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btn_update)
                     .addComponent(btn_add))
@@ -979,42 +1004,53 @@ Dashboard db = new Dashboard();
 
     private void btn_add1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_add1ActionPerformed
         try{
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
             if(txt_name.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Name is missing!", "Error", JOptionPane.ERROR_MESSAGE);
-            } if(txt_address.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Address is missing", "Error", JOptionPane.ERROR_MESSAGE);
-            } if(txt_phone.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Phone number is missing!", "Error", JOptionPane.ERROR_MESSAGE);
-            } if(txt_email.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Email is missing!","Error", JOptionPane.ERROR_MESSAGE);
+                errorMessage.append("Title field is empty!\n");
+                error = true;
+            }if(txt_address.getText().trim().isEmpty()){
+                errorMessage.append("Address field is empty!\n");
+                error = true;
+            }if(txt_phone.getText().trim().isEmpty()){
+                errorMessage.append("Phone number field is empty!\n");
+                error = true;
+            }if(txt_email.getText().trim().isEmpty()){
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            }if(error){
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
+                return;      
             }
             
-            int BorrowerId = Integer.parseInt(cb_id.getSelectedItem().toString());
+            Object selectedID = cb_id.getSelectedItem();
+            int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
             String name = txt_name.getText();
             String address = txt_address.getText();
-            long phone = Long.parseLong(txt_phone.getText());
+            
+            long phone;
+            try{
+                phone = Long.parseLong(txt_phone.getText());
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Invalid whole numbers only for 'Phone'.","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             String email = txt_email.getText();
             Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
             
-            Borrowers b = new Borrowers (BorrowerId, name, address, phone, email, membershipDate);
+            Borrowers b = new Borrowers (borrowerId, name, address, phone, email, membershipDate);
             boolean success = BorrowersController.addBorrower(b);
             
             if (success){
-                JOptionPane.showMessageDialog(this, "Borrower added successfulle!");
+                JOptionPane.showMessageDialog(this, "Borrower added successfully!");
                 txt_name.setText("");
                 txt_address.setText("");
                 txt_phone.setText("");
                 txt_email.setText("");
-                
-                
-                table();
+                table("");
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to add borrower. Please try again");
             }
-            
-       }catch(NullPointerException e){
-            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }catch(Exception e){
             JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -1024,8 +1060,9 @@ Dashboard db = new Dashboard();
 
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         try{
+            //validation
             if(cb_id.getSelectedItem() == null || cb_id.getSelectedItem().toString().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Please select book id.","Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please select book id.","Error", JOptionPane.ERROR_MESSAGE);
             }
             
             int selectedID = Integer.parseInt(cb_id.getSelectedItem().toString());
@@ -1042,9 +1079,6 @@ Dashboard db = new Dashboard();
             } else{
                 JOptionPane.showMessageDialog(this, "No record detected!","Error", JOptionPane.ERROR_MESSAGE);
             }
-        }catch(NullPointerException e){
-            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }catch(Exception e){
             JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -1054,40 +1088,53 @@ Dashboard db = new Dashboard();
 
     private void btn_update1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_update1ActionPerformed
         try{
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
             if(txt_name.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Name is missing!", "Error", JOptionPane.ERROR_MESSAGE);
-            } if(txt_address.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Address is missing", "Error", JOptionPane.ERROR_MESSAGE);
-            } if(txt_phone.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Phone number is missing!", "Error", JOptionPane.ERROR_MESSAGE);
-            } if(txt_email.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Email is missing!","Error", JOptionPane.ERROR_MESSAGE);
+                errorMessage.append("Title field is empty!\n");
+                error = true;
+            }if(txt_address.getText().trim().isEmpty()){
+                errorMessage.append("Address field is empty!\n");
+                error = true;
+            }if(txt_phone.getText().trim().isEmpty()){
+                errorMessage.append("Phone number field is empty!\n");
+                error = true;
+            }if(txt_email.getText().trim().isEmpty()){
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            }if(error){
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
+                return;
             }
             
-            int BorrowerId = Integer.parseInt(cb_id.getSelectedItem().toString());
+            Object selectedID = cb_id.getSelectedItem();
+            int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
             String name = txt_name.getText();
             String address = txt_address.getText();
-            long phone = Long.parseLong(txt_phone.getText());
+            
+            long phone;
+            try{
+                phone = Long.parseLong(txt_phone.getText());
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Invalid whole numbers only for 'Phone'.","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             String email = txt_email.getText();
             Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
             
-            Borrowers b = new Borrowers (BorrowerId, name, address, phone, email, membershipDate);
+            Borrowers b = new Borrowers (borrowerId, name, address, phone, email, membershipDate);
             boolean success = BorrowersController.updateBorrower(b);
             
             if (success){
-                JOptionPane.showMessageDialog(this, "Borrower updated successfulle!");
+                JOptionPane.showMessageDialog(this, "Borrower update successfully!");
                 txt_name.setText("");
                 txt_address.setText("");
                 txt_phone.setText("");
                 txt_email.setText("");
-                table();
+                table("");
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to update borrower. Please try again");
             }
-            
-        }catch(NullPointerException e){
-            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }catch(Exception e){
             JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -1099,10 +1146,65 @@ Dashboard db = new Dashboard();
     }//GEN-LAST:event_txt_searchActionPerformed
 
     private void btn_search2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_search2ActionPerformed
-//        String searchText = txt_search.getText().trim();
-//        table(searchText);
+        String searchText = txt_search.getText().trim();
+        table(searchText);
 
     }//GEN-LAST:event_btn_search2ActionPerformed
+
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+         try{
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+            if(txt_name.getText().trim().isEmpty()){
+                errorMessage.append("Title field is empty!\n");
+                error = true;
+            }if(txt_address.getText().trim().isEmpty()){
+                errorMessage.append("Address field is empty!\n");
+                error = true;
+            }if(txt_phone.getText().trim().isEmpty()){
+                errorMessage.append("Phone number field is empty!\n");
+                error = true;
+            }if(txt_email.getText().trim().isEmpty()){
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            }if(error){
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            Object selectedID = cb_id.getSelectedItem();
+            int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
+            String name = txt_name.getText();
+            String address = txt_address.getText();
+            
+            long phone;
+            try{
+                phone = Long.parseLong(txt_phone.getText());
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Invalid whole numbers only for 'Phone'.","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String email = txt_email.getText();
+            Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
+            
+            Borrowers b = new Borrowers (borrowerId, name, address, phone, email, membershipDate);
+            boolean success = BorrowersController.deleteBorrowers(b);
+            
+            if (success){
+                JOptionPane.showMessageDialog(this, "Borrower deleted successfully!");
+                txt_name.setText("");
+                txt_address.setText("");
+                txt_phone.setText("");
+                txt_email.setText("");
+                table("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to delete borrower. Please try again");
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btn_deleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1149,6 +1251,7 @@ Dashboard db = new Dashboard();
     private javax.swing.JButton btn_BrwrRecords;
     private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_add1;
+    private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_dshbrd;
     private javax.swing.JButton btn_search;
     private javax.swing.JButton btn_search2;

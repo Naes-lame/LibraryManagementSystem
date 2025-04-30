@@ -9,17 +9,21 @@ import Models.Borrowers;
 import java.util.List;
 
 public class BorrowersController {
-    private static DatabaseOperations dbm = new DatabaseOperations();
+    private static DatabaseOperations dbo = new DatabaseOperations();
     
     public static boolean addBorrower (Borrowers borrowers){
-        return dbm.addBorrower(borrowers);
+        return dbo.addBorrower(borrowers);
     }
     
     public static List<Borrowers> getBorrower(){
-        return dbm.getBorrower();
+        return dbo.getBorrower();
     }
     
     public static boolean updateBorrower(Borrowers borrowers){
-        return dbm.updateBorrower(borrowers);
+        return dbo.updateBorrower(borrowers);
+    }
+    
+    public static boolean deleteBorrowers(Borrowers borrowers){
+        return dbo.deleteBorrower(borrowers);
     }
 }

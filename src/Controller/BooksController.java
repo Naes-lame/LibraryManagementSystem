@@ -9,19 +9,23 @@ import Models.*;
 import java.util.List;
 
 public class BooksController {
-    private static DatabaseOperations dbm = new DatabaseOperations();
+    private static DatabaseOperations dbo = new DatabaseOperations();
     
     
     
     public static List<Books> getBooks(){
-        return dbm.getBooks();
+        return dbo.getBooks();
     }
     
     public static boolean addBook(Books books){
-        return dbm.addBook(books);
+        return dbo.addBook(books);
     }
     
     public static boolean updateBook(Books books){
-        return dbm.updateBook(books);
+        return dbo.updateBook(books);
+    }
+    
+    public static boolean deleteBook(Books books){
+        return dbo.deleteBook(books);
     }
 }

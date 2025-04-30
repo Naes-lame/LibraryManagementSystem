@@ -23,17 +23,19 @@ public abstract class SQLDatabaseManager {
     
     public abstract boolean updateBook(Books books);
     
+    public abstract boolean deleteBook(Books books);
+    
     public abstract boolean addBorrower(Borrowers borrowers);
     
     public abstract boolean updateBorrower (Borrowers borrowers);
     
-    public abstract boolean issue (Transactions transactions);
+    public abstract boolean deleteBorrower(Borrowers borrowers);
     
-//    public abstract boolean updateStatToReturn(int transactionId);
-//    
-//    public abstract boolean transferToReturnTbl(int transactionId);
-//    
+    public abstract boolean issueBook (Transactions transactions);
+
     public abstract boolean returnBook(Transactions transactions);
+    
+    public abstract boolean deleteTransaction (Transactions transactions);
     
    
 }

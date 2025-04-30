@@ -27,7 +27,6 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
      DefaultTableModel model = (DefaultTableModel) tbl_bookRecords.getModel();
 
      model.setRowCount(0); // Clear the table before reloading
-     boolean dataFound = false;//validate existing datas
      
      for (Books book : books) {
          if (keyword == null || keyword.trim().isEmpty() || // If no keyword is provided, show all books
@@ -55,13 +54,12 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
 
 //    
     private void getId(){
-        try{
             //fetch data
             List<Books> bookList = BooksController.getBooks();
             
             //validation
             if(bookList.isEmpty()){
-                JOptionPane.showMessageDialog(this, "No record detected!","Error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Book Records is currently empty.","Info",JOptionPane.INFORMATION_MESSAGE);
             }
             
             //remove existing row to add id
@@ -71,10 +69,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
             for(Books b : bookList){
                 cb_id.addItem(String.valueOf(b.getBookId()));
             }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "Error: "+e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-        }
-    }
+       }
     
 
 
@@ -142,6 +137,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         btn_search = new javax.swing.JButton();
         isbn = new javax.swing.JLabel();
         txt_isbn = new javax.swing.JTextField();
+        btn_delete = new javax.swing.JButton();
         txt_search = new javax.swing.JTextField();
         btn_search2 = new javax.swing.JButton();
 
@@ -526,6 +522,16 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
             }
         });
 
+        btn_delete.setBackground(new java.awt.Color(25, 25, 112));
+        btn_delete.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        btn_delete.setForeground(new java.awt.Color(255, 255, 255));
+        btn_delete.setText("Delete");
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -559,11 +565,10 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                                 .addComponent(txt_q, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(jPanel6Layout.createSequentialGroup()
-                                        .addComponent(btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txt_quantity, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(txt_quantity, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btn_add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btn_update, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(15, 15, 15))
         );
@@ -599,10 +604,12 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                     .addComponent(txt_q)
                     .addComponent(txt_quantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(154, Short.MAX_VALUE))
+                .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(60, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 120, -1, 490));
@@ -771,7 +778,6 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 txt_quantity.setText(Integer.toString(matchBook.getQuantity()));
             } else{
                 JOptionPane.showMessageDialog(this, "No record detected.");
-                return;
             }
         }catch(Exception e){
             JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
@@ -866,6 +872,70 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         
     }//GEN-LAST:event_btn_search2ActionPerformed
 
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        try{
+            StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
+            boolean error = false;
+            if(txt_title.getText().trim().isEmpty()){
+                errorMessage.append("Title field is empty!\n");
+                error = true;//confirm error.
+            }if(txt_author.getText().trim().isEmpty()){
+                errorMessage.append("Author field is empty!\n");
+                error = true;
+            }if(txt_genre.getText().trim().isEmpty()){
+                errorMessage.append("Genre field is empty!\n");
+                error = true;
+            }if(txt_isbn.getText().trim().isEmpty()){
+                errorMessage.append("ISBN field is empty!\n");
+                error = true;
+            }if(txt_quantity.getText().trim().isEmpty()){
+                errorMessage.append("Quantity firld is empty!");
+                error = true;
+            }if (error){
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);//error message for a specific field.
+                return;
+            }
+            Object selectedID = cb_id.getSelectedItem();
+            int bookId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
+            String title = txt_title.getText().trim();
+            String author = txt_author.getText().trim();
+            String genre = txt_genre.getText().trim();
+            String isbn = txt_isbn.getText().trim();
+            if(! Books.isbnValidation(isbn)){
+                JOptionPane.showMessageDialog(this, "Invalid ISBN! Please enter the right 13-digit code.","Error",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int quantity;
+                    try{
+                        quantity = Integer.parseInt(txt_quantity.getText().trim());
+                    }catch(NumberFormatException e){
+                        JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Quantity'.","Error",JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+            Books b = new Books(bookId, title, author, genre, isbn, quantity);
+            boolean success = BooksController.deleteBook(b);
+
+            if (success){
+                JOptionPane.showMessageDialog(this, "Book deleted successfully!");
+                txt_title.setText("");
+                txt_author.setText("");
+                txt_genre.setText("");
+                txt_isbn.setText("");   
+                txt_quantity.setText("");
+                table("");
+            }else{
+                JOptionPane.showMessageDialog(this, "Failed to delete book.");
+            }
+        } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Error! Numeric value only for 'Quantity'.");
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred."+e.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        
+    }//GEN-LAST:event_btn_deleteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -911,6 +981,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     private javax.swing.JButton btn_BRecords;
     private javax.swing.JButton btn_BrwrRecords;
     private javax.swing.JButton btn_add;
+    private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_dshbrd;
     private javax.swing.JButton btn_search;
     private javax.swing.JButton btn_search2;

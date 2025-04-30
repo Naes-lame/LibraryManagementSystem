@@ -19,7 +19,20 @@ public class DatabaseOperations extends SQLDatabaseManager {
    @Override 
    public boolean addUser(Users users) {
         try (Connection con = getConnection()){
-           String query = "INSERT INTO user  (full_name, email, username, password) VALUES ( ?, ?, ?, ?)";
+            String checkQuery = "SELECT COUNT(*) FROM user WHERE full_name = ? AND email = ? AND username = ?";//checking for duplication
+            PreparedStatement check = con.prepareStatement(checkQuery);
+            check.setString(1, users.getName());
+            check.setString(2, users.getEmail());
+            check.setString(3, users.getUsername());
+            ResultSet rs = check.executeQuery();
+            rs.next();
+            
+            if(rs.getInt(1)>0){
+                JOptionPane.showMessageDialog(null, "User is already registered!","Error",JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            
+           String query = "INSERT INTO user  (full_name, email, username, password) VALUES ( ?, ?, ?, ?)";//adding new user
            PreparedStatement  ps = con.prepareStatement(query);
            
            ps.setString(1, users.getName());
@@ -124,11 +137,33 @@ public class DatabaseOperations extends SQLDatabaseManager {
             return false; 
         }
     }
+    
+    //books SOFT DELETE
+    @Override
+    public boolean deleteBook(Books books) {
+    try (Connection con = getConnection()) {
+        String updateQuery = "UPDATE bookrecords SET deleted_at = NOW() WHERE book_id = ?";
+        
+        try (PreparedStatement ps = con.prepareStatement(updateQuery)) {
+            ps.setInt(1, books.getBookId());
+            int result = ps.executeUpdate();
+            
+            return result > 0; // True if the update was successful
+        }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error updating record!", "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 
     //books FETCH.
     public List<Books> getBooks(){
         List<Books> bookList = new ArrayList<>();
-        String query = "SELECT * FROM bookrecords";
+        String query = "SELECT * FROM bookrecords WHERE deleted_at IS NULL";//unable the deleted records to display
         
         try{
             Connection con = getConnection();
@@ -160,6 +195,22 @@ public class DatabaseOperations extends SQLDatabaseManager {
     @Override
     public boolean addBorrower (Borrowers borrowers){
         try (Connection con = getConnection()) {
+            String checkQuery = "SELECT COUNT(*) FROM borrowerrecords WHERE Name = ? AND Address = ? AND Phone = ? AND Email = ? ";
+            PreparedStatement check = con.prepareStatement(checkQuery);
+            
+            check.setString(1, borrowers.getName());
+            check.setString(2, borrowers.getAddress());
+            check.setLong(3, borrowers.getPhone());
+            check.setString(4, borrowers.getEmail());
+            
+            ResultSet rs = check.executeQuery();
+            rs.next();
+            
+            if(rs.getInt(1)> 0){
+                JOptionPane.showMessageDialog(null, "Borrower already existed!","Error",JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            
             String query = "INSERT INTO borrowerrecords (Name, Address, Phone, Email) VALUES (?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(query);
 
@@ -178,10 +229,53 @@ public class DatabaseOperations extends SQLDatabaseManager {
         return false;
     }
    
-    //borrowers FETCH
+   
+   
+    //borowers UPDATE.
+   @Override
+    public boolean updateBorrower(Borrowers borrowers){
+        try(Connection con = getConnection()){
+           String query = "UPDATE borrowerrecords SET Name = ?, Address = ?, Phone = ?, Email = ? WHERE borrower_id = ?";
+           PreparedStatement ps = con.prepareStatement(query);
+           
+           ps.setString(1, borrowers.getName());
+           ps.setString(2, borrowers.getAddress());
+           ps.setLong(3, borrowers.getPhone());
+           ps.setString(4, borrowers.getEmail());
+           ps.setInt(5, borrowers.getBorrowerId());
+           
+           int result = ps.executeUpdate();
+           
+           return result > 0;
+           
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
+           e.printStackTrace();
+        }
+        return false;
+    }
+    
+    @Override 
+    public boolean deleteBorrower(Borrowers borrowers){
+        try(Connection con = getConnection()){
+            String query = "UPDATE borrowerrecords SET deleted_at = NOW() WHERE borrower_id = ?";
+            try(PreparedStatement ps = con.prepareStatement(query)){
+                ps.setInt(1, borrowers.getBorrowerId());
+                int result =  ps.executeUpdate();
+                
+                return result > 0;
+            }           
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+     //borrowers FETCH
     public List<Borrowers> getBorrower(){
        List<Borrowers> borrowerList = new ArrayList<>();
-       String query = "SELECT * FROM borrowerrecords";
+       String query = "SELECT * FROM borrowerrecords WHERE deleted_at IS NULL";
        
         try{
            Connection con = getConnection();
@@ -208,34 +302,22 @@ public class DatabaseOperations extends SQLDatabaseManager {
         return borrowerList;
     }
    
-    //borowers UPDATE.
-   @Override
-    public boolean updateBorrower(Borrowers borrowers){
-        try(Connection con = getConnection()){
-           String query = "UPDATE borrowerrecords SET Name = ?, Address = ?, Phone = ?, Email = ? WHERE borrower_id = ?";
-           PreparedStatement ps = con.prepareStatement(query);
-           
-           ps.setString(1, borrowers.getName());
-           ps.setString(2, borrowers.getAddress());
-           ps.setLong(3, borrowers.getPhone());
-           ps.setString(4, borrowers.getEmail());
-           ps.setInt(5, borrowers.getBorrowerId());
-           
-           int result = ps.executeUpdate();
-           
-           return result > 0;
-           
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
-           e.printStackTrace();
-        }
-        return false;
-    }
-   
     //transactions ADD/IISUE.
     @Override
-    public boolean issue(Transactions transactions){
+    public boolean issueBook(Transactions transactions){
         try(Connection con = getConnection()){
+            String checkQuery = "SELECT COUNT(*) FROM transactions WHERE borrower_id = ? AND book_id = ?";
+            PreparedStatement check = con.prepareStatement(checkQuery);
+            
+            check.setInt(1, transactions.getBorrowerId());
+            check.setInt(2, transactions.getBookId());
+            
+            ResultSet rs = check.executeQuery();
+            rs.next();
+            
+            if(rs.getInt(1)> 0){
+                JOptionPane.showMessageDialog(null, "This transaction already exist!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
            String query = "INSERT INTO transactions (borrower_id, book_id, transaction_date, due_date, status) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'Issued')";
            PreparedStatement ps = con.prepareStatement(query);
 
@@ -249,7 +331,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
            e.printStackTrace();
         }
         return false;
- }
+    }
   
    //transactions UPDATE/RETURN.
    @Override
@@ -281,6 +363,24 @@ public class DatabaseOperations extends SQLDatabaseManager {
         }catch(SQLException e){
             JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    //trnsactions DELETE.
+    @Override
+    public boolean deleteTransaction(Transactions transactions){
+        try(Connection con = getConnection()){
+            String query = "UPDATE transactions SET deleted_at = NOW() WHERE transactions_id = ?";
+            try(PreparedStatement ps = con.prepareStatement(query)){
+                ps.setInt(1, transactions.getTransactionId());
+                int result = ps.executeUpdate();
+                
+                return result > 0;
+            }
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
         return false;
     }
