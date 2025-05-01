@@ -2,8 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
+
+//All goods!
 package GUI;
 
+import Controller.TransactionsController;
 import javax.swing.JLabel;
 
 public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
@@ -12,6 +15,18 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         initComponents();
         scaleImages();
         initializeButtons();
+        getRecordCount("");
+    }
+    
+    //count for each status.
+    private void getRecordCount(String tableName){
+        int issuedCount = TransactionsController.getRecordCount("issuedbooks");
+        int returnedCount = TransactionsController.getRecordCount("returned_books");
+        int overdueCount = TransactionsController.getRecordCount("overduebooks");
+        
+        txt_issued.setText(String.valueOf(issuedCount));
+        txt_returned.setText(String.valueOf(returnedCount));
+        txt_overdue.setText(String.valueOf(overdueCount));
     }
       
     private void scaleImages() {
@@ -65,18 +80,18 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         btn_Acc = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        txt_issued = new javax.swing.JLabel();
         lb_issdbks = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         btn_issued = new javax.swing.JButton();
         jPanel12 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        txt_returned = new javax.swing.JLabel();
         lb_rtrndBks = new javax.swing.JLabel();
         jPanel13 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        txt_overdue = new javax.swing.JLabel();
         lb_overdue = new javax.swing.JLabel();
         jPanel15 = new javax.swing.JPanel();
         btn_rtrnd = new javax.swing.JButton();
@@ -346,9 +361,9 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("ISSUED ");
 
-        jLabel4.setFont(new java.awt.Font("Calibri", 1, 48)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("0");
+        txt_issued.setFont(new java.awt.Font("Calibri", 1, 48)); // NOI18N
+        txt_issued.setForeground(new java.awt.Color(255, 255, 255));
+        txt_issued.setText("0");
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -358,7 +373,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGap(25, 25, 25)
-                        .addComponent(jLabel4))
+                        .addComponent(txt_issued))
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGap(14, 14, 14)
                         .addComponent(jLabel3)))
@@ -374,7 +389,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
                         .addGap(14, 14, 14)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel4))
+                        .addComponent(txt_issued))
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(lb_issdbks, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -418,9 +433,9 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("RETURNED ");
 
-        jLabel9.setFont(new java.awt.Font("Calibri", 1, 48)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("0");
+        txt_returned.setFont(new java.awt.Font("Calibri", 1, 48)); // NOI18N
+        txt_returned.setForeground(new java.awt.Color(255, 255, 255));
+        txt_returned.setText("0");
 
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
@@ -433,7 +448,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
                         .addComponent(jLabel7))
                     .addGroup(jPanel12Layout.createSequentialGroup()
                         .addGap(30, 30, 30)
-                        .addComponent(jLabel9)))
+                        .addComponent(txt_returned)))
                 .addGap(18, 18, 18)
                 .addComponent(lb_rtrndBks, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(36, Short.MAX_VALUE))
@@ -444,7 +459,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
                 .addGap(15, 15, 15)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel9))
+                .addComponent(txt_returned))
             .addGroup(jPanel12Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lb_rtrndBks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -472,9 +487,9 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("OVERDUE");
 
-        jLabel10.setFont(new java.awt.Font("Calibri", 1, 48)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setText("0");
+        txt_overdue.setFont(new java.awt.Font("Calibri", 1, 48)); // NOI18N
+        txt_overdue.setForeground(new java.awt.Color(255, 255, 255));
+        txt_overdue.setText("0");
 
         javax.swing.GroupLayout jPanel14Layout = new javax.swing.GroupLayout(jPanel14);
         jPanel14.setLayout(jPanel14Layout);
@@ -484,7 +499,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
                 .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel14Layout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addComponent(jLabel10))
+                        .addComponent(txt_overdue))
                     .addGroup(jPanel14Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -498,7 +513,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
                 .addGap(15, 15, 15)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel10))
+                .addComponent(txt_overdue))
             .addGroup(jPanel14Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lb_overdue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -677,14 +692,11 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
     private javax.swing.JButton btn_trnsct;
     private javax.swing.JLabel dbIcon;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -706,5 +718,8 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
     private javax.swing.JLabel lb_overdue;
     private javax.swing.JLabel lb_rtrndBks;
     private javax.swing.JLabel logo;
+    private javax.swing.JLabel txt_issued;
+    private javax.swing.JLabel txt_overdue;
+    private javax.swing.JLabel txt_returned;
     // End of variables declaration//GEN-END:variables
 }

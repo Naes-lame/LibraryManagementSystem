@@ -26,4 +26,8 @@ public class TransactionsController {
         return dbo.deleteTransaction(transactions);
     }
     
+    public static int getRecordCount(String tableName){
+        return dbo.getRecordCount(tableName);
+    }
+    
 }

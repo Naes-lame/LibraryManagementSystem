@@ -191,7 +191,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
     
     
     
-    //borrower ADD.
+    //borrower ADD.puyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     @Override
     public boolean addBorrower (Borrowers borrowers){
         try (Connection con = getConnection()) {
@@ -335,8 +335,8 @@ public class DatabaseOperations extends SQLDatabaseManager {
   
    //transactions UPDATE/RETURN.
    @Override
-    public boolean returnBook(Transactions transactions){
-        try(Connection con = getConnection()){
+   public boolean returnBook(Transactions transactions) {
+     try(Connection con = getConnection()){
             con.setAutoCommit(false);
             
            //Deleting from issuedbooks table in DB.
@@ -359,6 +359,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
             con.commit();//apply changes
             return result > 0;
 
+
            
         }catch(SQLException e){
             JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
@@ -366,6 +367,8 @@ public class DatabaseOperations extends SQLDatabaseManager {
         }
         return false;
     }
+
+
     
     //trnsactions DELETE.
     @Override
@@ -470,5 +473,53 @@ public class DatabaseOperations extends SQLDatabaseManager {
             e.printStackTrace();
         }
         return returnedBooksList;
+    }
+    
+    public List<OverdueBooks> getOverdueBooks(){
+        List<OverdueBooks> overdueBooksList = new ArrayList<>();
+        String query = "SELECT * FROM overduebooks";
+        
+        try{
+            Connection con = getConnection();
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()){
+                OverdueBooks overdueBooks = new OverdueBooks(
+                        rs.getInt("transaction_id"),
+                        rs.getInt("borrower_id"),
+                        rs.getInt("book_id"),
+                        rs.getTimestamp("issue_date"),
+                        rs.getTimestamp("due_date"),
+                        rs.getTimestamp("days_overdue"),
+                        rs.getInt("fine_amount"),
+                        rs.getString("status")
+                );
+                
+                overdueBooksList.add(overdueBooks);
+            }
+            
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return overdueBooksList;
+    }
+    
+    public int getRecordCount(String tableName) {
+        int count = 0;
+        String query = "SELECT COUNT(*) AS count FROM " + tableName;
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                count = rs.getInt("count");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 }

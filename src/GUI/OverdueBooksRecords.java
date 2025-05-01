@@ -5,12 +5,17 @@
 package GUI;
 
 import javax.swing.JLabel;
+import Controller.OverdueBooksController;
+import Models.OverdueBooks;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 public class OverdueBooksRecords extends javax.swing.JFrame implements imagesNbuttons{
 
     public OverdueBooksRecords() {
         initComponents();
         imagesNbuttons();
+        table();
     }
     
     private void imagesNbuttons(){
@@ -26,6 +31,26 @@ public class OverdueBooksRecords extends javax.swing.JFrame implements imagesNbu
         scaleImages(paths, labels);
         
         initializeButtons(btn_dshbrd2, btn_BRecords, btn_BrwrRecords, btn_trnsct, btn_Acc );
+    }
+    
+    private void table(){
+        List<OverdueBooks> overdueBooks = OverdueBooksController.getOverdueBooks();
+        
+        DefaultTableModel model = (DefaultTableModel) OverdueBooksTable.getModel();
+        model.setRowCount(0);
+        
+        for(OverdueBooks overdue : overdueBooks){
+            model.addRow(new Object[]{
+                overdue.getTransactionId(),
+                overdue.getBorrowerId(),
+                overdue.getBookId(),
+                overdue.getIssueDate(),
+                overdue.getDueDate(),
+                overdue.getDaysOverdue(),
+                overdue.getFineAmount(),
+                overdue.getStatus()
+            });
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -4,7 +4,8 @@
  */
 package GUI;
 
-//combo box issue. Other than that all goods na
+//still consider a data duplicate when issueing eventhough it is already returned.
+// the status is not updating.
 import Models.Transactions;
 import Controller.TransactionsController;
 import javax.swing.JLabel;
@@ -57,13 +58,13 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
 
     private void getId(){
             List<Transactions> transactionList = TransactionsController.getTransaction();
+             //clear to add.
+            cb_id.removeAllItems();
             //validation
             if(transactionList.isEmpty()){
                 JOptionPane.showMessageDialog(this, "Transaction Records is currently empty.","Info",JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
-             //clear to add.
-            cb_id.removeAllItems();
             
             for(Transactions tr : transactionList){
                 cb_id.addItem(String.valueOf(tr.getTransactionId()));
@@ -585,8 +586,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE))))
-                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -600,8 +600,8 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -637,85 +637,103 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     }//GEN-LAST:event_btn_AccActionPerformed
 
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
-        try{
-            //validation
-            if (cb_id.getSelectedItem() == null || cb_id.getSelectedItem().toString().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Please select a transaction ID","Error", JOptionPane.ERROR_MESSAGE);
-            }
-            
-            int selectedTrId = Integer.parseInt(cb_id.getSelectedItem().toString());
-            //retrieving records from database
-            List<Transactions> transactionList = TransactionsController.getTransaction();
-            
-            //searching
-            Transactions matchTr = transactionList.stream()
-            .filter(transaction -> transaction.getTransactionId()==selectedTrId ).findFirst().orElse(null);
-                
-            
-            //display details
-            if(matchTr !=null){
-                txt_borrowerid.setText(Integer.toString(matchTr.getBorrowerId()));
-                txt_bookid.setText(Integer.toString(matchTr.getBookId()));
-            } else{
-                JOptionPane.showMessageDialog(this, "No record detected.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+        try {
+        // validation: Ensure a transaction ID has been selected
+        if (cb_id.getSelectedItem() == null || cb_id.getSelectedItem().toString().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select a transaction ID", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        int selectedTrId = Integer.parseInt(cb_id.getSelectedItem().toString());
+
+        // retrieving records from the database
+        List<Transactions> transactionList = TransactionsController.getTransaction();
+
+        // searching for the matching transaction using the transaction ID for comparison
+        Transactions matchTr = transactionList.stream()
+            .filter(transaction -> transaction.getTransactionId() == selectedTrId)
+            .findFirst()
+            .orElse(null);
+
+        // display details if found
+        if (matchTr != null) {
+            txt_borrowerid.setText(String.valueOf(matchTr.getBorrowerId()));
+            txt_bookid.setText(String.valueOf(matchTr.getBookId()));
+        } else {
+            JOptionPane.showMessageDialog(this, "No record detected.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_issueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_issueActionPerformed
-        try {
-            //validation of fields.
-            StringBuilder errorMessage = new StringBuilder("Error: ");
-            boolean error = false;
-            if(txt_borrowerid.getText().trim().isEmpty()){
-                errorMessage.append("Borrower ID field is empty!\n");
-                error = true;
-            }if(txt_bookid.getText().trim().isEmpty()){
-                errorMessage.append("Book ID field is empty!\n");
-                error = true;
-            }if (error){
-                JOptionPane.showMessageDialog(new JFrame(),errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            Object selectedID = cb_id.getSelectedItem();
-            int transactionId = (selectedID != null)? Integer.parseInt(selectedID.toString()): null;
-            int borrowerId;
-            try{
-                borrowerId = Integer.parseInt(txt_borrowerid.getText());
-            }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Borrower ID'","Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            int bookId;
-            try{
-                bookId = Integer.parseInt(txt_bookid.getText());
-            }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Book ID'","Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
-            Timestamp dueDate = new Timestamp(System.currentTimeMillis()+(7L * 24 * 60 * 60 * 1000));
-            String status = "Issued";
-
-            Transactions tr = new Transactions(transactionId, borrowerId, bookId, transactionDate, dueDate, status);
-            boolean success = TransactionsController.issueBook(tr);
-
-            if(success){
-                JOptionPane.showMessageDialog(this, "Book was issued successfully!");
-                txt_borrowerid.setText("");
-                txt_bookid.setText("");
-                table("");
-            } else{
-                JOptionPane.showMessageDialog(this, "Failed to issue book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+         try {
+        // Validation of required fields.
+        StringBuilder errorMessage = new StringBuilder("Error: ");
+        boolean error = false;
+        if(txt_borrowerid.getText().trim().isEmpty()){
+            errorMessage.append("Borrower ID field is empty!\n");
+            error = true;
         }
+        if(txt_bookid.getText().trim().isEmpty()){
+            errorMessage.append("Book ID field is empty!\n");
+            error = true;
+        }
+        if (error){
+            JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Determine the transaction ID.
+        // If combo box is empty, this means no previous transaction exists,
+        // so assign a default ID (e.g., 1) for the first transaction.
+        int transactionId;
+        Object selectedID = cb_id.getSelectedItem();
+        if (selectedID == null || selectedID.toString().trim().isEmpty()){
+            transactionId = 1;
+        } else {
+            transactionId = Integer.parseInt(selectedID.toString());
+        }
+        
+        // Parse other required fields.
+        int borrowerId;
+        try {
+            borrowerId = Integer.parseInt(txt_borrowerid.getText());
+        } catch(NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Borrower ID'", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        int bookId;
+        try {
+            bookId = Integer.parseInt(txt_bookid.getText());
+        } catch(NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Book ID'", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Set timestamps and status.
+        Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
+        Timestamp dueDate = new Timestamp(System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000)); // 7 days later
+        String status = "Issued";
+        
+        // Create transaction object.
+        Transactions tr = new Transactions(transactionId, borrowerId, bookId, transactionDate, dueDate, status);
+        boolean success = TransactionsController.issueBook(tr);
+        
+        if(success) {
+            JOptionPane.showMessageDialog(this, "Book was issued successfully!");
+            txt_borrowerid.setText("");
+            txt_bookid.setText("");
+            table("");  // Refresh or update table view
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to issue book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch(Exception e) {
+        JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
 
     }//GEN-LAST:event_btn_issueActionPerformed
 
