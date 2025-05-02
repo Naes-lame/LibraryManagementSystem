@@ -1,13 +1,13 @@
-/*
+    /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package GUI;
 
-//still consider a data duplicate when issueing eventhough it is already returned.
-// the status is not updating.
-import Models.Transactions;
-import Controller.TransactionsController;
+//error from terminal "duplicate key"
+//delete btn
+import Models.*;
+import Controller.*;
 import javax.swing.JLabel;
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -37,8 +37,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
     
     for (Transactions tr : transaction){
-        String formattedDate = df.format(tr.getTransactionDate());
-        String status = tr.getStatus();
+        
         
         if (keyword == null || keyword.trim().isEmpty()||
                 tr.getStatus().toLowerCase().contains(keyword.toLowerCase())){
@@ -738,7 +737,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     }//GEN-LAST:event_btn_issueActionPerformed
 
     private void btn_returnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_returnActionPerformed
-        try{
+        try{ 
             //validation
             StringBuilder errorMessage = new StringBuilder("Error: ");
             boolean error = false;

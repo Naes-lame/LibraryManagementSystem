@@ -36,7 +36,7 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
     private void table(){
         List<ReturnedBooks> returnedBooks = ReturnedBooksController.getReturnedBooks();
         
-        DefaultTableModel model = (DefaultTableModel)ReturnedBooksTable.getModel();
+        DefaultTableModel model = (DefaultTableModel)tbl_returnedbooks.getModel();
         model.setRowCount(0);
         
         for (ReturnedBooks returned : returnedBooks){
@@ -78,7 +78,7 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
         txt_search = new javax.swing.JTextField();
         btn_search = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        ReturnedBooksTable = new javax.swing.JTable();
+        tbl_returnedbooks = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -337,7 +337,7 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
             }
         });
 
-        ReturnedBooksTable.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_returnedbooks.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -356,8 +356,8 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
                 return canEdit [columnIndex];
             }
         });
-        ReturnedBooksTable.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(ReturnedBooksTable);
+        tbl_returnedbooks.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(tbl_returnedbooks);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -489,7 +489,6 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel AccIcon;
     private javax.swing.JLabel BrrwrIcon;
-    private javax.swing.JTable ReturnedBooksTable;
     private javax.swing.JLabel TrnsactIcon;
     private javax.swing.JLabel bookIcon;
     private javax.swing.JButton btn_Acc;
@@ -511,6 +510,7 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jlbl_wlcm8;
     private javax.swing.JLabel logo;
+    private javax.swing.JTable tbl_returnedbooks;
     private javax.swing.JTextField txt_search;
     // End of variables declaration//GEN-END:variables
 }

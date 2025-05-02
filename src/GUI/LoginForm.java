@@ -5,7 +5,7 @@
 package GUI;
 
 import Controller.UsersController;
-import Models.Users;
+import Models.*;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -127,13 +127,20 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
             }
                 
                 if(matchUser !=null){
+                    // ✅ Store the logged-in username in SessionManager
+                    SessionManager.setLoggedInUsername(matchUser.getUsername());
+
                     JOptionPane.showMessageDialog(this, "User login successfully!");
-                    Dashboard db = new Dashboard();
-                    db.show();
+
+                    // ✅ Open Dashboard dynamically
+                    new Dashboard().setVisible(true);
+
+                    // ✅ Close login form after successful login
                     dispose();
-                }else{
-                    JOptionPane.showMessageDialog(this, "Error. No user record detected. Please register.", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Invalid username or password!", "Login Error", JOptionPane.ERROR_MESSAGE);
                 }
+
             
          }catch(NullPointerException e){
             JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);

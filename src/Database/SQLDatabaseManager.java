@@ -32,6 +32,12 @@ public abstract class SQLDatabaseManager {
     public abstract boolean deleteBorrower(Borrowers borrowers);
     
     public abstract boolean issueBook (Transactions transactions);
+    
+    public abstract boolean updateStatToReturn(int transactionId);
+    
+    public abstract boolean transferToReturnTbl(int transactionId);
+    
+    public abstract boolean deleteFromIssuedTbl(int transactionId);
 
     public abstract boolean returnBook(Transactions transactions);
     

@@ -19,11 +19,13 @@ public class DatabaseOperations extends SQLDatabaseManager {
    @Override 
    public boolean addUser(Users users) {
         try (Connection con = getConnection()){
-            String checkQuery = "SELECT COUNT(*) FROM user WHERE full_name = ? AND email = ? AND username = ?";//checking for duplication
+            String checkQuery = "SELECT COUNT(*) FROM user WHERE full_name = ? AND email = ? AND phone = ? AND address = ? AND username = ?";//checking for duplication
             PreparedStatement check = con.prepareStatement(checkQuery);
-            check.setString(1, users.getName());
+            check.setString(1, users.getFullName());
             check.setString(2, users.getEmail());
-            check.setString(3, users.getUsername());
+            check.setLong(3, users.getPhoneNum());
+            check.setString(4, users.getAddress());
+            check.setString(5, users.getUsername());
             ResultSet rs = check.executeQuery();
             rs.next();
             
@@ -32,13 +34,15 @@ public class DatabaseOperations extends SQLDatabaseManager {
                 return false;
             }
             
-           String query = "INSERT INTO user  (full_name, email, username, password) VALUES ( ?, ?, ?, ?)";//adding new user
+           String query = "INSERT INTO user  (full_name, email, phone, address, username, password) VALUES ( ?, ?, ?, ?, ?, ?)";//adding new user
            PreparedStatement  ps = con.prepareStatement(query);
            
-           ps.setString(1, users.getName());
+           ps.setString(1, users.getFullName());
            ps.setString(2, users.getEmail());
-           ps.setString(3, users.getUsername());
-           ps.setString(4, users.getPassword());
+           ps.setLong(3, users.getPhoneNum());
+           ps.setString(4, users.getAddress());
+           ps.setString(5, users.getUsername());
+           ps.setString(6, users.getPassword());
            
            int result = ps.executeUpdate();
            
@@ -62,6 +66,8 @@ public class DatabaseOperations extends SQLDatabaseManager {
                 Users user = new Users(
                         rs.getString("full_name"),
                         rs.getString("email"),
+                        rs.getLong("phone"),
+                        rs.getString("address"),
                         rs.getString("username"),
                         rs.getString("password")
                 );
@@ -317,6 +323,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
             
             if(rs.getInt(1)> 0){
                 JOptionPane.showMessageDialog(null, "This transaction already exist!", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
            String query = "INSERT INTO transactions (borrower_id, book_id, transaction_date, due_date, status) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'Issued')";
            PreparedStatement ps = con.prepareStatement(query);
@@ -332,42 +339,95 @@ public class DatabaseOperations extends SQLDatabaseManager {
         }
         return false;
     }
-  
-   //transactions UPDATE/RETURN.
-   @Override
-   public boolean returnBook(Transactions transactions) {
-     try(Connection con = getConnection()){
-            con.setAutoCommit(false);
-            
-           //Deleting from issuedbooks table in DB.
-           String deleteQuery = "DELETE FROM issuedbooks WHERE transaction_id = ?";
-           PreparedStatement ps = con.prepareStatement(deleteQuery);
-           
-           ps.setInt(1, transactions.getTransactionId());
-           ps.executeUpdate();
-           
-           //inserting updated data to returnbooks BD table.
-           String insertQuery = "INSERT INTO returned_books (transaction_id, borrower_id, book_id, date_returned, status) " +
-                     "SELECT transaction_id, borrower_id, book_id, NOW(), 'Returned' FROM transactions WHERE transaction_id = ? " +
-                     "AND NOT EXISTS (SELECT 1 FROM returned_books WHERE transaction_id = ?)";
-            PreparedStatement ps2 = con.prepareStatement(insertQuery);
-            ps2.setInt(1, transactions.getTransactionId());
-            ps2.setInt(2, transactions.getTransactionId()); // Second parameter to avoid duplication.
+    
 
-            int result = ps2.executeUpdate();
-            
-            con.commit();//apply changes
+
+   @Override
+    public boolean updateStatToReturn(int transactionId) {
+        try (Connection con = getConnection()) {
+            String query = "UPDATE transactions SET status = ? WHERE transaction_id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+
+            ps.setString(1, "Returned");
+            ps.setInt(2, transactionId);
+
+            int result = ps.executeUpdate();
             return result > 0;
 
-
-           
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
-           e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return false;
     }
 
+   @Override
+     public boolean transferToReturnTbl(int transactionId){
+        try(Connection con = getConnection()){
+           String query = "INSERT INTO returned_books (transaction_id, borrower_id, book_id, date_returned, status) "
+        + "SELECT transaction_id, borrower_id, book_id, NOW(), 'Returned' "
+        + "FROM transactions t WHERE transaction_id = ? AND NOT EXISTS "
+        + "(SELECT 1 FROM returned_books rb WHERE rb.transaction_id = t.transaction_id)";
+
+
+             PreparedStatement ps = con.prepareStatement(query);
+         
+             ps.setInt(1, transactionId);
+             ps.setInt(2, transactionId);
+             
+             int result = ps.executeUpdate();
+             return result>0;
+         
+        }catch(SQLException e){
+            
+        }
+        return false;
+    }
+     
+     @Override
+    public boolean deleteFromIssuedTbl(int transactionId) {
+        try (Connection con = getConnection()) {
+            String query = "DELETE FROM issuedbooks WHERE transaction_id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+
+            ps.setInt(1, transactionId);
+
+            int result = ps.executeUpdate();
+            return result > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+
+
+
+    @Override
+    public boolean returnBook(Transactions transactions){
+        try(Connection con = getConnection()){
+            String query = "UPDATE transactions SET borrower_id = ?, book_id = ?, transaction_date = ?,status = ? WHERE transaction_id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            
+            ps.setInt(1, transactions.getBorrowerId());
+            ps.setInt(2, transactions.getBookId());
+            ps.setTimestamp(3, transactions.getTransactionDate());
+            ps.setString(4, "Returned");
+            ps.setInt(5, transactions.getTransactionId());
+            
+            int result = ps.executeUpdate();
+            updateStatToReturn(transactions.getTransactionId());
+            transferToReturnTbl(transactions.getTransactionId());
+            deleteFromIssuedTbl(transactions.getTransactionId());
+            return true;
+            
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     
     //trnsactions DELETE.
@@ -475,37 +535,6 @@ public class DatabaseOperations extends SQLDatabaseManager {
         return returnedBooksList;
     }
     
-    public List<OverdueBooks> getOverdueBooks(){
-        List<OverdueBooks> overdueBooksList = new ArrayList<>();
-        String query = "SELECT * FROM overduebooks";
-        
-        try{
-            Connection con = getConnection();
-            PreparedStatement ps = con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            
-            while(rs.next()){
-                OverdueBooks overdueBooks = new OverdueBooks(
-                        rs.getInt("transaction_id"),
-                        rs.getInt("borrower_id"),
-                        rs.getInt("book_id"),
-                        rs.getTimestamp("issue_date"),
-                        rs.getTimestamp("due_date"),
-                        rs.getTimestamp("days_overdue"),
-                        rs.getInt("fine_amount"),
-                        rs.getString("status")
-                );
-                
-                overdueBooksList.add(overdueBooks);
-            }
-            
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error in the Database occur!","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-        return overdueBooksList;
-    }
-    
     public int getRecordCount(String tableName) {
         int count = 0;
         String query = "SELECT COUNT(*) AS count FROM " + tableName;
@@ -521,5 +550,30 @@ public class DatabaseOperations extends SQLDatabaseManager {
             e.printStackTrace();
         }
         return count;
+    }
+    
+    public Users getLoggedInUser(String username) {
+        Users user = null;
+        try (Connection con = getConnection()) {
+            String query = "SELECT * FROM user WHERE username = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                user = new Users(
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getLong("phone"),
+                        rs.getString("address"),
+                        rs.getString("username"),
+                        rs.getString("password")
+                );
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error retrieving user data!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return user;
     }
 }

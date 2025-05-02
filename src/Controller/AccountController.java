@@ -5,14 +5,12 @@
 package Controller;
 
 import Database.DatabaseOperations;
-import Models.OverdueBooks;
-import java.util.List;
+import Models.Users;
 
-public class OverdueBooksController {
+public class AccountController {
     private static final DatabaseOperations dbo = new DatabaseOperations();
     
-    public static List<OverdueBooks> getOverdueBooks(){
-        return dbo.getOverdueBooks();
+    public static Users getLoggedInUser(String username) {
+        return dbo.getLoggedInUser(username);
     }
-    
 }

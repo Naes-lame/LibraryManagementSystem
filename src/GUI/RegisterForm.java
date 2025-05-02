@@ -4,7 +4,7 @@
  */
 package GUI;
 
-
+//validation for password & number.
 import Controller.*;
 import Models.*;
 import javax.swing.JFrame;
@@ -51,14 +51,16 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
         jbtn_signUp = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jlbl_wlcmMssg2 = new javax.swing.JLabel();
+        txt_eMail1 = new javax.swing.JLabel();
+        txt_phoneNum = new javax.swing.JTextField();
+        txt_eMail2 = new javax.swing.JLabel();
+        txt_address = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(1011, 555));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel1.add(lbl_bgPhoto, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 460, 390));
 
         btn_login.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
         btn_login.setText("Login");
@@ -70,36 +72,27 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
                 btn_loginActionPerformed(evt);
             }
         });
-        jPanel1.add(btn_login, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 420, 60, 30));
 
         jlbl_wlcmMssg1.setFont(new java.awt.Font("Century Gothic", 0, 24)); // NOI18N
         jlbl_wlcmMssg1.setForeground(new java.awt.Color(72, 209, 204));
-        jPanel1.add(jlbl_wlcmMssg1, new org.netbeans.lib.awtextra.AbsoluteConstraints(524, 18, 40, 28));
 
         txt_fName.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         txt_fName.setText("Full Name:");
-        jPanel1.add(txt_fName, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 170, 57, 14));
 
         jLabel3.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel3.setText("Username:");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 255, 60, 10));
 
         jLabel4.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel4.setText("Password:");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 280, 57, 30));
 
         txt_eMail.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         txt_eMail.setText("E-mail:");
-        jPanel1.add(txt_eMail, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 200, -1, -1));
 
         txt_name.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        jPanel1.add(txt_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(588, 162, 302, -1));
 
         txt_email.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        jPanel1.add(txt_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(588, 195, 302, -1));
 
         txt_username.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        jPanel1.add(txt_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(588, 249, 302, -1));
 
         txt_password.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
         txt_password.addActionListener(new java.awt.event.ActionListener() {
@@ -107,11 +100,9 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
                 txt_passwordActionPerformed(evt);
             }
         });
-        jPanel1.add(txt_password, new org.netbeans.lib.awtextra.AbsoluteConstraints(588, 285, 302, -1));
 
         jtxt_mssg1.setFont(new java.awt.Font("Calibri", 2, 12)); // NOI18N
         jtxt_mssg1.setText("Already have an account?");
-        jPanel1.add(jtxt_mssg1, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 420, -1, 30));
 
         jbtn_signUp.setBackground(new java.awt.Color(0, 0, 255));
         jbtn_signUp.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
@@ -124,17 +115,123 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
                 jbtn_signUpActionPerformed(evt);
             }
         });
-        jPanel1.add(jbtn_signUp, new org.netbeans.lib.awtextra.AbsoluteConstraints(588, 371, 302, 40));
 
         jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(204, 204, 204));
         jLabel1.setText("Register your account");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(678, 60, 170, 20));
 
         jlbl_wlcmMssg2.setFont(new java.awt.Font("Century Gothic", 0, 24)); // NOI18N
         jlbl_wlcmMssg2.setForeground(new java.awt.Color(72, 209, 204));
         jlbl_wlcmMssg2.setText("SCC Library Management System");
-        jPanel1.add(jlbl_wlcmMssg2, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 6, -1, 53));
+
+        txt_eMail1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        txt_eMail1.setText("Phone No. :");
+
+        txt_phoneNum.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+
+        txt_eMail2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        txt_eMail2.setText("Address:");
+
+        txt_address.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(lbl_bgPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txt_username, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_password, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jbtn_signUp, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(62, 62, 62)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jtxt_mssg1)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(110, 110, 110)
+                                                .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txt_eMail)
+                                    .addComponent(txt_fName, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_eMail1)
+                                    .addComponent(txt_eMail2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_phoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_address, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(245, 245, 245)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(524, 524, 524)
+                .addComponent(jlbl_wlcmMssg1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jlbl_wlcmMssg2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(jlbl_wlcmMssg1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jlbl_wlcmMssg2, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(1, 1, 1)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl_bgPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(42, 42, 42)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_fName, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(12, 12, 12)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_eMail))
+                        .addGap(12, 12, 12)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_phoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_eMail1))
+                        .addGap(12, 12, 12)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_address, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_eMail2))
+                        .addGap(69, 69, 69)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(10, 10, 10)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(27, 27, 27)
+                        .addComponent(jbtn_signUp, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(9, 9, 9)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jtxt_mssg1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(72, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -163,26 +260,39 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
 
     private void jbtn_signUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtn_signUpActionPerformed
         try{
+             StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
+            boolean error = false;
             if(txt_name.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Full Name is missing!","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("Full Name field is empty!\n");
+                error = true;//confirm error.
             }if(txt_email.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Email is missing!","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            }if(txt_phoneNum.getText().trim().isEmpty()){
+                errorMessage.append("Phone Number field is empty!\n");
+                error = true;
+            }if(txt_address.getText().trim().isEmpty()){
+                errorMessage.append("Address field is empty!\n");
+                error = true;
             }if(txt_username.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Username is missing!","Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                errorMessage.append("Username field is empty!");
+                error = true;
             }if(txt_password.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(new JFrame(),"Error. Password is missing!","Error", JOptionPane.ERROR_MESSAGE);
+                errorMessage.append("Password field is empty!");
+                error = true;
+            }if (error){
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);//error message for a specific field.
                 return;
             }
             
             String name = txt_name.getText();
             String email = txt_email.getText();
+            long phoneNum = Long.parseLong(txt_phoneNum.getText().trim());
+            String address = txt_address.getText();
             String username = txt_username.getText();
             String password = txt_password.getText();
             
-            Users users = new Users(name, email, username, password);
+            Users users = new Users(name, email, phoneNum, address, username, password);
             boolean success = UsersController.addUser(users);
             
             if (success){
@@ -251,11 +361,15 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
     private javax.swing.JLabel jlbl_wlcmMssg2;
     private javax.swing.JLabel jtxt_mssg1;
     private javax.swing.JLabel lbl_bgPhoto;
+    private javax.swing.JTextField txt_address;
     private javax.swing.JLabel txt_eMail;
+    private javax.swing.JLabel txt_eMail1;
+    private javax.swing.JLabel txt_eMail2;
     private javax.swing.JTextField txt_email;
     private javax.swing.JLabel txt_fName;
     private javax.swing.JTextField txt_name;
     private javax.swing.JPasswordField txt_password;
+    private javax.swing.JTextField txt_phoneNum;
     private javax.swing.JTextField txt_username;
     // End of variables declaration//GEN-END:variables
 }
