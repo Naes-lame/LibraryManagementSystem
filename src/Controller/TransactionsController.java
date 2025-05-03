@@ -20,10 +20,6 @@ public class TransactionsController {
         return dbo.getTransaction();
     }
 
-    public static boolean deleteTransaction(Transactions transactions) {
-        return dbo.deleteTransaction(transactions);
-    }
-
     public static int getRecordCount(String tableName) {
         return dbo.getRecordCount(tableName);
     }

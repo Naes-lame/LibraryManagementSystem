@@ -25,7 +25,6 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     private void table(String keyword) {
      List<Books> books = BooksController.getBooks(); 
      DefaultTableModel model = (DefaultTableModel) tbl_bookRecords.getModel();
-
      model.setRowCount(0); // Clear the table before reloading
      
      for (Books book : books) {
@@ -693,6 +692,14 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         try{
+            Object selectedID = cb_id.getSelectedItem();
+            int bookId = (selectedID != null) ? Integer.parseInt(selectedID.toString()) : 0; // Default to 0
+            String title = txt_title.getText().trim();
+            String author = txt_author.getText().trim();
+            String genre = txt_genre.getText().trim();
+            String isbn = txt_isbn.getText().trim();         
+            int quantity = Integer.parseInt(txt_quantity.getText());
+            
             StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
             boolean error = false;
             if(txt_title.getText().trim().isEmpty()){
@@ -706,32 +713,23 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 error = true;
             }if(txt_isbn.getText().trim().isEmpty()){
                 errorMessage.append("ISBN field is empty!\n");
+                error = true;               
+            }else if (!Books.isbnValidation(txt_isbn.getText().trim())) { // Directly calling the method in else-if
+                errorMessage.append("Invalid ISBN! Must be 13 digits and correctly formatted.\n");
                 error = true;
             }if(txt_quantity.getText().trim().isEmpty()){
                 errorMessage.append("Quantity field is empty!");
                 error = true;
+            } else if (!txt_quantity.getText().matches("\\d+")) {
+                errorMessage.append("Invalid input! Whole numbers only.\n");
+                error = true;
+
             }if (error){
                 JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);//error message for a specific field.
                 return;
             }
                         
-            Object selectedID = cb_id.getSelectedItem();
-            int bookId = (selectedID != null) ? Integer.parseInt(selectedID.toString()) : 0; // Default to 0
-            String title = txt_title.getText().trim();
-            String author = txt_author.getText().trim();
-            String genre = txt_genre.getText().trim();
-            String isbn = txt_isbn.getText().trim();
-            if(! Books.isbnValidation(isbn)){
-                JOptionPane.showMessageDialog(this, "Invalid ISBN! Please enter the right 13-digit code.","Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }          
-            int quantity;
-            try{
-               quantity = Integer.parseInt(txt_quantity.getText());
-            } catch (NumberFormatException e) {//validation for 'Quantity'
-            JOptionPane.showMessageDialog(this, "Invalid! Whole number only for 'Quantity'.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-            }
+            
                      
             Books b = new Books(bookId, title, author, genre,isbn,quantity);
             boolean success = BooksController.addBook(b);

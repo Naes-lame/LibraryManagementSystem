@@ -2,11 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
+//all goods!
 package GUI;
 
 import Controller.UsersController;
 import Models.*;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -107,15 +109,26 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
 
     private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
         try{
-            if(txt_username.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Username is missing!","Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }if (txt_password.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Error. Password is missing!", "Error", JOptionPane.ERROR_MESSAGE);
-            }
             
             String username = txt_username.getText();
             String password = txt_password.getText();
+            
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+             if (txt_username.getText().trim().isEmpty()) {
+                errorMessage.append("Username field is empty!\n");
+                error = true;
+            }
+            if (txt_password.getText().trim().isEmpty()) {
+                errorMessage.append("Password field is empty!\n");
+                error = true;
+            }
+            if (error) {
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);//error message for a specific field.
+                return;
+            }
+            
+            
             
             List<Users> allUser = UsersController.getUser();
             Users matchUser = null;
@@ -127,15 +140,10 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
             }
                 
                 if(matchUser !=null){
-                    // ✅ Store the logged-in username in SessionManager
                     SessionManager.setLoggedInUsername(matchUser.getUsername());
-
                     JOptionPane.showMessageDialog(this, "User login successfully!");
-
-                    // ✅ Open Dashboard dynamically
-                    new Dashboard().setVisible(true);
-
-                    // ✅ Close login form after successful login
+                    Dashboard db = new Dashboard();
+                    db.show();
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Invalid username or password!", "Login Error", JOptionPane.ERROR_MESSAGE);

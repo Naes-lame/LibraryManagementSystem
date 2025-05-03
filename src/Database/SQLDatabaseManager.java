@@ -13,7 +13,7 @@ public abstract class SQLDatabaseManager {
     private static final String user = "root";
     private static final String password = "";
 
-    protected Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url, user, password);
     }
     
@@ -40,8 +40,6 @@ public abstract class SQLDatabaseManager {
     public abstract boolean deleteFromIssuedTbl(int transactionId);
 
     public abstract boolean returnBook(Transactions transactions);
-    
-    public abstract boolean deleteTransaction (Transactions transactions);
     
    
 }

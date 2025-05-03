@@ -65,7 +65,6 @@ public class Books {
     }
     
     public static boolean isbnValidation(String isbn){
-//        return isbn != null && isbn.matches("\\d{13}");
         
 //        //validate isbn legnth.
        if(isbn == null || isbn.length()!= 13){

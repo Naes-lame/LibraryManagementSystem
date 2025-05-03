@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import java.util.List;
 import Controller.IssuedBooksController;
 import Models.IssuedBooks;
+import java.text.SimpleDateFormat;
 import javax.swing.table.DefaultTableModel;
 
 public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbuttons{
@@ -15,7 +16,7 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
     public IssuedBooksRecords() {
         initComponents();
         scaleImages();
-        table();
+        table("");
     }
     
     private void scaleImages() {
@@ -33,19 +34,24 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
         initializeButtons(btn_dshbrd2, btn_BRecords, btn_BrwrRecords, btn_trnsct, btn_Acc );
     }
     
-    private void table(){
+    private void table(String keyword){
         List<IssuedBooks> issuedBooks = IssuedBooksController.getIssuedBooks();
         
         DefaultTableModel model = (DefaultTableModel)IssuedBooksTable.getModel();
         model.setRowCount(0);
         
+        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+        
         for(IssuedBooks issued : issuedBooks){
+            String issueDate = df.format(issued.getIssueDate());
+            String dueDate = df.format(issued.getDueDate());
+           
             model.addRow(new Object[]{
                 issued.getTransactionId(),
                 issued.getBorrowerId(),
                 issued.getBookId(),
-                issued.getIssueDate(),
-                issued.getDueDate(),
+                issueDate,
+                dueDate,
                 issued.getStatus()
             });
         }
@@ -78,8 +84,6 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
         jScrollPane1 = new javax.swing.JScrollPane();
         IssuedBooksTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
-        txt_search = new javax.swing.JTextField();
-        btn_search = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -353,21 +357,6 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
         jLabel1.setFont(new java.awt.Font("Calibri", 3, 24)); // NOI18N
         jLabel1.setText("ISSUED BOOKS RECORDS");
 
-        btn_search.setBackground(new java.awt.Color(25, 25, 112));
-        btn_search.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btn_search.setForeground(new java.awt.Color(255, 255, 255));
-        btn_search.setText("Search");
-        btn_search.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_searchActionPerformed(evt);
-            }
-        });
-        btn_search.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                btn_searchKeyTyped(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -380,10 +369,6 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
                 .addGap(55, 55, 55)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 803, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)
-                        .addComponent(btn_search))
                     .addComponent(jLabel1))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -398,12 +383,8 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 441, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 505, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
         );
 
@@ -452,15 +433,6 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
         dispose();
     }//GEN-LAST:event_btn_AccActionPerformed
 
-    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
-        
-
-    }//GEN-LAST:event_btn_searchActionPerformed
-
-    private void btn_searchKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btn_searchKeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_searchKeyTyped
-
     /**
      * @param args the command line arguments
      */
@@ -506,7 +478,6 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
     private javax.swing.JButton btn_BRecords;
     private javax.swing.JButton btn_BrwrRecords;
     private javax.swing.JButton btn_dshbrd2;
-    private javax.swing.JButton btn_search;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.JLabel dbIcon2;
     private javax.swing.JLabel jLabel1;
@@ -521,6 +492,5 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jlbl_wlcm8;
     private javax.swing.JLabel logo;
-    private javax.swing.JTextField txt_search;
     // End of variables declaration//GEN-END:variables
 }

@@ -7,6 +7,7 @@ package GUI;
 import javax.swing.JLabel;
 import Controller.ReturnedBooksController;
 import Models.ReturnedBooks;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,12 +40,16 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
         DefaultTableModel model = (DefaultTableModel)tbl_returnedbooks.getModel();
         model.setRowCount(0);
         
+        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy"); 
+                
         for (ReturnedBooks returned : returnedBooks){
+            String dateReturned = df.format(returned.getDateReturned());
+            
         model.addRow(new Object[]{
             returned.getTransactionId(),
             returned.getBorrowerId(),
             returned.getBookId(),
-            returned.getDateReturned(),
+            dateReturned,
             returned.getStatus()
         });
     }
@@ -358,6 +363,13 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
         });
         tbl_returnedbooks.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tbl_returnedbooks);
+        if (tbl_returnedbooks.getColumnModel().getColumnCount() > 0) {
+            tbl_returnedbooks.getColumnModel().getColumn(0).setResizable(false);
+            tbl_returnedbooks.getColumnModel().getColumn(1).setResizable(false);
+            tbl_returnedbooks.getColumnModel().getColumn(2).setResizable(false);
+            tbl_returnedbooks.getColumnModel().getColumn(3).setResizable(false);
+            tbl_returnedbooks.getColumnModel().getColumn(4).setResizable(false);
+        }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

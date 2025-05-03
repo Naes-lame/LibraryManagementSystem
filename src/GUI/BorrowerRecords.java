@@ -703,7 +703,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
 
         jLabel1.setFont(new java.awt.Font("Calibri", 3, 24)); // NOI18N
         jLabel1.setText("BORROWER RECORDS");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 80, -1, -1));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 80, -1, -1));
 
         tbl_borrowerrecords.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -1004,25 +1004,6 @@ Dashboard db = new Dashboard();
 
     private void btn_add1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_add1ActionPerformed
         try{
-            StringBuilder errorMessage = new StringBuilder("Error: ");
-            boolean error = false;
-            if(txt_name.getText().trim().isEmpty()){
-                errorMessage.append("Title field is empty!\n");
-                error = true;
-            }if(txt_address.getText().trim().isEmpty()){
-                errorMessage.append("Address field is empty!\n");
-                error = true;
-            }if(txt_phone.getText().trim().isEmpty()){
-                errorMessage.append("Phone number field is empty!\n");
-                error = true;
-            }if(txt_email.getText().trim().isEmpty()){
-                errorMessage.append("Email field is empty!\n");
-                error = true;
-            }if(error){
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
-                return;      
-            }
-            
             Object selectedID = cb_id.getSelectedItem();
             int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
             String name = txt_name.getText();
@@ -1037,6 +1018,36 @@ Dashboard db = new Dashboard();
             }
             String email = txt_email.getText();
             Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
+        
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+            if(txt_name.getText().trim().isEmpty()){
+                errorMessage.append("Title field is empty!\n");
+                error = true;
+            }if(txt_address.getText().trim().isEmpty()){
+                errorMessage.append("Address field is empty!\n");
+                error = true;
+            }if(txt_phone.getText().trim().isEmpty()){
+                errorMessage.append("Phone number field is empty!\n");
+                error = true;
+            }else if(!txt_phone.getText().matches("\\d+")){
+                errorMessage.append("Invalid input! Whole numbers only.\n");
+                error = true;
+            } else if (txt_phone.getText().trim().length() != 11) {
+                errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
+                error = true;
+            }if (txt_email.getText().trim().isEmpty()) {
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
+                errorMessage.append("Invalid input! Please try again.\n");
+                error = true;
+            }if(error){
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
+                return;      
+            }
+            
+            
             
             Borrowers b = new Borrowers (borrowerId, name, address, phone, email, membershipDate);
             boolean success = BorrowersController.addBorrower(b);
@@ -1088,25 +1099,6 @@ Dashboard db = new Dashboard();
 
     private void btn_update1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_update1ActionPerformed
         try{
-            StringBuilder errorMessage = new StringBuilder("Error: ");
-            boolean error = false;
-            if(txt_name.getText().trim().isEmpty()){
-                errorMessage.append("Title field is empty!\n");
-                error = true;
-            }if(txt_address.getText().trim().isEmpty()){
-                errorMessage.append("Address field is empty!\n");
-                error = true;
-            }if(txt_phone.getText().trim().isEmpty()){
-                errorMessage.append("Phone number field is empty!\n");
-                error = true;
-            }if(txt_email.getText().trim().isEmpty()){
-                errorMessage.append("Email field is empty!\n");
-                error = true;
-            }if(error){
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
             Object selectedID = cb_id.getSelectedItem();
             int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
             String name = txt_name.getText();
@@ -1121,6 +1113,34 @@ Dashboard db = new Dashboard();
             }
             String email = txt_email.getText();
             Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
+        
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+            if(txt_name.getText().trim().isEmpty()){
+                errorMessage.append("Title field is empty!\n");
+                error = true;
+            }if(txt_address.getText().trim().isEmpty()){
+                errorMessage.append("Address field is empty!\n");
+                error = true;
+            }if(txt_phone.getText().trim().isEmpty()){
+                errorMessage.append("Phone number field is empty!\n");
+                error = true;
+            }else if(!txt_phone.getText().matches("\\d+")){
+                errorMessage.append("Invalid input! Whole numbers only.\n");
+                error = true;
+            } else if (txt_phone.getText().trim().length() != 11) {
+                errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
+                error = true;
+            } if (txt_email.getText().trim().isEmpty()) {
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
+                errorMessage.append("Invalid input! Please try again.\n");
+                error = true;
+            }if(error){
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
+                return;      
+            }
             
             Borrowers b = new Borrowers (borrowerId, name, address, phone, email, membershipDate);
             boolean success = BorrowersController.updateBorrower(b);
@@ -1153,39 +1173,49 @@ Dashboard db = new Dashboard();
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
          try{
-            StringBuilder errorMessage = new StringBuilder("Error: ");
-            boolean error = false;
-            if(txt_name.getText().trim().isEmpty()){
-                errorMessage.append("Title field is empty!\n");
-                error = true;
-            }if(txt_address.getText().trim().isEmpty()){
-                errorMessage.append("Address field is empty!\n");
-                error = true;
-            }if(txt_phone.getText().trim().isEmpty()){
-                errorMessage.append("Phone number field is empty!\n");
-                error = true;
-            }if(txt_email.getText().trim().isEmpty()){
-                errorMessage.append("Email field is empty!\n");
-                error = true;
-            }if(error){
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            Object selectedID = cb_id.getSelectedItem();
-            int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
-            String name = txt_name.getText();
-            String address = txt_address.getText();
-            
-            long phone;
-            try{
-                phone = Long.parseLong(txt_phone.getText());
-            }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(this, "Invalid whole numbers only for 'Phone'.","Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            String email = txt_email.getText();
-            Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
+               Object selectedID = cb_id.getSelectedItem();
+                int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
+                String name = txt_name.getText();
+                String address = txt_address.getText();
+
+                long phone;
+                try{
+                    phone = Long.parseLong(txt_phone.getText());
+                }catch(NumberFormatException e){
+                    JOptionPane.showMessageDialog(this, "Invalid whole numbers only for 'Phone'.","Error",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                String email = txt_email.getText();
+                Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
+
+                StringBuilder errorMessage = new StringBuilder("Error: ");
+                boolean error = false;
+                if(txt_name.getText().trim().isEmpty()){
+                    errorMessage.append("Title field is empty!\n");
+                    error = true;
+                }if(txt_address.getText().trim().isEmpty()){
+                    errorMessage.append("Address field is empty!\n");
+                    error = true;
+                }if(txt_phone.getText().trim().isEmpty()){
+                    errorMessage.append("Phone number field is empty!\n");
+                    error = true;
+                }else if(!txt_phone.getText().matches("\\d+")){
+                    errorMessage.append("Invalid input! Whole numbers only.\n");
+                    error = true;
+                } else if (txt_phone.getText().trim().length() != 11) {
+                    errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
+                    error = true;
+                } if (txt_email.getText().trim().isEmpty()) {
+                    errorMessage.append("Email field is empty!\n");
+                    error = true;
+                } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
+                    errorMessage.append("Invalid input! Please try again.\n");
+                    error = true;
+                }if(error){
+                    JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
+                    return;      
+                }
+
             
             Borrowers b = new Borrowers (borrowerId, name, address, phone, email, membershipDate);
             boolean success = BorrowersController.deleteBorrowers(b);

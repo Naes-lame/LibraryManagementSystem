@@ -15,8 +15,8 @@ public class Transactions {
         this.transactionId = transactionId;
         this.borrowerId = borrowerId;
         this.bookId = bookId;
-        this.transactionDate = new Timestamp(new Date().getTime());
-        this.dueDate = new Timestamp(transactionDate.getTime() + (7L * 24 * 60 * 60 * 1000));
+        this.transactionDate = transactionDate;
+        this.dueDate = dueDate;
         this.status = status;
     }
     
@@ -25,7 +25,7 @@ public class Transactions {
     }
     
     public int getBorrowerId(){
-        return borrowerId;
+        return this.borrowerId;
     }
     
     public void setBorrowerId(int borrowerId){
@@ -33,7 +33,7 @@ public class Transactions {
     }
     
     public int getBookId(){
-        return bookId;
+        return this.bookId;
     }
     
     public void setBookId(int bookId){

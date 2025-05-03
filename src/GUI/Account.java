@@ -17,25 +17,25 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons{
     loadUserData(); // No need to pass a username manually
 }
 
-private void loadUserData() {
-    String username = SessionManager.getLoggedInUsername(); // Get current user
+    private void loadUserData() {
+        String username = SessionManager.getLoggedInUsername(); // Get current user
 
-    if (username == null || username.isEmpty()) {
-        System.out.println("No user logged in!");
-        return;
-    }
+        if (username == null || username.isEmpty()) {
+            System.out.println("No user logged in!");
+            return;
+        }
 
-    Users user = AccountController.getLoggedInUser(username);
-    
-    if (user != null) {
-        txt_username.setText(user.getUsername());
-        txt_email.setText(user.getEmail());
-        txt_name.setText(user.getFullName());
-        txt_phone.setText(String.valueOf(user.getPhoneNum()));
-        txt_address.setText(user.getAddress());
-    } else {
-        System.out.println("User not found!");
-    }}
+        Users user = AccountController.getLoggedInUser(username);
+
+        if (user != null) {
+            txt_username.setText(user.getUsername());
+            txt_email.setText(user.getEmail());
+            txt_name.setText(user.getFullName());
+            txt_phone.setText(String.valueOf(user.getPhoneNum()));
+            txt_address.setText(user.getAddress());
+        } else {
+            System.out.println("User not found!");
+        }}
 
     
     private void scaleImages() {

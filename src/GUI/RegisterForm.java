@@ -4,32 +4,31 @@
  */
 package GUI;
 
-//validation for password & number.
+//all goods
 import Controller.*;
 import Models.*;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
+public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
 
     public RegisterForm() {
         initComponents();
         scaleImage();
         initializeButtons();
     }
-    
-    private void scaleImage(){
+
+    private void scaleImage() {
         String[] paths = {
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\freepik3.jpg",
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png"
-        };      
-        JLabel[] labels = { lbl_bgPhoto, jlbl_wlcmMssg1 };
+        };
+        JLabel[] labels = {lbl_bgPhoto, jlbl_wlcmMssg1};
         scaleImages(paths, labels);
-        
+
         initializeButtons(btn_login);
     }
-    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -225,8 +224,8 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
                             .addComponent(txt_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(27, 27, 27)
-                        .addComponent(jbtn_signUp, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(9, 9, 9)
+                        .addComponent(jbtn_signUp, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jtxt_mssg1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -249,67 +248,83 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons{
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
-       LoginForm lf = new LoginForm();
-       lf.show();
-       dispose();
+        LoginForm lf = new LoginForm();
+        lf.show();
+        dispose();
     }//GEN-LAST:event_btn_loginActionPerformed
 
     private void txt_passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_passwordActionPerformed
-        
+
     }//GEN-LAST:event_txt_passwordActionPerformed
 
     private void jbtn_signUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtn_signUpActionPerformed
-        try{
-             StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
-            boolean error = false;
-            if(txt_name.getText().trim().isEmpty()){
-                errorMessage.append("Full Name field is empty!\n");
-                error = true;//confirm error.
-            }if(txt_email.getText().trim().isEmpty()){
-                errorMessage.append("Email field is empty!\n");
-                error = true;
-            }if(txt_phoneNum.getText().trim().isEmpty()){
-                errorMessage.append("Phone Number field is empty!\n");
-                error = true;
-            }if(txt_address.getText().trim().isEmpty()){
-                errorMessage.append("Address field is empty!\n");
-                error = true;
-            }if(txt_username.getText().trim().isEmpty()){
-                errorMessage.append("Username field is empty!");
-                error = true;
-            }if(txt_password.getText().trim().isEmpty()){
-                errorMessage.append("Password field is empty!");
-                error = true;
-            }if (error){
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);//error message for a specific field.
-                return;
-            }
-            
+
+        try {
             String name = txt_name.getText();
             String email = txt_email.getText();
             long phoneNum = Long.parseLong(txt_phoneNum.getText().trim());
             String address = txt_address.getText();
             String username = txt_username.getText();
             String password = txt_password.getText();
-            
+
+            StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
+            boolean error = false;
+            if (txt_name.getText().trim().isEmpty()) {
+                errorMessage.append("Full Name field is empty!\n");
+                error = true;//confirm error.
+            }
+            if (txt_email.getText().trim().isEmpty()) {
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
+                errorMessage.append("Invalid input! Please try again.\n");
+                error = true;
+            }
+            if (txt_phoneNum.getText().trim().isEmpty()) {
+                errorMessage.append("Phone Number field is empty!\n");
+                error = true;
+            } else if (!txt_phoneNum.getText().matches("\\d+")) {
+                errorMessage.append("Invalid input! Whole numbers only.\n");
+                error = true;
+
+            } else if (txt_phoneNum.getText().trim().length() != 11) {
+                errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
+                error = true;
+            }if (txt_address.getText().trim().isEmpty()) {
+                errorMessage.append("Address field is empty!\n");
+                error = true;
+            }
+            if (txt_username.getText().trim().isEmpty()) {
+                errorMessage.append("Username field is empty!\n");
+                error = true;
+            }
+            if (txt_password.getText().trim().isEmpty()) {
+                errorMessage.append("Password field is empty!\n");
+                error = true;
+            }else if(txt_password.getText().trim().length() < 6){
+                errorMessage.append("Invalid input! Password must be more than 6 characters.\n");
+                error = true;
+            }
+            if (error) {
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);//error message for a specific field.
+                return;
+            }
+
             Users users = new Users(name, email, phoneNum, address, username, password);
             boolean success = UsersController.addUser(users);
-            
-            if (success){
+
+            if (success) {
                 JOptionPane.showMessageDialog(this, "User registered seccessfully!");
                 LoginForm lf = new LoginForm();
                 lf.show();
                 dispose();
-                
-            }else{
-                JOptionPane.showMessageDialog(this, "Error. User failed to register. Please try again.","Error", JOptionPane.ERROR_MESSAGE);
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Error. User failed to register. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
             
-        }catch(NullPointerException e){
-            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }//GEN-LAST:event_jbtn_signUpActionPerformed
