@@ -6,7 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public interface imagesNbuttons {
-    
+   
     default void scaleImages(String[] imagePaths, JLabel[] labels) {
         if (imagePaths.length != labels.length) {
             throw new IllegalArgumentException("The number of image paths must match the number of labels.");

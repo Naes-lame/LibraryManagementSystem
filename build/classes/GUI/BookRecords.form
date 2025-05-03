@@ -436,7 +436,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JTable" name="tbl_bookRecords">
+            <Component class="javax.swing.JTable" name="bookRecordsTable">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                   <Table columnCount="6" rowCount="6">
@@ -556,7 +556,7 @@
                                   <Group type="102" attributes="0">
                                       <Component id="txt_trnscID" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="cb_id" min="-2" max="-2" attributes="0"/>
+                                      <Component id="id_cb" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                                       <Component id="btn_search" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -588,7 +588,7 @@
                                   <Component id="txt_trnscID" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="cb_id" min="-2" pref="34" max="-2" attributes="0"/>
+                              <Component id="id_cb" min="-2" pref="34" max="-2" attributes="0"/>
                           </Group>
                           <Component id="btn_search" alignment="0" min="-2" pref="34" max="-2" attributes="0"/>
                       </Group>
@@ -689,7 +689,7 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txt_quantityActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JComboBox" name="cb_id">
+            <Component class="javax.swing.JComboBox" name="id_cb">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="4">
@@ -701,7 +701,7 @@
                 </Property>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cb_idActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="id_cbActionPerformed"/>
               </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>

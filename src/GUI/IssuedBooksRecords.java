@@ -37,7 +37,7 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
     private void table(String keyword){
         List<IssuedBooks> issuedBooks = IssuedBooksController.getIssuedBooks();
         
-        DefaultTableModel model = (DefaultTableModel)IssuedBooksTable.getModel();
+        DefaultTableModel model = (DefaultTableModel)issuedBooksRecordsTable.getModel();
         model.setRowCount(0);
         
         SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
@@ -82,7 +82,7 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
         AccIcon = new javax.swing.JLabel();
         btn_Acc = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        IssuedBooksTable = new javax.swing.JTable();
+        issuedBooksRecordsTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -324,7 +324,7 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
                 .addContainerGap(349, Short.MAX_VALUE))
         );
 
-        IssuedBooksTable.setModel(new javax.swing.table.DefaultTableModel(
+        issuedBooksRecordsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
@@ -343,15 +343,15 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
                 return canEdit [columnIndex];
             }
         });
-        IssuedBooksTable.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(IssuedBooksTable);
-        if (IssuedBooksTable.getColumnModel().getColumnCount() > 0) {
-            IssuedBooksTable.getColumnModel().getColumn(0).setResizable(false);
-            IssuedBooksTable.getColumnModel().getColumn(1).setResizable(false);
-            IssuedBooksTable.getColumnModel().getColumn(2).setResizable(false);
-            IssuedBooksTable.getColumnModel().getColumn(3).setResizable(false);
-            IssuedBooksTable.getColumnModel().getColumn(4).setResizable(false);
-            IssuedBooksTable.getColumnModel().getColumn(5).setResizable(false);
+        issuedBooksRecordsTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(issuedBooksRecordsTable);
+        if (issuedBooksRecordsTable.getColumnModel().getColumnCount() > 0) {
+            issuedBooksRecordsTable.getColumnModel().getColumn(0).setResizable(false);
+            issuedBooksRecordsTable.getColumnModel().getColumn(1).setResizable(false);
+            issuedBooksRecordsTable.getColumnModel().getColumn(2).setResizable(false);
+            issuedBooksRecordsTable.getColumnModel().getColumn(3).setResizable(false);
+            issuedBooksRecordsTable.getColumnModel().getColumn(4).setResizable(false);
+            issuedBooksRecordsTable.getColumnModel().getColumn(5).setResizable(false);
         }
 
         jLabel1.setFont(new java.awt.Font("Calibri", 3, 24)); // NOI18N
@@ -471,7 +471,6 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel AccIcon;
     private javax.swing.JLabel BrrwrIcon;
-    private javax.swing.JTable IssuedBooksTable;
     private javax.swing.JLabel TrnsactIcon;
     private javax.swing.JLabel bookIcon;
     private javax.swing.JButton btn_Acc;
@@ -480,6 +479,7 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
     private javax.swing.JButton btn_dshbrd2;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.JLabel dbIcon2;
+    private javax.swing.JTable issuedBooksRecordsTable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;

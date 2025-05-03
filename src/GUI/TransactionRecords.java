@@ -7,11 +7,11 @@ package GUI;
 //all goods
 import Models.*;
 import Controller.*;
-import Database.SQLDatabaseManager;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.JLabel;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -24,18 +24,26 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         ScaleImages();
         table("");
         getId();
+        txt_searchfield.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String searchText = txt_searchfield.getText().trim();
+                table(searchText); // Call your table function with the search text
+            }
+        });
+
     }
 
     private void table(String keyword) {
         List<Transactions> transaction = TransactionsController.getTransaction();
 
-        DefaultTableModel model = (DefaultTableModel) tbl_transactions.getModel();
+        DefaultTableModel model = (DefaultTableModel) transactionRecordsTable.getModel();
         model.setRowCount(0);
-        
+
         SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
 
         for (Transactions tr : transaction) {
-            
+
             String transactionDate = df.format(tr.getTransactionDate());
             String dueDate = df.format(tr.getDueDate());
 
@@ -51,8 +59,8 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 });
             }
         }
-        tbl_transactions.setModel(model);
-        tbl_transactions.revalidate();
+        transactionRecordsTable.setModel(model);
+        transactionRecordsTable.revalidate();
     }
 
     private void getId() {
@@ -122,10 +130,10 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         btn_search = new javax.swing.JButton();
         cb_id = new javax.swing.JComboBox<>();
         txt_brrwr1 = new javax.swing.JLabel();
-        txt_search = new javax.swing.JTextField();
+        txt_searchfield = new javax.swing.JTextField();
         btn_search2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tbl_transactions = new javax.swing.JTable();
+        transactionRecordsTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -478,9 +486,9 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        txt_search.addActionListener(new java.awt.event.ActionListener() {
+        txt_searchfield.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_searchActionPerformed(evt);
+                txt_searchfieldActionPerformed(evt);
             }
         });
 
@@ -494,7 +502,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             }
         });
 
-        tbl_transactions.setModel(new javax.swing.table.DefaultTableModel(
+        transactionRecordsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
@@ -520,15 +528,15 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 return canEdit [columnIndex];
             }
         });
-        tbl_transactions.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(tbl_transactions);
-        if (tbl_transactions.getColumnModel().getColumnCount() > 0) {
-            tbl_transactions.getColumnModel().getColumn(0).setResizable(false);
-            tbl_transactions.getColumnModel().getColumn(1).setResizable(false);
-            tbl_transactions.getColumnModel().getColumn(2).setResizable(false);
-            tbl_transactions.getColumnModel().getColumn(3).setResizable(false);
-            tbl_transactions.getColumnModel().getColumn(4).setResizable(false);
-            tbl_transactions.getColumnModel().getColumn(5).setResizable(false);
+        transactionRecordsTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(transactionRecordsTable);
+        if (transactionRecordsTable.getColumnModel().getColumnCount() > 0) {
+            transactionRecordsTable.getColumnModel().getColumn(0).setResizable(false);
+            transactionRecordsTable.getColumnModel().getColumn(1).setResizable(false);
+            transactionRecordsTable.getColumnModel().getColumn(2).setResizable(false);
+            transactionRecordsTable.getColumnModel().getColumn(3).setResizable(false);
+            transactionRecordsTable.getColumnModel().getColumn(4).setResizable(false);
+            transactionRecordsTable.getColumnModel().getColumn(5).setResizable(false);
         }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -547,7 +555,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txt_searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btn_search2))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 522, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -570,7 +578,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(btn_search2))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -817,12 +825,12 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
 
     }//GEN-LAST:event_txt_borroweridActionPerformed
 
-    private void txt_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_searchActionPerformed
+    private void txt_searchfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_searchfieldActionPerformed
 
-    }//GEN-LAST:event_txt_searchActionPerformed
+    }//GEN-LAST:event_txt_searchfieldActionPerformed
 
     private void btn_search2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_search2ActionPerformed
-        String searchText = txt_search.getText().trim();
+        String searchText = txt_searchfield.getText().trim();
         table(searchText);
 
     }//GEN-LAST:event_btn_search2ActionPerformed
@@ -896,12 +904,12 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jlbl_wlcm8;
     private javax.swing.JLabel logo;
-    private javax.swing.JTable tbl_transactions;
+    private javax.swing.JTable transactionRecordsTable;
     private javax.swing.JLabel txt_bk;
     private javax.swing.JTextField txt_bookid;
     private javax.swing.JTextField txt_borrowerid;
     private javax.swing.JLabel txt_brrwr;
     private javax.swing.JLabel txt_brrwr1;
-    private javax.swing.JTextField txt_search;
+    private javax.swing.JTextField txt_searchfield;
     // End of variables declaration//GEN-END:variables
 }

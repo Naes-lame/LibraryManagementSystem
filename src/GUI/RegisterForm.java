@@ -42,7 +42,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txt_eMail = new javax.swing.JLabel();
-        txt_name = new javax.swing.JTextField();
+        txt_fullname = new javax.swing.JTextField();
         txt_email = new javax.swing.JTextField();
         txt_username = new javax.swing.JTextField();
         txt_password = new javax.swing.JPasswordField();
@@ -51,7 +51,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
         jLabel1 = new javax.swing.JLabel();
         jlbl_wlcmMssg2 = new javax.swing.JLabel();
         txt_eMail1 = new javax.swing.JLabel();
-        txt_phoneNum = new javax.swing.JTextField();
+        txt_phonenumber = new javax.swing.JTextField();
         txt_eMail2 = new javax.swing.JLabel();
         txt_address = new javax.swing.JTextField();
 
@@ -87,7 +87,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
         txt_eMail.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         txt_eMail.setText("E-mail:");
 
-        txt_name.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        txt_fullname.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
 
         txt_email.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
 
@@ -126,7 +126,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
         txt_eMail1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         txt_eMail1.setText("Phone No. :");
 
-        txt_phoneNum.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        txt_phonenumber.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
 
         txt_eMail2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         txt_eMail2.setText("Address:");
@@ -168,9 +168,9 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
                                     .addComponent(txt_eMail2))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_fullname, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txt_phoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_phonenumber, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txt_address, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(245, 245, 245)
@@ -201,7 +201,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(42, 42, 42)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_fullname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txt_fName, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(12, 12, 12)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -209,7 +209,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
                             .addComponent(txt_eMail))
                         .addGap(12, 12, 12)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txt_phoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_phonenumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txt_eMail1))
                         .addGap(12, 12, 12)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -260,16 +260,16 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
     private void jbtn_signUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtn_signUpActionPerformed
 
         try {
-            String name = txt_name.getText();
+            String name = txt_fullname.getText();
             String email = txt_email.getText();
-            long phoneNum = Long.parseLong(txt_phoneNum.getText().trim());
+            long phoneNum = Long.parseLong(txt_phonenumber.getText().trim());
             String address = txt_address.getText();
             String username = txt_username.getText();
             String password = txt_password.getText();
 
             StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
             boolean error = false;
-            if (txt_name.getText().trim().isEmpty()) {
+            if (txt_fullname.getText().trim().isEmpty()) {
                 errorMessage.append("Full Name field is empty!\n");
                 error = true;//confirm error.
             }
@@ -277,17 +277,17 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
                 errorMessage.append("Email field is empty!\n");
                 error = true;
             } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
-                errorMessage.append("Invalid input! Please try again.\n");
+                errorMessage.append("Invalid email input! Please try again.\n");
                 error = true;
             }
-            if (txt_phoneNum.getText().trim().isEmpty()) {
+            if (txt_phonenumber.getText().trim().isEmpty()) {
                 errorMessage.append("Phone Number field is empty!\n");
                 error = true;
-            } else if (!txt_phoneNum.getText().matches("\\d+")) {
+            } else if (!txt_phonenumber.getText().matches("\\d+")) {
                 errorMessage.append("Invalid input! Whole numbers only.\n");
                 error = true;
 
-            } else if (txt_phoneNum.getText().trim().length() != 11) {
+            } else if (txt_phonenumber.getText().trim().length() != 11) {
                 errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
                 error = true;
             }if (txt_address.getText().trim().isEmpty()) {
@@ -382,9 +382,9 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
     private javax.swing.JLabel txt_eMail2;
     private javax.swing.JTextField txt_email;
     private javax.swing.JLabel txt_fName;
-    private javax.swing.JTextField txt_name;
+    private javax.swing.JTextField txt_fullname;
     private javax.swing.JPasswordField txt_password;
-    private javax.swing.JTextField txt_phoneNum;
+    private javax.swing.JTextField txt_phonenumber;
     private javax.swing.JTextField txt_username;
     // End of variables declaration//GEN-END:variables
 }

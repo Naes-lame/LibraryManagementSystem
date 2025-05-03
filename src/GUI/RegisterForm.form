@@ -85,9 +85,9 @@
                                   </Group>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="txt_name" min="-2" pref="302" max="-2" attributes="0"/>
+                                      <Component id="txt_fullname" min="-2" pref="302" max="-2" attributes="0"/>
                                       <Component id="txt_email" min="-2" pref="302" max="-2" attributes="0"/>
-                                      <Component id="txt_phoneNum" min="-2" pref="302" max="-2" attributes="0"/>
+                                      <Component id="txt_phonenumber" min="-2" pref="302" max="-2" attributes="0"/>
                                       <Component id="txt_address" min="-2" pref="302" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -129,7 +129,7 @@
                           <Component id="jLabel1" min="-2" pref="20" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="txt_name" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="txt_fullname" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="txt_fName" alignment="3" min="-2" pref="21" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
@@ -139,7 +139,7 @@
                           </Group>
                           <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="txt_phoneNum" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="txt_phonenumber" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="txt_eMail1" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
@@ -230,7 +230,7 @@
             <Property name="text" type="java.lang.String" value="E-mail:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txt_name">
+        <Component class="javax.swing.JTextField" name="txt_fullname">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Calibri" size="12" style="0"/>
@@ -320,7 +320,7 @@
             <Property name="text" type="java.lang.String" value="Phone No. :"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txt_phoneNum">
+        <Component class="javax.swing.JTextField" name="txt_phonenumber">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Calibri" size="12" style="0"/>

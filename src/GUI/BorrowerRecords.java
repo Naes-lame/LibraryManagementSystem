@@ -8,6 +8,8 @@ package GUI;
 
 import Controller.BorrowersController;
 import Models.Borrowers;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -24,6 +26,14 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         initializeButtons();
         table("");
         getId();
+        
+        txt_search.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String searchText = txt_search.getText().trim();
+                table(searchText);
+            }
+        });
     }
     
 
@@ -31,7 +41,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
    private void table(String keyword) {
     List<Borrowers> borrowers = BorrowersController.getBorrower();
 
-    DefaultTableModel model = (DefaultTableModel) tbl_borrowerrecords.getModel();
+    DefaultTableModel model = (DefaultTableModel) borrowerRecordsTable.getModel();
     model.setRowCount(0);
 
     SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
@@ -54,8 +64,8 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 });
             }
         }
-    tbl_borrowerrecords.setModel(model);
-    tbl_borrowerrecords.revalidate();
+    borrowerRecordsTable.setModel(model);
+    borrowerRecordsTable.revalidate();
     }
 
     
@@ -142,7 +152,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         logo = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tbl_borrowerrecords = new javax.swing.JTable();
+        borrowerRecordsTable = new javax.swing.JTable();
         jPanel17 = new javax.swing.JPanel();
         txt_trnscID = new javax.swing.JLabel();
         txt_brrwr = new javax.swing.JLabel();
@@ -705,7 +715,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         jLabel1.setText("BORROWER RECORDS");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 80, -1, -1));
 
-        tbl_borrowerrecords.setModel(new javax.swing.table.DefaultTableModel(
+        borrowerRecordsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
@@ -724,15 +734,15 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 return canEdit [columnIndex];
             }
         });
-        tbl_borrowerrecords.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(tbl_borrowerrecords);
-        if (tbl_borrowerrecords.getColumnModel().getColumnCount() > 0) {
-            tbl_borrowerrecords.getColumnModel().getColumn(0).setResizable(false);
-            tbl_borrowerrecords.getColumnModel().getColumn(1).setResizable(false);
-            tbl_borrowerrecords.getColumnModel().getColumn(2).setResizable(false);
-            tbl_borrowerrecords.getColumnModel().getColumn(3).setResizable(false);
-            tbl_borrowerrecords.getColumnModel().getColumn(4).setResizable(false);
-            tbl_borrowerrecords.getColumnModel().getColumn(5).setResizable(false);
+        borrowerRecordsTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(borrowerRecordsTable);
+        if (borrowerRecordsTable.getColumnModel().getColumnCount() > 0) {
+            borrowerRecordsTable.getColumnModel().getColumn(0).setResizable(false);
+            borrowerRecordsTable.getColumnModel().getColumn(1).setResizable(false);
+            borrowerRecordsTable.getColumnModel().getColumn(2).setResizable(false);
+            borrowerRecordsTable.getColumnModel().getColumn(3).setResizable(false);
+            borrowerRecordsTable.getColumnModel().getColumn(4).setResizable(false);
+            borrowerRecordsTable.getColumnModel().getColumn(5).setResizable(false);
         }
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 313, 820, 300));
@@ -1040,7 +1050,7 @@ Dashboard db = new Dashboard();
                 errorMessage.append("Email field is empty!\n");
                 error = true;
             } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
-                errorMessage.append("Invalid input! Please try again.\n");
+                errorMessage.append("Invalid email input! Please try again.\n");
                 error = true;
             }if(error){
                 JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
@@ -1135,7 +1145,7 @@ Dashboard db = new Dashboard();
                 errorMessage.append("Email field is empty!\n");
                 error = true;
             } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
-                errorMessage.append("Invalid input! Please try again.\n");
+                errorMessage.append("Invalid email input! Please try again.\n");
                 error = true;
             }if(error){
                 JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
@@ -1209,7 +1219,7 @@ Dashboard db = new Dashboard();
                     errorMessage.append("Email field is empty!\n");
                     error = true;
                 } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
-                    errorMessage.append("Invalid input! Please try again.\n");
+                    errorMessage.append("Invalid email input! Please try again.\n");
                     error = true;
                 }if(error){
                     JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
@@ -1276,6 +1286,7 @@ Dashboard db = new Dashboard();
     private javax.swing.JLabel BrrwrIcon;
     private javax.swing.JLabel TrnsactIcon;
     private javax.swing.JLabel bookIcon;
+    private javax.swing.JTable borrowerRecordsTable;
     private javax.swing.JButton btn_Acc;
     private javax.swing.JButton btn_BRecords;
     private javax.swing.JButton btn_BrwrRecords;
@@ -1327,7 +1338,6 @@ Dashboard db = new Dashboard();
     private javax.swing.JLabel jlbl_wlcm7;
     private javax.swing.JLabel jlbl_wlcm8;
     private javax.swing.JLabel logo;
-    private javax.swing.JTable tbl_borrowerrecords;
     private javax.swing.JTextField txt_address;
     private javax.swing.JLabel txt_bk;
     private javax.swing.JLabel txt_brrwr;

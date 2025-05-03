@@ -37,7 +37,7 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
     private void table(){
         List<ReturnedBooks> returnedBooks = ReturnedBooksController.getReturnedBooks();
         
-        DefaultTableModel model = (DefaultTableModel)tbl_returnedbooks.getModel();
+        DefaultTableModel model = (DefaultTableModel)returnedBooksRecordsTable.getModel();
         model.setRowCount(0);
         
         SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy"); 
@@ -83,7 +83,7 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
         txt_search = new javax.swing.JTextField();
         btn_search = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tbl_returnedbooks = new javax.swing.JTable();
+        returnedBooksRecordsTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -342,7 +342,7 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
             }
         });
 
-        tbl_returnedbooks.setModel(new javax.swing.table.DefaultTableModel(
+        returnedBooksRecordsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -361,14 +361,14 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
                 return canEdit [columnIndex];
             }
         });
-        tbl_returnedbooks.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(tbl_returnedbooks);
-        if (tbl_returnedbooks.getColumnModel().getColumnCount() > 0) {
-            tbl_returnedbooks.getColumnModel().getColumn(0).setResizable(false);
-            tbl_returnedbooks.getColumnModel().getColumn(1).setResizable(false);
-            tbl_returnedbooks.getColumnModel().getColumn(2).setResizable(false);
-            tbl_returnedbooks.getColumnModel().getColumn(3).setResizable(false);
-            tbl_returnedbooks.getColumnModel().getColumn(4).setResizable(false);
+        returnedBooksRecordsTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(returnedBooksRecordsTable);
+        if (returnedBooksRecordsTable.getColumnModel().getColumnCount() > 0) {
+            returnedBooksRecordsTable.getColumnModel().getColumn(0).setResizable(false);
+            returnedBooksRecordsTable.getColumnModel().getColumn(1).setResizable(false);
+            returnedBooksRecordsTable.getColumnModel().getColumn(2).setResizable(false);
+            returnedBooksRecordsTable.getColumnModel().getColumn(3).setResizable(false);
+            returnedBooksRecordsTable.getColumnModel().getColumn(4).setResizable(false);
         }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -522,7 +522,7 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jlbl_wlcm8;
     private javax.swing.JLabel logo;
-    private javax.swing.JTable tbl_returnedbooks;
+    private javax.swing.JTable returnedBooksRecordsTable;
     private javax.swing.JTextField txt_search;
     // End of variables declaration//GEN-END:variables
 }
