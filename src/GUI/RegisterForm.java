@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
-
+    private int id;
     public RegisterForm() {
         initComponents();
         scaleImage();
@@ -310,7 +310,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
                 return;
             }
 
-            Users users = new Users(name, email, phoneNum, address, username, password);
+            Users users = new Users(id, name, email, phoneNum, address, username, password);
             boolean success = UsersController.addUser(users);
 
             if (success) {

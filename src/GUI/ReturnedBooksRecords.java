@@ -47,8 +47,8 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
             
         model.addRow(new Object[]{
             returned.getTransactionId(),
-            returned.getBorrowerId(),
-            returned.getBookId(),
+            returned.getBorrowerName(),
+            returned.getBookTitle(),
             dateReturned,
             returned.getStatus()
         });
@@ -350,7 +350,7 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
                 {null, null, null, null, null}
             },
             new String [] {
-                "Transaction ID", "Borrower ID", "Book ID", "Date Returned", "Status"
+                "Transaction ID", "Borrower Name", "Book Title", "Date Returned", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {

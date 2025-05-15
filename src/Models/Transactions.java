@@ -5,16 +5,16 @@ import java.util.Date;
 
 public class Transactions {
     private int transactionId;
-    private int borrowerId;
-    private int bookId;
+    private String borrowerName;
+    private String bookTitle;
     private Timestamp transactionDate;
-   private Timestamp dueDate;
+    private Timestamp dueDate;
     private String status;
     
-    public Transactions(int transactionId, int borrowerId, int bookId, Timestamp transactionDate, Timestamp dueDate, String status){
+    public Transactions(int transactionId, String borrowerName, String bookTitle, Timestamp transactionDate, Timestamp dueDate, String status){
         this.transactionId = transactionId;
-        this.borrowerId = borrowerId;
-        this.bookId = bookId;
+        this.borrowerName = borrowerName;
+        this.bookTitle = bookTitle;
         this.transactionDate = transactionDate;
         this.dueDate = dueDate;
         this.status = status;
@@ -24,20 +24,20 @@ public class Transactions {
         return transactionId;
     }
     
-    public int getBorrowerId(){
-        return this.borrowerId;
+    public String getBorrowerName(){
+        return borrowerName;
     }
     
-    public void setBorrowerId(int borrowerId){
-        this.borrowerId = borrowerId;
+    public void setBorrowerName(String borrowerName){
+        this.borrowerName = borrowerName;
     }
     
-    public int getBookId(){
-        return this.bookId;
+    public String getBookTitle(){
+        return bookTitle;
     }
     
-    public void setBookId(int bookId){
-         this.bookId = bookId;
+    public void setBookTitle(String bookTitle){
+        this.bookTitle = bookTitle;
     }
     
     public Timestamp getTransactionDate(){

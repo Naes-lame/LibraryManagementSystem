@@ -2,31 +2,122 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 //All goods!
 package GUI;
 
 import Controller.TransactionsController;
+import Database.*;
+import java.awt.BorderLayout;
+// Required imports
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
+
+import javax.swing.JPanel;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JLabel;
 
-public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
+public class Dashboard extends javax.swing.JFrame implements imagesNbuttons {
+
+  //  private JPanel histogramPanel; // Ensure it's defined
 
     public Dashboard() {
         initComponents();
         scaleImages();
         initializeButtons();
         getRecordCount("");
+
+        setupHistogram(); // Call setupHistogram in constructor to display the chart
     }
-    
+
+    private void setupHistogram() {
+        histogramPanel.setLayout(new BorderLayout());
+
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Query to count books added and borrower memberships per month
+        String query = "SELECT MONTH(DateAdded) AS month, COUNT(*) AS books_added, 0 AS borrower_memberships FROM bookrecords GROUP BY month " +
+                       "UNION " +
+                       "SELECT MONTH(membership_date) AS month, 0 AS books_added, COUNT(*) AS borrower_memberships FROM borrowerrecords GROUP BY month " +
+                       "ORDER BY month";
+
+        try (Connection conn = SQLDatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int month = rs.getInt("month");
+                int booksAdded = rs.getInt("books_added");
+                int borrowerMemberships = rs.getInt("borrower_memberships");
+
+                dataset.addValue(booksAdded, "Books Added", getMonthName(month));
+                dataset.addValue(borrowerMemberships, "New Borrowers", getMonthName(month));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Create Bar Chart
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Books Added vs New Borrowers Per Month",
+                "Month",
+                "Count",
+                dataset
+        );
+
+        // Customize chart appearance
+        CategoryPlot plot = chart.getCategoryPlot();
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+
+        // Reduce bar width
+        renderer.setMaximumBarWidth(0.3); // Controls how thick the bars are
+        renderer.setItemMargin(0.05); // Adjusts spacing between bars for clarity
+
+        // Apply gradient colors for a modern look
+        renderer.setSeriesPaint(0, new Color(224,255,255)); // Books Added - Dark Blue Gradient
+        renderer.setSeriesPaint(1, new Color(25,25,112)); // Borrower Memberships - Green Gradient
+
+        // Optional: Slight transparency for smoother rendering
+        plot.setBackgroundAlpha(0.8f);
+
+        ChartPanel chartPanel = new ChartPanel(chart, false); 
+chartPanel.setMouseWheelEnabled(false); 
+chartPanel.setPopupMenu(null); 
+chartPanel.setFocusable(false);
+        chartPanel.setPreferredSize(histogramPanel.getSize());
+
+        histogramPanel.removeAll();
+        histogramPanel.add(chartPanel, BorderLayout.CENTER);
+        histogramPanel.revalidate();
+        histogramPanel.repaint();
+    }
+
+    // Helper method to convert month numbers to names
+    private String getMonthName(int month) {
+        String[] months = {"January", "February", "March", "April", "May", "June",
+                           "July", "August", "September", "October", "November", "December"};
+        return months[month - 1];
+    }
+
+
     //count for each status.
-    private void getRecordCount(String tableName){
+    private void getRecordCount(String tableName) {
         int issuedCount = TransactionsController.getRecordCount("issuedbooks");
         int returnedCount = TransactionsController.getRecordCount("returned_books");
-        
+
         txt_issued.setText(String.valueOf(issuedCount));
         txt_returned.setText(String.valueOf(returnedCount));
     }
-      
+
     private void scaleImages() {
         String[] paths = {
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png",
@@ -38,15 +129,12 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\issued.png",
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\returned.png"
         };
-        JLabel[] labels = { logo, dbIcon, bookIcon, BrrwrIcon, TrnsactIcon, AccIcon, lb_issdbks, lb_rtrndBks};
+        JLabel[] labels = {logo, dbIcon, bookIcon, BrrwrIcon, TrnsactIcon, AccIcon, lb_issdbks, lb_rtrndBks};
         scaleImages(paths, labels);
-        
+
         initializeButtons(btn_dshbrd, btn_BRecords, btn_BrwrRecords, btn_trnsct, btn_Acc, btn_issued, btn_rtrnd);
     }
 
-    
-
-     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -63,14 +151,10 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         jLabel3 = new javax.swing.JLabel();
         txt_issued = new javax.swing.JLabel();
         lb_issdbks = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
-        btn_issued = new javax.swing.JButton();
         jPanel12 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         txt_returned = new javax.swing.JLabel();
         lb_rtrndBks = new javax.swing.JLabel();
-        jPanel15 = new javax.swing.JPanel();
-        btn_rtrnd = new javax.swing.JButton();
         jPanel13 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -88,6 +172,11 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         jPanel11 = new javax.swing.JPanel();
         AccIcon = new javax.swing.JLabel();
         btn_Acc = new javax.swing.JButton();
+        jPanel8 = new javax.swing.JPanel();
+        btn_issued = new javax.swing.JButton();
+        jPanel15 = new javax.swing.JPanel();
+        btn_rtrnd = new javax.swing.JButton();
+        histogramPanel = new javax.swing.JPanel();
 
         jLabel1.setText("jLabel1");
 
@@ -126,7 +215,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
                 .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jlbl_wlcm)
-                .addContainerGap(376, Short.MAX_VALUE))
+                .addContainerGap(386, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -149,62 +238,30 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         txt_issued.setForeground(new java.awt.Color(255, 255, 255));
         txt_issued.setText("0");
 
-        btn_issued.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
-        btn_issued.setText("More info");
-        btn_issued.setBorderPainted(false);
-        btn_issued.setContentAreaFilled(false);
-        btn_issued.setFocusPainted(false);
-        btn_issued.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_issuedActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
-        jPanel8.setLayout(jPanel8Layout);
-        jPanel8Layout.setHorizontalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(95, 95, 95)
-                .addComponent(btn_issued, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel8Layout.setVerticalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(btn_issued))
-        );
-
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(23, 23, 23)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jLabel3))
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addComponent(txt_issued)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
-                .addComponent(lb_issdbks, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
-            .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3)
+                    .addComponent(txt_issued))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addComponent(lb_issdbks, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lb_issdbks, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txt_issued))
-                    .addComponent(lb_issdbks, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txt_issued)))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         jPanel12.setBackground(new java.awt.Color(25, 25, 112));
@@ -217,63 +274,32 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         txt_returned.setForeground(new java.awt.Color(255, 255, 255));
         txt_returned.setText("0");
 
-        btn_rtrnd.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
-        btn_rtrnd.setText("More info");
-        btn_rtrnd.setBorderPainted(false);
-        btn_rtrnd.setContentAreaFilled(false);
-        btn_rtrnd.setFocusPainted(false);
-        btn_rtrnd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_rtrndActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
-        jPanel15.setLayout(jPanel15Layout);
-        jPanel15Layout.setHorizontalGroup(
-            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel15Layout.createSequentialGroup()
-                .addContainerGap(119, Short.MAX_VALUE)
-                .addComponent(btn_rtrnd)
-                .addGap(115, 115, 115))
-        );
-        jPanel15Layout.setVerticalGroup(
-            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel15Layout.createSequentialGroup()
-                .addGap(0, 14, Short.MAX_VALUE)
-                .addComponent(btn_rtrnd))
-        );
-
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
         jPanel12Layout.setHorizontalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
+                .addGap(21, 21, 21)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7)
                     .addGroup(jPanel12Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jLabel7))
-                    .addGroup(jPanel12Layout.createSequentialGroup()
-                        .addGap(60, 60, 60)
+                        .addGap(6, 6, 6)
                         .addComponent(txt_returned)))
-                .addGap(18, 18, 18)
-                .addComponent(lb_rtrndBks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(31, 31, 31))
-            .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lb_rtrndBks, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(43, 43, 43))
         );
         jPanel12Layout.setVerticalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lb_rtrndBks, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel12Layout.createSequentialGroup()
                         .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txt_returned))
-                    .addComponent(lb_rtrndBks, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txt_returned)))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
@@ -493,48 +519,127 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
                 .addContainerGap(349, Short.MAX_VALUE))
         );
 
+        btn_issued.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
+        btn_issued.setText("More info");
+        btn_issued.setBorderPainted(false);
+        btn_issued.setContentAreaFilled(false);
+        btn_issued.setFocusPainted(false);
+        btn_issued.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_issuedActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(52, 52, 52)
+                .addComponent(btn_issued, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(59, Short.MAX_VALUE))
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btn_issued))
+        );
+
+        btn_rtrnd.setFont(new java.awt.Font("Calibri Light", 0, 14)); // NOI18N
+        btn_rtrnd.setText("More info");
+        btn_rtrnd.setBorderPainted(false);
+        btn_rtrnd.setContentAreaFilled(false);
+        btn_rtrnd.setFocusPainted(false);
+        btn_rtrnd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_rtrndActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
+        jPanel15.setLayout(jPanel15Layout);
+        jPanel15Layout.setHorizontalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel15Layout.createSequentialGroup()
+                .addGap(87, 87, 87)
+                .addComponent(btn_rtrnd)
+                .addContainerGap(87, Short.MAX_VALUE))
+        );
+        jPanel15Layout.setVerticalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel15Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btn_rtrnd))
+        );
+
+        javax.swing.GroupLayout histogramPanelLayout = new javax.swing.GroupLayout(histogramPanel);
+        histogramPanel.setLayout(histogramPanelLayout);
+        histogramPanelLayout.setHorizontalGroup(
+            histogramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 530, Short.MAX_VALUE)
+        );
+        histogramPanelLayout.setVerticalGroup(
+            histogramPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 330, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(210, 210, 210)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(histogramPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(78, 78, 78)
                         .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(80, 80, 80)
-                        .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(30, 30, 30)
+                        .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(376, 376, 376)
+                        .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(270, 270, 270)
+                        .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(107, 107, 107)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(70, 70, 70)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(220, 220, 220)
+                        .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(histogramPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -545,29 +650,11 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btn_rtrndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_rtrndActionPerformed
-        ReturnedBooksRecords rbr = new ReturnedBooksRecords();
-        rbr.show();
+    private void btn_AccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AccActionPerformed
+        Account ac = new Account();
+        ac.show();
         dispose();
-    }//GEN-LAST:event_btn_rtrndActionPerformed
-
-    private void btn_dshbrdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dshbrdActionPerformed
-        Dashboard db = new Dashboard();
-        db.show();
-        dispose();
-    }//GEN-LAST:event_btn_dshbrdActionPerformed
-
-    private void btn_BRecordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BRecordsActionPerformed
-        BookRecords br = new BookRecords();
-        br.show();
-        dispose();
-    }//GEN-LAST:event_btn_BRecordsActionPerformed
-
-    private void btn_BrwrRecordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BrwrRecordsActionPerformed
-        BorrowerRecords br = new BorrowerRecords();
-        br.show();
-        dispose();
-    }//GEN-LAST:event_btn_BrwrRecordsActionPerformed
+    }//GEN-LAST:event_btn_AccActionPerformed
 
     private void btn_trnsctActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_trnsctActionPerformed
         TransactionRecords tr = new TransactionRecords();
@@ -575,11 +662,29 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
         dispose();
     }//GEN-LAST:event_btn_trnsctActionPerformed
 
-    private void btn_AccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AccActionPerformed
-        Account ac = new Account();
-        ac.show();
+    private void btn_BrwrRecordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BrwrRecordsActionPerformed
+        BorrowerRecords br = new BorrowerRecords();
+        br.show();
         dispose();
-    }//GEN-LAST:event_btn_AccActionPerformed
+    }//GEN-LAST:event_btn_BrwrRecordsActionPerformed
+
+    private void btn_BRecordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BRecordsActionPerformed
+        BookRecords br = new BookRecords();
+        br.show();
+        dispose();
+    }//GEN-LAST:event_btn_BRecordsActionPerformed
+
+    private void btn_dshbrdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dshbrdActionPerformed
+        Dashboard db = new Dashboard();
+        db.show();
+        dispose();
+    }//GEN-LAST:event_btn_dshbrdActionPerformed
+
+    private void btn_rtrndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_rtrndActionPerformed
+        ReturnedBooksRecords rbr = new ReturnedBooksRecords();
+        rbr.show();
+        dispose();
+    }//GEN-LAST:event_btn_rtrndActionPerformed
 
     private void btn_issuedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_issuedActionPerformed
         IssuedBooksRecords ibr = new IssuedBooksRecords();
@@ -635,6 +740,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons{
     private javax.swing.JButton btn_rtrnd;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.JLabel dbIcon;
+    private static javax.swing.JPanel histogramPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel3;

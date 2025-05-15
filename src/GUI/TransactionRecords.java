@@ -7,23 +7,22 @@ package GUI;
 //all goods
 import Models.*;
 import Controller.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.JLabel;
+import java.awt.event.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class TransactionRecords extends javax.swing.JFrame implements imagesNbuttons {
-
+        private int transactionId = -1;
+        
     public TransactionRecords() {
         initComponents();
         ScaleImages();
         table("");
-        getId();
+        populateComboBoxes();
+        
         txt_searchfield.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -31,7 +30,27 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 table(searchText); // Call your table function with the search text
             }
         });
-
+        
+        transactionRecordsTable.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+                if(e.getClickCount() == 2){
+                    int selectedRow = transactionRecordsTable.getSelectedRow();
+                    
+                    if (selectedRow != -1){
+                        transactionId = Integer.parseInt(transactionRecordsTable.getValueAt(selectedRow, 0).toString());
+                        borrowerNameComboBox.setSelectedItem(transactionRecordsTable.getValueAt(selectedRow, 1).toString());
+                        bookTitleComboBox.setSelectedItem(transactionRecordsTable.getValueAt(selectedRow, 2).toString());
+                        System.out.println("selected transac id: "+ transactionId);
+                    }
+                }
+            }
+        });
+    }
+    
+    private void populateComboBoxes() {
+        TransactionsComboBoxHelper.populateComboBox(bookTitleComboBox, "SELECT book_title FROM bookrecords WHERE deleted_at IS NULL", "book_title", "-- Select Book Title --");
+        TransactionsComboBoxHelper.populateComboBox(borrowerNameComboBox, "SELECT borrower_name FROM borrowerrecords WHERE deleted_at IS NULL", "borrower_name", "-- Select Borrower Name --");
     }
 
     private void table(String keyword) {
@@ -51,8 +70,8 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                     || tr.getStatus().toLowerCase().contains(keyword.toLowerCase())) {
                 model.addRow(new Object[]{
                     tr.getTransactionId(),
-                    tr.getBorrowerId(),
-                    tr.getBookId(),
+                    tr.getBorrowerName(),
+                    tr.getBookTitle(),
                     transactionDate,
                     dueDate,
                     tr.getStatus()
@@ -61,22 +80,14 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         }
         transactionRecordsTable.setModel(model);
         transactionRecordsTable.revalidate();
+        
+        transactionRecordsTable.getColumnModel().getColumn(0).setMinWidth(0);
+        transactionRecordsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        transactionRecordsTable.getColumnModel().getColumn(0).setWidth(0);
     }
 
-    private void getId() {
-        List<Transactions> transactionList = TransactionsController.getTransaction();
-        //clear to add.
-        cb_id.removeAllItems();
-        //validation
-        if (transactionList.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Transaction Records is currently empty.", "Info", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
 
-        for (Transactions tr : transactionList) {
-            cb_id.addItem(String.valueOf(tr.getTransactionId()));
-        }
-    }
+    
 
     private void ScaleImages() {
         String[] paths = {
@@ -123,13 +134,10 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         jPanel6 = new javax.swing.JPanel();
         txt_brrwr = new javax.swing.JLabel();
         txt_bk = new javax.swing.JLabel();
-        txt_borrowerid = new javax.swing.JTextField();
-        txt_bookid = new javax.swing.JTextField();
         btn_return = new javax.swing.JButton();
         btn_issue = new javax.swing.JButton();
-        btn_search = new javax.swing.JButton();
-        cb_id = new javax.swing.JComboBox<>();
-        txt_brrwr1 = new javax.swing.JLabel();
+        borrowerNameComboBox = new javax.swing.JComboBox<>();
+        bookTitleComboBox = new javax.swing.JComboBox<>();
         txt_searchfield = new javax.swing.JTextField();
         btn_search2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -381,22 +389,10 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(25, 25, 112)));
 
         txt_brrwr.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        txt_brrwr.setText("Borrower ID:");
+        txt_brrwr.setText("Borrower Name:");
 
         txt_bk.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        txt_bk.setText("Book ID:");
-
-        txt_borrowerid.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_borroweridActionPerformed(evt);
-            }
-        });
-
-        txt_bookid.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_bookidActionPerformed(evt);
-            }
-        });
+        txt_bk.setText("Book Title:");
 
         btn_return.setBackground(new java.awt.Color(25, 25, 112));
         btn_return.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
@@ -418,25 +414,9 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             }
         });
 
-        btn_search.setBackground(new java.awt.Color(25, 25, 112));
-        btn_search.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btn_search.setForeground(new java.awt.Color(255, 255, 255));
-        btn_search.setText("Search");
-        btn_search.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_searchActionPerformed(evt);
-            }
-        });
+        borrowerNameComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        cb_id.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cb_id.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cb_idActionPerformed(evt);
-            }
-        });
-
-        txt_brrwr1.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        txt_brrwr1.setText("Transaction ID:");
+        bookTitleComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -444,42 +424,27 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btn_return, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txt_bk, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txt_brrwr)
-                            .addComponent(txt_brrwr1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel6Layout.createSequentialGroup()
-                                .addComponent(cb_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(29, 29, 29)
-                                .addComponent(btn_search))
-                            .addComponent(txt_bookid)
-                            .addComponent(txt_borrowerid)
-                            .addComponent(btn_issue, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE))))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btn_return, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_issue, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bookTitleComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(borrowerNameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txt_brrwr)
+                    .addComponent(txt_bk, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(68, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(cb_id, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txt_brrwr1)))
-                .addGap(98, 98, 98)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_borrowerid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_brrwr))
-                .addGap(16, 16, 16)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_bookid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txt_bk))
-                .addGap(69, 69, 69)
+                .addGap(43, 43, 43)
+                .addComponent(txt_brrwr)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(borrowerNameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28)
+                .addComponent(txt_bk)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(bookTitleComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(76, 76, 76)
                 .addComponent(btn_issue, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btn_return, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -510,11 +475,11 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Transaction ID", "Borrower ID", "Book ID", "Transaction Date", "Due Date", "Status"
+                "Transaction ID", "Borrower Name", "Book Title", "Transaction Date", "Due Date", "Status"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false
@@ -547,19 +512,20 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(20, 20, 20)
-                        .addComponent(jLabel1)))
-                .addGap(18, 18, 18)
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(40, 40, 40)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(txt_searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btn_search2))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 522, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btn_search2)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
+                .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -577,7 +543,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                                 .addComponent(jLabel1))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txt_searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(btn_search2))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -633,198 +599,6 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         dispose();
     }//GEN-LAST:event_btn_AccActionPerformed
 
-    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
-        try {
-            // validation: Ensure a transaction ID has been selected
-            if (cb_id.getSelectedItem() == null || cb_id.getSelectedItem().toString().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please select a transaction ID", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            int selectedTrId = Integer.parseInt(cb_id.getSelectedItem().toString());
-
-            // retrieving records from the database
-            List<Transactions> transactionList = TransactionsController.getTransaction();
-
-            // searching for the matching transaction using the transaction ID for comparison
-            Transactions matchTr = transactionList.stream()
-                    .filter(transaction -> transaction.getTransactionId() == selectedTrId)
-                    .findFirst()
-                    .orElse(null);
-
-            // display details if found
-            if (matchTr != null) {
-                txt_borrowerid.setText(String.valueOf(matchTr.getBorrowerId()));
-                txt_bookid.setText(String.valueOf(matchTr.getBookId()));
-            } else {
-                JOptionPane.showMessageDialog(this, "No record detected.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }//GEN-LAST:event_btn_searchActionPerformed
-
-    private void btn_issueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_issueActionPerformed
-        try {
-            // Validation of required fields.
-            StringBuilder errorMessage = new StringBuilder("Error: ");
-            boolean error = false;
-            if (txt_borrowerid.getText().trim().isEmpty()) {
-                errorMessage.append("Borrower ID field is empty!\n");
-                error = true;
-            }
-            if (txt_bookid.getText().trim().isEmpty()) {
-                errorMessage.append("Book ID field is empty!\n");
-                error = true;
-            }
-            if (error) {
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            int transactionId;
-            Object selectedID = cb_id.getSelectedItem();
-            if (selectedID == null || selectedID.toString().trim().isEmpty()) {
-                transactionId = 1;
-            } else {
-                transactionId = Integer.parseInt(selectedID.toString());
-            }
-
-            int borrowerId;
-            try {
-                borrowerId = Integer.parseInt(txt_borrowerid.getText());
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Borrower ID'", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            int bookId;
-            try {
-                bookId = Integer.parseInt(txt_bookid.getText());
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Book ID'", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Set timestamps and status.
-            Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
-            Timestamp dueDate = new Timestamp(System.currentTimeMillis());
-            String status = "Issued";
-
-            // Create transaction object.
-            Transactions tr = new Transactions(transactionId, borrowerId, bookId, transactionDate, dueDate, status);
-            boolean success = TransactionsController.issueBook(tr);
-
-            if (success) {
-                JOptionPane.showMessageDialog(this, "Book was issued successfully!");
-                txt_borrowerid.setText("");
-                txt_bookid.setText("");
-                table("");  // Refresh or update table view
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to issue book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-
-    }//GEN-LAST:event_btn_issueActionPerformed
-
-    private void btn_returnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_returnActionPerformed
-
-        try {
-
-            //validation
-            StringBuilder errorMessage = new StringBuilder("Error: ");
-            boolean error = false;
-            if (txt_borrowerid.getText().trim().isEmpty()) {
-                errorMessage.append("Borrower ID field is empty!\n");
-                error = true;
-            }
-            if (txt_bookid.getText().trim().isEmpty()) {
-                errorMessage.append("Book ID field is empty!\n");
-                error = true;
-            }
-            if (error) {
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms_database", "root", "")) {
-                String bookId = txt_bookid.getText().trim();
-                String query = "SELECT status FROM transactions WHERE book_id = ?";
-
-                try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                    stmt.setString(1, bookId);
-                    ResultSet rs = stmt.executeQuery();
-
-                    if (rs.next() && "Returned".equalsIgnoreCase(rs.getString("status"))) {
-                        JOptionPane.showMessageDialog(null, "This book has already been returned!", "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    } else {
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Database connection failed!", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            //retrieving id's
-            Object selectedID = cb_id.getSelectedItem();
-
-            int transactionId = Integer.parseInt(selectedID.toString());
-
-            int borrowerId;
-            try {
-                borrowerId = Integer.parseInt(txt_borrowerid.getText());
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Borrower ID'", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            int bookId;
-            try {
-                bookId = Integer.parseInt(txt_bookid.getText());
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Book ID'", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            //generating timestamps
-            Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
-
-            Timestamp dueDate = new Timestamp(System.currentTimeMillis());
-            //retrieving stats
-            List<Transactions> transactions = TransactionsController.getTransaction();
-            String status = transactions.isEmpty() ? "No Transactions Found" : transactions.get(0).getStatus();
-
-            //grouping transaction details into object for easier manage.
-            Transactions tr = new Transactions(transactionId, borrowerId, bookId, transactionDate, dueDate, status);
-
-            //calling the returnBooks method through the controller.
-            boolean success = TransactionsController.returnBooks(tr);
-
-            if (success) {
-                JOptionPane.showMessageDialog(this, "Book was returned successfully!");
-                txt_borrowerid.setText("");
-                txt_bookid.setText("");
-                table("");
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to return book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }//GEN-LAST:event_btn_returnActionPerformed
-
-    private void txt_bookidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_bookidActionPerformed
-
-    }//GEN-LAST:event_txt_bookidActionPerformed
-
-    private void txt_borroweridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_borroweridActionPerformed
-
-    }//GEN-LAST:event_txt_borroweridActionPerformed
-
     private void txt_searchfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_searchfieldActionPerformed
 
     }//GEN-LAST:event_txt_searchfieldActionPerformed
@@ -835,9 +609,116 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
 
     }//GEN-LAST:event_btn_search2ActionPerformed
 
-    private void cb_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_idActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cb_idActionPerformed
+    private void btn_issueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_issueActionPerformed
+        try {
+            // Validation of required fields.
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+            if (borrowerNameComboBox.getSelectedItem()== null) {
+                errorMessage.append("Borrower Name field is empty!\n");
+                error = true;
+            }
+            if (bookTitleComboBox.getSelectedItem()== null) {
+                errorMessage.append("Book Title field is empty!\n");
+                error = true;
+            }
+            if (error) {
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            String borrowerName = borrowerNameComboBox.getSelectedItem().toString();
+            String bookTitle = bookTitleComboBox.getSelectedItem().toString();
+
+            // Set timestamps and status.
+            Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
+            Timestamp dueDate = new Timestamp(System.currentTimeMillis());
+            String status = "Issued";
+
+            // Create transaction object.
+            Transactions tr = new Transactions(transactionId, borrowerName, bookTitle, transactionDate, dueDate, status);
+            boolean success = TransactionsController.issueBook(tr);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Book was issued successfully!");
+                
+                table("");  // Refresh or update table view
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to issue book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btn_issueActionPerformed
+
+    private void btn_returnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_returnActionPerformed
+        try {
+            String borrowerName = borrowerNameComboBox.getSelectedItem().toString();
+            String bookTitle = bookTitleComboBox.getSelectedItem().toString();
+            //validation
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+            if (borrowerNameComboBox.getSelectedItem() == null) {
+                errorMessage.append("Borrower Name field is empty!\n");
+                error = true;
+            }
+            if (bookTitleComboBox.getSelectedItem() == null) {
+                errorMessage.append("Book Title field is empty!\n");
+                error = true;
+            }
+            if (error) {
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String fetchBookIdQuery = "SELECT book_id FROM bookrecords WHERE book_title = ?";
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms_database", "root", "");
+                 PreparedStatement stmt = conn.prepareStatement(fetchBookIdQuery)) {
+
+                stmt.setString(1, bookTitle);
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    int bookId = rs.getInt("book_id"); // Now you have bookId correctly fetched
+                    System.out.println("Fetched Book ID: " + bookId);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Book not found in database!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            
+
+            //generating timestamps
+            Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
+
+            Timestamp dueDate = new Timestamp(System.currentTimeMillis());
+            //retrieving stats
+            List<Transactions> transactions = TransactionsController.getTransaction();
+            String status = transactions.isEmpty() ? "No Transactions Found" : transactions.get(0).getStatus();
+
+            //grouping transaction details into object for easier manage.
+            Transactions tr = new Transactions(transactionId,  borrowerName, bookTitle, transactionDate, dueDate, status);
+
+            //calling the returnBooks method through the controller.
+            boolean success = TransactionsController.returnBooks(tr);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Book was returned successfully!");
+                
+                table("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to return book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+    }//GEN-LAST:event_btn_returnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -879,17 +760,17 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     private javax.swing.JLabel BrrwrIcon;
     private javax.swing.JLabel TrnsactIcon;
     private javax.swing.JLabel bookIcon;
+    private javax.swing.JComboBox<String> bookTitleComboBox;
+    private javax.swing.JComboBox<String> borrowerNameComboBox;
     private javax.swing.JButton btn_Acc;
     private javax.swing.JButton btn_BRecords;
     private javax.swing.JButton btn_BrwrRecords;
     private javax.swing.JButton btn_dshbrd;
     private javax.swing.JButton btn_issue;
     private javax.swing.JButton btn_return;
-    private javax.swing.JButton btn_search;
     private javax.swing.JButton btn_search2;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JComboBox<String> cb_id;
     private javax.swing.JLabel dbIcon;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
@@ -906,10 +787,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
     private javax.swing.JLabel logo;
     private javax.swing.JTable transactionRecordsTable;
     private javax.swing.JLabel txt_bk;
-    private javax.swing.JTextField txt_bookid;
-    private javax.swing.JTextField txt_borrowerid;
     private javax.swing.JLabel txt_brrwr;
-    private javax.swing.JLabel txt_brrwr1;
     private javax.swing.JTextField txt_searchfield;
     // End of variables declaration//GEN-END:variables
 }

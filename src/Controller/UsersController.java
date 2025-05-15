@@ -8,14 +8,21 @@ import Database.DatabaseOperations;
 import Models.*;
 import java.util.List;
 public class UsersController {
-    private  static DatabaseOperations dbm = new DatabaseOperations();
+    private  static DatabaseOperations dbo = new DatabaseOperations();
     
-   public static boolean addUser(Users users){
-        return dbm.addUser(users);
+    public static boolean addUser(Users users){
+        return dbo.addUser(users);
     }
    
-   public static List<Users> getUser(){
-       return dbm.getUser();
+     public static List<Users> getUser(){
+       return dbo.getUser();
    }
+     
+   public static Users getLoggedInUser(String username) {
+        return dbo.getLoggedInUser(username);
+    }
+    public static boolean updateUserInfo(Users users){
+        return dbo.updateUserInfo(users);
+    }  
     
 }

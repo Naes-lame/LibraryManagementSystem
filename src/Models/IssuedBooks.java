@@ -7,38 +7,38 @@ package Models;
 import java.sql.Timestamp;
 
 public class IssuedBooks {
-    //private int issueId;
+    private int issueId;
     private int transactionId;
-    private int borrowerId;
-    private int bookId;
+    private String borrowerName;
+    private String bookTitle;
     private Timestamp issueDate;
     private Timestamp dueDate;
     private String status;
     
-    public IssuedBooks( int transactionId, int borrowerId, int bookId, Timestamp issueDate, Timestamp dueDate, String status){
-       // this.issueId = issueId;
+    public IssuedBooks( int transactionId, String borrowerName, String bookTitle, Timestamp issueDate, Timestamp dueDate, String status){
+        this.issueId = issueId;
         this.transactionId = transactionId;
-        this.borrowerId = borrowerId;
-        this.bookId = bookId;
+        this.borrowerName = borrowerName;
+        this.bookTitle = bookTitle;
         this.issueDate = issueDate;
         this.dueDate = dueDate;
         this.status = status;
     } 
     
-//    public int getIssueId(){
-//        return issueId;
-//    }
+    public int getIssueId(){
+        return issueId;
+    }
     
     public int getTransactionId(){
         return transactionId;
     }
     
-    public int getBorrowerId(){
-        return borrowerId;
+    public String getBorrowerName(){
+        return borrowerName;
     }
     
-    public int getBookId(){
-        return bookId;
+    public String getBookTitle(){
+        return bookTitle;
     }
     
     public Timestamp getIssueDate(){

@@ -6,20 +6,35 @@
 package Models;
 
 public class Users {
+    private  int userId;
     private String fullName;
     private String email;
     private long phoneNum;
     private String address;
-    private String username;
+    private  String username;
     private String password;
 
-    public Users(String fullName, String email, long phoneNum, String address, String username, String password) {
+    public Users(int userId, String fullName, String email, long phoneNum, String address, String username, String password) {
+        this.userId = userId;
         this.fullName = fullName;
         this.email = email;
         this.phoneNum = phoneNum;
         this.address = address;
         this.username = username;
         this.password = password;
+    }
+     public Users() {
+        this.userId = userId;
+        this.fullName = fullName;
+        this.email = email;
+        this.phoneNum = phoneNum;
+        this.address = address;
+        this.username = username;
+        this.password = password;
+    }
+    
+    public  int getUserId(){
+        return userId;
     }
 
     public String getFullName() {
@@ -54,7 +69,7 @@ public class Users {
         this.address = address;
     }
 
-    public String getUsername() {
+    public  String getUsername() {
         return username;
     }
 

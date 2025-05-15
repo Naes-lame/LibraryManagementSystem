@@ -64,17 +64,26 @@ public class Books {
         this.quantity = quantity;
     }
     
-    public static boolean isbnValidation(String isbn){
-        
-//        //validate isbn legnth.
-       if(isbn == null || isbn.length()!= 13){
+    public static boolean isbnValidation(String isbn) {
+    // Validate length
+    if (isbn == null || isbn.length() != 13) {
         return false;
     }
-        int sum = 0;//get numbers inputed
-        for(int i = 0; i < 13; i++) {
-            int digit = Character.getNumericValue(isbn.charAt(i));//convert char to int
-            sum += (i % 2 == 0)? digit : digit*3;//apply weight rule (even * 1 , odd * 3)
-        }
-        return sum % 10 == 0;//validate if isbn is divisible by 10.
+
+    int sum = 0;
+    // Loop through each digit
+    for (int i = 0; i < 13; i++) {
+        char ch = isbn.charAt(i);
+        if (!Character.isDigit(ch)) return false; // Ensure all characters are digits
+        
+        int digit = Character.getNumericValue(ch); // Convert char to integer
+
+        // Apply weight rule: odd positions (index 0, 2, 4...) *1, even positions (index 1, 3, 5...) *3
+        sum += (i % 2 == 0) ? digit : digit * 3;
     }
+
+    // ISBN-13 is valid if sum is divisible by 10
+    return (sum % 10 == 0);
+}
+
 }

@@ -10,11 +10,11 @@ public class Borrowers {
     private int borrowerId;
     private String name;
     private String address;
-    private long phone;
+    private String phone;
     private String email;
     private Timestamp membershipDate;
     
-    public Borrowers(int borrowerId, String name, String address, long phone, String email, Timestamp membershipDate){
+    public Borrowers(int borrowerId, String name, String address, String phone, String email, Timestamp membershipDate){
         this.borrowerId = borrowerId;
         this.name = name;
         this.address = address;
@@ -43,11 +43,11 @@ public class Borrowers {
         this.address = address;
     }
     
-    public long getPhone(){
+    public String getPhone(){
         return phone;
     }
     
-    public void setPhone(long phone){
+    public void setPhone(String phone){
         this.phone = phone;
     }
     

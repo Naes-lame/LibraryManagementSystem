@@ -65,6 +65,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
 
             while (rs.next()) {
                 Users user = new Users(
+                        rs.getInt("user_id"),
                         rs.getString("full_name"),
                         rs.getString("email"),
                         rs.getLong("phone"),
@@ -86,7 +87,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
     @Override
     public boolean addBook(Books books) {
         try (Connection con = getConnection()) {
-            String checkQuery = " SELECT COUNT(*) FROM bookrecords WHERE Title = ? AND Author = ? AND Genre = ? AND ISBN = ?";
+            String checkQuery = " SELECT COUNT(*) FROM bookrecords WHERE book_title = ? AND Author = ? AND Genre = ? AND ISBN = ?";
             PreparedStatement check = con.prepareStatement(checkQuery);
             check.setString(1, books.getTitle());
             check.setString(2, books.getAuthor());
@@ -100,7 +101,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
                 JOptionPane.showMessageDialog(null, "Book already exists!", "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-            String query = "INSERT INTO bookrecords (Title, Author, Genre, ISBN, Quantity) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO bookrecords (book_title, Author, Genre, ISBN, Quantity) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(query);
 
             ps.setString(1, books.getTitle());
@@ -119,12 +120,10 @@ public class DatabaseOperations extends SQLDatabaseManager {
         }
     }
 
-    //books UPDATE.
     @Override
     public boolean updateBook(Books books) {
         try (Connection con = getConnection()) {
-
-            String query = "UPDATE bookrecords SET Title = ?, Author = ?, Genre = ?, ISBN = ?, Quantity = ? WHERE book_id = ?";
+            String query = "UPDATE bookrecords SET book_title = ?, Author = ?, Genre = ?, ISBN = ?, Quantity = ? WHERE book_id = ?";
             PreparedStatement ps = con.prepareStatement(query);
 
             ps.setString(1, books.getTitle());
@@ -132,17 +131,20 @@ public class DatabaseOperations extends SQLDatabaseManager {
             ps.setString(3, books.getGenre());
             ps.setString(4, books.getIsbn());
             ps.setInt(5, books.getQuantity());
-            ps.setInt(6, books.getBookId());
+            ps.setInt(6, books.getBookId()); 
+
+            System.out.println("Executing update query for book_id: " + books.getBookId()); // Debugging print
 
             int result = ps.executeUpdate();
 
             return result > 0;
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error in the Database occur!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error in the Database!", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             return false;
         }
     }
+
 
     //books SOFT DELETE
     @Override
@@ -167,42 +169,40 @@ public class DatabaseOperations extends SQLDatabaseManager {
     //books FETCH.
     public List<Books> getBooks() {
         List<Books> bookList = new ArrayList<>();
-        String query = "SELECT * FROM bookrecords WHERE deleted_at IS NULL";//unable the deleted records to display
+        String query = "SELECT * FROM bookrecords WHERE deleted_at IS NULL";
 
-        try {
-            Connection con = getConnection();
-            PreparedStatement ps = con.prepareStatement(query);
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                Books books = new Books(
-                        rs.getInt("book_id"),
-                        rs.getString("Title"),
-                        rs.getString("Author"),
-                        rs.getString("Genre"),
-                        rs.getString("ISBN"),
-                        rs.getInt("Quantity")
-                );
-                bookList.add(books);
+                int id = rs.getInt("book_id");
+                String title = rs.getString("book_title");
+                String author = rs.getString("Author");
+                String genre = rs.getString("Genre");
+                String isbn = rs.getString("ISBN");
+                int quantity = rs.getInt("Quantity");
+
+                bookList.add(new Books(id, title, author, genre, isbn, quantity)); 
             }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error in the Database occur!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error in the Database!", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         return bookList;
     }
 
-    //borrower ADD.puyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+    //borrower ADD.
     @Override
     public boolean addBorrower(Borrowers borrowers) {
         try (Connection con = getConnection()) {
-            String checkQuery = "SELECT COUNT(*) FROM borrowerrecords WHERE Name = ? AND Address = ? AND Phone = ? AND Email = ? ";
+            String checkQuery = "SELECT COUNT(*) FROM borrowerrecords WHERE borrower_name = ? AND Address = ? AND Phone = ? AND Email = ? ";
             PreparedStatement check = con.prepareStatement(checkQuery);
 
             check.setString(1, borrowers.getName());
             check.setString(2, borrowers.getAddress());
-            check.setLong(3, borrowers.getPhone());
+            check.setString(3, borrowers.getPhone());
             check.setString(4, borrowers.getEmail());
 
             ResultSet rs = check.executeQuery();
@@ -213,12 +213,12 @@ public class DatabaseOperations extends SQLDatabaseManager {
                 return false;
             }
 
-            String query = "INSERT INTO borrowerrecords (Name, Address, Phone, Email) VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO borrowerrecords (borrower_name, Address, Phone, Email) VALUES (?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(query);
 
             ps.setString(1, borrowers.getName());
             ps.setString(2, borrowers.getAddress());
-            ps.setLong(3, borrowers.getPhone());
+            ps.setString(3, borrowers.getPhone());
             ps.setString(4, borrowers.getEmail());
 
             int result = ps.executeUpdate();
@@ -235,12 +235,12 @@ public class DatabaseOperations extends SQLDatabaseManager {
     @Override
     public boolean updateBorrower(Borrowers borrowers) {
         try (Connection con = getConnection()) {
-            String query = "UPDATE borrowerrecords SET Name = ?, Address = ?, Phone = ?, Email = ? WHERE borrower_id = ?";
+            String query = "UPDATE borrowerrecords SET borrower_name = ?, Address = ?, Phone = ?, Email = ? WHERE borrower_id = ?";
             PreparedStatement ps = con.prepareStatement(query);
 
             ps.setString(1, borrowers.getName());
             ps.setString(2, borrowers.getAddress());
-            ps.setLong(3, borrowers.getPhone());
+            ps.setString(3, borrowers.getPhone());
             ps.setString(4, borrowers.getEmail());
             ps.setInt(5, borrowers.getBorrowerId());
 
@@ -285,9 +285,9 @@ public class DatabaseOperations extends SQLDatabaseManager {
             while (rs.next()) {
                 Borrowers borrowers = new Borrowers(
                         rs.getInt("borrower_id"),
-                        rs.getString("Name"),
+                        rs.getString("borrower_name"),
                         rs.getString("Address"),
-                        rs.getLong("Phone"),
+                        rs.getString("Phone"),
                         rs.getString("Email"),
                         rs.getTimestamp("membership_date")
                 );
@@ -305,35 +305,42 @@ public class DatabaseOperations extends SQLDatabaseManager {
     @Override
     public boolean issueBook(Transactions transactions) {
         try (Connection con = getConnection()) {
-            String checkQuery = "SELECT COUNT(*) FROM transactions WHERE borrower_id = ? AND book_id = ?";
+            String checkQuery = "SELECT status FROM transactions WHERE borrower_name = ? AND book_title = ? ORDER BY transaction_date DESC LIMIT 1";
             PreparedStatement check = con.prepareStatement(checkQuery);
 
-            check.setInt(1, transactions.getBorrowerId());
-            check.setInt(2, transactions.getBookId());
+            check.setString(1, transactions.getBorrowerName());
+            check.setString(2, transactions.getBookTitle());
 
             ResultSet rs = check.executeQuery();
-            rs.next();
 
-            if (rs.getInt(1) > 0) {
-                JOptionPane.showMessageDialog(null, "This transaction already exist!", "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
+            if (rs.next()) {
+                String status = rs.getString("status");
+                if ("Issued".equalsIgnoreCase(status)) {
+                    JOptionPane.showMessageDialog(null, "This book is already issued and has not been returned yet!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                } else if (!"Returned".equalsIgnoreCase(status)) {
+                    JOptionPane.showMessageDialog(null, "This book must be returned first before re-issuing!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
             }
-            String query = "INSERT INTO transactions (borrower_id, book_id, transaction_date, due_date, status) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'Issued')";
+
+            String query = "INSERT INTO transactions (borrower_name, book_title, transaction_date, due_date, status) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'Issued');";
             PreparedStatement ps = con.prepareStatement(query);
 
-            ps.setInt(1, transactions.getBorrowerId());
-            ps.setInt(2, transactions.getBookId());
+            ps.setString(1, transactions.getBorrowerName());
+            ps.setString(2, transactions.getBookTitle());
 
             int result = ps.executeUpdate();
             return result > 0;
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error in the Database occur!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error in the Database occurred!", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
-        return false;
+        return false;                                      
     }
+
     
-     @Override
+    @Override
     public boolean updateStatToReturn(int transactionId) {
         try (Connection con = getConnection()) {
             // Check if transaction is already marked as "Returned"
@@ -365,8 +372,8 @@ public class DatabaseOperations extends SQLDatabaseManager {
     @Override
     public boolean transferToReturnTbl(int transactionId) {
         try (Connection con = getConnection()) {
-            String query = "INSERT INTO returned_books (transaction_id, borrower_id, book_id, date_returned, status) "
-                    + "SELECT transaction_id, borrower_id, book_id, NOW(), 'Returned' "
+            String query = "INSERT INTO returned_books (transaction_id, borrower_name, book_title, date_returned, status) "
+                    + "SELECT transaction_id, borrower_name, book_title, NOW(), 'Returned' "
                     + "FROM transactions t WHERE transaction_id = ? AND NOT EXISTS "
                     + "(SELECT 1 FROM returned_books rb WHERE rb.transaction_id = t.transaction_id)";
 
@@ -401,11 +408,11 @@ public class DatabaseOperations extends SQLDatabaseManager {
     @Override
     public boolean returnBook(Transactions transactions) {
         try (Connection con = getConnection()) {
-            String query = "UPDATE transactions SET borrower_id = ?, book_id = ?, transaction_date = ?,status = ? WHERE transaction_id = ?";
+            String query = "UPDATE transactions SET borrower_name = ?, book_title = ?, transaction_date = ?,status = ? WHERE transaction_id = ?";
             PreparedStatement ps = con.prepareStatement(query);
 
-            ps.setInt(1, transactions.getBorrowerId());
-            ps.setInt(2, transactions.getBookId());
+            ps.setString(1, transactions.getBorrowerName());
+            ps.setString(2, transactions.getBookTitle());
             ps.setTimestamp(3, transactions.getTransactionDate());
             ps.setString(4, "Returned");
             ps.setInt(5, transactions.getTransactionId());
@@ -423,6 +430,8 @@ public class DatabaseOperations extends SQLDatabaseManager {
     }
 
 
+
+
     //transactions FETCH DATA.
     public List<Transactions> getTransaction() {
         List<Transactions> transactionList = new ArrayList<>();
@@ -436,8 +445,8 @@ public class DatabaseOperations extends SQLDatabaseManager {
             while (rs.next()) {
                 Transactions transaction = new Transactions(
                         rs.getInt("transaction_id"),
-                        rs.getInt("borrower_id"),
-                        rs.getInt("book_id"),
+                        rs.getString("borrower_name"),
+                        rs.getString("book_title"),
                         rs.getTimestamp("transaction_date"),
                         rs.getTimestamp("due_date"),
                         rs.getString("status")
@@ -465,8 +474,8 @@ public class DatabaseOperations extends SQLDatabaseManager {
             while (rs.next()) {
                 IssuedBooks issuedBooks = new IssuedBooks(
                         rs.getInt("transaction_id"),
-                        rs.getInt("borrower_id"),
-                        rs.getInt("book_id"),
+                        rs.getString("borrower_name"),
+                        rs.getString("book_title"),
                         rs.getTimestamp("issue_date"),
                         rs.getTimestamp("due_date"),
                         rs.getString("status")
@@ -494,8 +503,8 @@ public class DatabaseOperations extends SQLDatabaseManager {
             while (rs.next()) {
                 ReturnedBooks returnedBooks = new ReturnedBooks(
                         rs.getInt("transaction_id"),
-                        rs.getInt("borrower_id"),
-                        rs.getInt("book_id"),
+                        rs.getString("borrower_name"),
+                        rs.getString("book_title"),
                         rs.getTimestamp("date_returned"),
                         rs.getString("status")
                 );
@@ -535,18 +544,45 @@ public class DatabaseOperations extends SQLDatabaseManager {
 
             if (rs.next()) {
                 user = new Users(
-                        rs.getString("full_name"),
-                        rs.getString("email"),
-                        rs.getLong("phone"),
-                        rs.getString("address"),
-                        rs.getString("username"),
-                        rs.getString("password")
+                    rs.getInt("user_id"),
+                    rs.getString("full_name"),
+                    rs.getString("email"),
+                    rs.getLong("phone"),
+                    rs.getString("address"),
+                    rs.getString("username"),
+                    rs.getString("password")
                 );
+
+                SessionManager.setLoggedInUserId(rs.getInt("user_id"));
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error retrieving user data!", "Database Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         return user;
+    }
+    
+    public boolean updateUserInfo(Users users){
+        try(Connection con = getConnection()){
+            String updateQuery = "UPDATE user SET full_name = ?, email = ?, phone = ?, address = ?,username = ?, password = ? WHERE user_id = ? ";
+            PreparedStatement ps = con.prepareStatement(updateQuery);
+            
+            ps.setString(1, users.getFullName());
+            ps.setString(2, users.getEmail());
+            ps.setLong(3, users.getPhoneNum());  // Phone should be a long/int
+            ps.setString(4, users.getAddress());
+            ps.setString(5, users.getUsername());
+            ps.setString(6, users.getPassword());
+            ps.setInt(7, users.getUserId());
+            System.out.println("Executing query: " + ps);
+            int result = ps.executeUpdate();
+            
+            return result > 0;
+            
+        } catch(SQLException e) {
+            e.printStackTrace();  // Prints full error details in the terminal
+            JOptionPane.showMessageDialog(null, "Failed to update admin info!\nError: " + e.getMessage(), 
+            "Database Error", JOptionPane.ERROR_MESSAGE);
+        }   return false;
     }
 }

@@ -4,40 +4,62 @@
  */
 package GUI;
 
-
-import Controller.AccountController;
+//DOESN'T REFRESH UI AFTER UPDATING 
+import Controller.UsersController;
 import Models.*;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
-public class Account extends javax.swing.JFrame implements imagesNbuttons{
+public class Account extends javax.swing.JFrame implements imagesNbuttons {
 
     public Account() {
-    initComponents();
-    scaleImages();
-    loadUserData(); // No need to pass a username manually
-}
+        initComponents();
+        scaleImages();
+        loadUserData();
+    }
 
     private void loadUserData() {
-        String username = SessionManager.getLoggedInUsername(); // Get current user
+        String username = SessionManager.getLoggedInUsername();
 
         if (username == null || username.isEmpty()) {
             System.out.println("No user logged in!");
             return;
         }
-
-        Users user = AccountController.getLoggedInUser(username);
+        Users user = UsersController.getLoggedInUser(username);
 
         if (user != null) {
+            SessionManager.setLoggedInUserId(user.getUserId());
+            SessionManager.setLoggedInUsername(user.getUsername());
+
             txt_username.setText(user.getUsername());
             txt_email.setText(user.getEmail());
-            txt_name.setText(user.getFullName());
-            txt_phone.setText(String.valueOf(user.getPhoneNum()));
-            txt_address.setText(user.getAddress());
-        } else {
-            System.out.println("User not found!");
-        }}
 
-    
+            usernameTextField.setText(user.getUsername());
+            fullNameTextField.setText(user.getFullName());
+            phoneNumberTextField.setText(String.valueOf(user.getPhoneNum()));
+            emailTextField.setText(user.getEmail());
+            addressTextField.setText(user.getAddress());
+            passwordTextField.setText(user.getPassword());
+        } else {
+            System.out.println("User not found! Make sure database contains this username.");
+        }
+    }
+
+    private void refreshData() {
+        String username = SessionManager.getLoggedInUsername();
+
+        Users user = UsersController.getLoggedInUser(username);
+
+        txt_username.setText(user.getUsername());
+        txt_email.setText(user.getEmail());
+        usernameTextField.setText(user.getUsername());
+        fullNameTextField.setText(user.getFullName());
+        phoneNumberTextField.setText(String.valueOf(user.getPhoneNum()));
+        emailTextField.setText(user.getEmail());
+        addressTextField.setText(user.getAddress());
+        passwordTextField.setText(user.getPassword());
+    }
+
     private void scaleImages() {
         String[] paths = {
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png",
@@ -48,12 +70,11 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons{
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\avatar_7610196.png",
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\avatar_7610196.png"
         };
-        JLabel[] labels = { logo, dbIcon, bookIcon, BrrwrIcon, TrnsactIcon, AccIcon,pfp};
+        JLabel[] labels = {logo, dbIcon, bookIcon, BrrwrIcon, TrnsactIcon, AccIcon, pfp};
         scaleImages(paths, labels);
-        
+
         initializeButtons(btn_dshbrd, btn_BRecords, btn_BrwrRecords, btn_trnsct, btn_Acc);
     }
-    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -86,12 +107,19 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons{
         name = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         pfp = new javax.swing.JLabel();
-        txt_name = new javax.swing.JLabel();
         phone = new javax.swing.JLabel();
         adress = new javax.swing.JLabel();
-        txt_phone = new javax.swing.JLabel();
-        txt_address = new javax.swing.JLabel();
-        btn_logout = new javax.swing.JButton();
+        updateBtn = new javax.swing.JButton();
+        usernameTextField = new javax.swing.JTextField();
+        fullNameTextField = new javax.swing.JTextField();
+        phoneNumberTextField = new javax.swing.JTextField();
+        btn_logout1 = new javax.swing.JButton();
+        adress1 = new javax.swing.JLabel();
+        emailTextField = new javax.swing.JTextField();
+        adress2 = new javax.swing.JLabel();
+        addressTextField = new javax.swing.JTextField();
+        adress3 = new javax.swing.JLabel();
+        passwordTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -339,121 +367,94 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons{
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         txt_username.setFont(new java.awt.Font("Calibri", 2, 24)); // NOI18N
         txt_username.setText("Username");
+        jPanel2.add(txt_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(262, 107, 155, -1));
 
         txt_email.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
         txt_email.setForeground(new java.awt.Color(102, 102, 102));
         txt_email.setText("email");
+        jPanel2.add(txt_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(262, 143, 164, -1));
 
         txt_name2.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
-        txt_name2.setText("Personal Information:");
+        txt_name2.setText("Edit Personal Information:");
+        jPanel2.add(txt_name2, new org.netbeans.lib.awtextra.AbsoluteConstraints(595, 46, -1, -1));
 
         name.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
-        name.setText("Name:");
+        name.setText("Username:");
+        jPanel2.add(name, new org.netbeans.lib.awtextra.AbsoluteConstraints(528, 112, 64, -1));
 
         jLabel1.setFont(new java.awt.Font("Calibri", 1, 36)); // NOI18N
         jLabel1.setText("Admin Profile");
-
-        txt_name.setFont(new java.awt.Font("Calibri", 0, 13)); // NOI18N
-        txt_name.setText("Name:");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(43, 17, -1, -1));
+        jPanel2.add(pfp, new org.netbeans.lib.awtextra.AbsoluteConstraints(57, 68, 155, 140));
 
         phone.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
-        phone.setText("Phone Number: ");
+        phone.setText("Full Name:");
+        jPanel2.add(phone, new org.netbeans.lib.awtextra.AbsoluteConstraints(525, 148, -1, -1));
 
         adress.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
-        adress.setText("Address:");
+        adress.setText("Phone Number:");
+        jPanel2.add(adress, new org.netbeans.lib.awtextra.AbsoluteConstraints(525, 178, -1, -1));
 
-        txt_phone.setFont(new java.awt.Font("Calibri", 0, 13)); // NOI18N
-        txt_phone.setText("Name:");
-
-        txt_address.setFont(new java.awt.Font("Calibri", 0, 13)); // NOI18N
-        txt_address.setText("Name:");
-
-        btn_logout.setBackground(new java.awt.Color(25, 25, 112));
-        btn_logout.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btn_logout.setForeground(new java.awt.Color(255, 255, 255));
-        btn_logout.setText("Logout");
-        btn_logout.addActionListener(new java.awt.event.ActionListener() {
+        updateBtn.setBackground(new java.awt.Color(25, 25, 112));
+        updateBtn.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        updateBtn.setForeground(new java.awt.Color(255, 255, 255));
+        updateBtn.setText("Update");
+        updateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_logoutActionPerformed(evt);
+                updateBtnActionPerformed(evt);
             }
         });
+        jPanel2.add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(623, 365, 169, 35));
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addComponent(jLabel1))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(56, 56, 56)
-                        .addComponent(pfp, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(26, 26, 26)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txt_username, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(118, 118, 118)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(17, 17, 17)
-                                        .addComponent(txt_name2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(62, 62, 62)
-                                        .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(phone)
-                                .addGap(18, 18, 18)
-                                .addComponent(txt_phone, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(adress, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txt_address, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(575, 575, 575)
-                        .addComponent(btn_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(50, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jLabel1)
-                .addGap(7, 7, 7)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pfp, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(39, 39, 39)
-                        .addComponent(txt_username)
-                        .addGap(6, 6, 6)
-                        .addComponent(txt_email))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(45, 45, 45)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(name)
-                                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(txt_name2))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(phone)
-                            .addComponent(txt_phone, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txt_address, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(adress))))
-                .addGap(80, 80, 80)
-                .addComponent(btn_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+        usernameTextField.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jPanel2.add(usernameTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(623, 109, 169, -1));
+
+        fullNameTextField.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jPanel2.add(fullNameTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(623, 142, 169, -1));
+
+        phoneNumberTextField.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jPanel2.add(phoneNumberTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(623, 175, 169, -1));
+
+        btn_logout1.setBackground(new java.awt.Color(25, 25, 112));
+        btn_logout1.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        btn_logout1.setForeground(new java.awt.Color(255, 255, 255));
+        btn_logout1.setText("Logout");
+        btn_logout1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_logout1ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_logout1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, 169, 35));
+
+        adress1.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
+        adress1.setText("Email:");
+        jPanel2.add(adress1, new org.netbeans.lib.awtextra.AbsoluteConstraints(525, 211, 50, -1));
+
+        emailTextField.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jPanel2.add(emailTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(623, 208, 169, -1));
+
+        adress2.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
+        adress2.setText("Address:");
+        jPanel2.add(adress2, new org.netbeans.lib.awtextra.AbsoluteConstraints(525, 244, 50, -1));
+
+        addressTextField.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jPanel2.add(addressTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(623, 241, 169, -1));
+
+        adress3.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
+        adress3.setText("Password:");
+        jPanel2.add(adress3, new org.netbeans.lib.awtextra.AbsoluteConstraints(525, 277, 70, -1));
+
+        passwordTextField.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        passwordTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordTextFieldActionPerformed(evt);
+            }
+        });
+        jPanel2.add(passwordTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(623, 274, 169, -1));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 90, 820, 500));
 
@@ -499,11 +500,85 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons{
     private void btn_AccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AccActionPerformed
     }//GEN-LAST:event_btn_AccActionPerformed
 
-    private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
-        RegisterForm rf = new RegisterForm();
-        rf.show();
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        try {
+            StringBuilder errorMessage = new StringBuilder("Error:\n");
+            boolean error = false;
+
+            if (usernameTextField.getText().trim().isEmpty()) {
+                errorMessage.append("Username field is empty!\n");
+                error = true;
+            }
+            if (fullNameTextField.getText().trim().isEmpty()) {
+                errorMessage.append("Full Name field is empty!\n");
+                error = true;
+            }
+            if (phoneNumberTextField.getText().trim().isEmpty()) {
+                errorMessage.append("Phone Number field is empty!");
+                error = true;
+            } else if (!phoneNumberTextField.getText().matches("\\d+")) {
+                errorMessage.append("Invalid input! Whole numbers only.\n");
+                error = true;
+            } else if (phoneNumberTextField.getText().trim().length() != 11) {
+                errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
+                error = true;
+            }
+            if (emailTextField.getText().trim().isEmpty()) {
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            } else if (!emailTextField.getText().matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
+                errorMessage.append("Invalid email input! Please try again.\n");
+                error = true;
+            }
+            if (addressTextField.getText().trim().isEmpty()) {
+                errorMessage.append("Address field is empty!\n");
+                error = true;
+            }
+            if (passwordTextField.getText().trim().isEmpty()) {
+                errorMessage.append("Password field is empty!\n");
+                error = true;
+            }
+
+            String fullname = fullNameTextField.getText().trim();
+            String email = emailTextField.getText().trim();
+            long phoneNumber = Long.parseLong(phoneNumberTextField.getText().trim());
+            String address = addressTextField.getText().trim();
+            String username = usernameTextField.getText().trim();
+            String password = passwordTextField.getText().trim();
+
+            int userId = SessionManager.getLoggedInUserId();
+            Users users = new Users(userId, fullname, email, phoneNumber, address, username, password);
+            boolean success = UsersController.updateUserInfo(users);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Admin info updated successfully!");
+
+                Users user = new Users();
+
+                user.setFullName(fullname);
+                user.setEmail(email);
+                user.setPhoneNum(phoneNumber);
+                user.setAddress(address);
+                user.setUsername(username);
+                user.setPassword(password);
+                loadUserData();}
+           
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void btn_logout1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logout1ActionPerformed
+        LoginForm lf = new LoginForm();
+        lf.show();
         dispose();
-    }//GEN-LAST:event_btn_logoutActionPerformed
+    }//GEN-LAST:event_btn_logout1ActionPerformed
+
+    private void passwordTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordTextFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -544,15 +619,21 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons{
     private javax.swing.JLabel AccIcon;
     private javax.swing.JLabel BrrwrIcon;
     private javax.swing.JLabel TrnsactIcon;
+    private javax.swing.JTextField addressTextField;
     private javax.swing.JLabel adress;
+    private javax.swing.JLabel adress1;
+    private javax.swing.JLabel adress2;
+    private javax.swing.JLabel adress3;
     private javax.swing.JLabel bookIcon;
     private javax.swing.JButton btn_Acc;
     private javax.swing.JButton btn_BRecords;
     private javax.swing.JButton btn_BrwrRecords;
     private javax.swing.JButton btn_dshbrd;
-    private javax.swing.JButton btn_logout;
+    private javax.swing.JButton btn_logout1;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.JLabel dbIcon;
+    private javax.swing.JTextField emailTextField;
+    private javax.swing.JTextField fullNameTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
@@ -566,13 +647,14 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons{
     private javax.swing.JLabel jlbl_wlcm8;
     private javax.swing.JLabel logo;
     private javax.swing.JLabel name;
+    private javax.swing.JTextField passwordTextField;
     private javax.swing.JLabel pfp;
     private javax.swing.JLabel phone;
-    private javax.swing.JLabel txt_address;
+    private javax.swing.JTextField phoneNumberTextField;
     private javax.swing.JLabel txt_email;
-    private javax.swing.JLabel txt_name;
     private javax.swing.JLabel txt_name2;
-    private javax.swing.JLabel txt_phone;
     private javax.swing.JLabel txt_username;
+    private javax.swing.JButton updateBtn;
+    private javax.swing.JTextField usernameTextField;
     // End of variables declaration//GEN-END:variables
 }

@@ -7,22 +7,29 @@ package GUI;
 
 import Controller.BooksController;
 import Models.Books;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
-
+    private int selectedBookId = -1;
+    
     public BookRecords() {
         initComponents();
         scaleImages();
         initializeButtons();
-        getId();
         table("");
+        Genres();
 
         txt_search.addKeyListener(new KeyAdapter() {
             @Override
@@ -31,7 +38,29 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 table(searchText);
             }
         });
+
+        bookRecordsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) { 
+                    int selectedRow = bookRecordsTable.getSelectedRow();
+
+                    if (selectedRow != -1) {
+                        selectedBookId = Integer.parseInt(bookRecordsTable.getValueAt(selectedRow, 0).toString());
+                        txtBookTitle.setText(bookRecordsTable.getValueAt(selectedRow, 1).toString());
+                        txtBookAuthor.setText(bookRecordsTable.getValueAt(selectedRow, 2).toString());
+                        bookGenreComboBox.setSelectedItem(bookRecordsTable.getValueAt(selectedRow, 3).toString());
+                        txtBookIsbn.setText(bookRecordsTable.getValueAt(selectedRow, 4).toString());
+                        txtBookQuantity.setText(String.valueOf(bookRecordsTable.getValueAt(selectedRow, 5)));
+
+                        System.out.println("Selected book_id for update: " + selectedBookId);
+                    }
+                }
+            }
+        });
+
     }
+
 
     private void table(String keyword) {
         List<Books> books = BooksController.getBooks();
@@ -39,11 +68,12 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         model.setRowCount(0);
 
         for (Books book : books) {
-            if (keyword == null || keyword.trim().isEmpty() || // shows all records if txtfld is empty
-                    book.getTitle().toLowerCase().contains(keyword.toLowerCase())
-                    || book.getAuthor().toLowerCase().contains(keyword.toLowerCase())
-                    || book.getGenre().toLowerCase().contains(keyword.toLowerCase())
-                    || book.getIsbn().toLowerCase().contains(keyword.toLowerCase())) {
+            System.out.println("DEBUG - Adding to Table: Book ID = " + book.getBookId());
+            if (keyword == null || keyword.trim().isEmpty() ||
+                book.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
+                book.getAuthor().toLowerCase().contains(keyword.toLowerCase()) ||
+                book.getGenre().toLowerCase().contains(keyword.toLowerCase()) ||
+                book.getIsbn().toLowerCase().contains(keyword.toLowerCase())) {
 
                 model.addRow(new Object[]{
                     book.getBookId(),
@@ -56,28 +86,66 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
             }
         }
 
-        bookRecordsTable.setModel(model); // makes the table use the updated model
-        bookRecordsTable.revalidate(); // Refresh UI
+        bookRecordsTable.setModel(model);
+        bookRecordsTable.revalidate();
+
+        // Hide the bookid column
+        bookRecordsTable.getColumnModel().getColumn(0).setMinWidth(0);
+        bookRecordsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        bookRecordsTable.getColumnModel().getColumn(0).setWidth(0);
     }
 
-//    
-    private void getId() {
-        //fetch data
-        List<Books> bookList = BooksController.getBooks();
+    
+    private void Genres() {
+        bookGenreComboBox.removeAllItems();
+        bookGenreComboBox.setEditable(true); // Make combo box editable
+        bookGenreComboBox.addItem("-- Select Genre --"); // Placeholder
 
-        //validation
-        if (bookList.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Book Records is currently empty.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        // Define genres
+        String[] genres = {"Fiction", "History", "Science", "Mathematics", "Information Technology"};
+
+        for (String genre : genres) {
+            bookGenreComboBox.addItem(genre);
         }
 
-        //remove existing row to add id
-        id_cb.removeAllItems();
+        // Get the editable text field from JComboBox
+        JTextField textField = (JTextField) bookGenreComboBox.getEditor().getEditorComponent();
 
-        //store new id
-        for (Books b : bookList) {
-            id_cb.addItem(String.valueOf(b.getBookId()));
-        }
+        textField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField.getText().equals("-- Select Genre --")) {
+                    textField.setText(""); // Clears the placeholder
+                }
+            }
+        });
+
+        textField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String input = textField.getText().toLowerCase();
+                filterComboBox(input, textField);
+            }
+        });
     }
+
+    private void filterComboBox(String input, JTextField textField) {
+        bookGenreComboBox.hidePopup();
+        bookGenreComboBox.removeAllItems();
+
+        String[] genres = {"Fiction", "History", "Science", "Mathematics", "Information Technology"};
+        for (String genre : genres) {
+            if (genre.toLowerCase().startsWith(input)) { // Matches user input
+                bookGenreComboBox.addItem(genre);
+            }
+        }
+
+        bookGenreComboBox.showPopup();
+        SwingUtilities.invokeLater(() -> textField.setText(input));
+    }
+
+
+
 
     private void scaleImages() {
         String[] paths = {
@@ -124,22 +192,19 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         bookRecordsTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
-        txt_trnscID = new javax.swing.JLabel();
         txt_brrwr = new javax.swing.JLabel();
         txt_bk = new javax.swing.JLabel();
         txt_g = new javax.swing.JLabel();
         txt_q = new javax.swing.JLabel();
-        txt_title = new javax.swing.JTextField();
-        txt_author = new javax.swing.JTextField();
-        txt_genre = new javax.swing.JTextField();
-        txt_quantity = new javax.swing.JTextField();
-        id_cb = new javax.swing.JComboBox<>();
+        txtBookTitle = new javax.swing.JTextField();
+        txtBookAuthor = new javax.swing.JTextField();
+        txtBookQuantity = new javax.swing.JTextField();
         btn_update = new javax.swing.JButton();
         btn_add = new javax.swing.JButton();
-        btn_search = new javax.swing.JButton();
         isbn = new javax.swing.JLabel();
-        txt_isbn = new javax.swing.JTextField();
+        txtBookIsbn = new javax.swing.JTextField();
         btn_delete = new javax.swing.JButton();
+        bookGenreComboBox = new javax.swing.JComboBox<>();
         txt_search = new javax.swing.JTextField();
         btn_search2 = new javax.swing.JButton();
 
@@ -401,7 +466,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Book ID", "Title", "Author", "Genre", "ISBN", "Quantity"
+                "Book ID", "Book Title", "Book author", "Book Genre", "ISBN", "Quantity"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -434,9 +499,6 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         jPanel6.setBackground(new java.awt.Color(224, 255, 255));
         jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(25, 25, 112)));
 
-        txt_trnscID.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        txt_trnscID.setText("Book ID:");
-
         txt_brrwr.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
         txt_brrwr.setText("Title:");
 
@@ -449,34 +511,21 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         txt_q.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
         txt_q.setText("Quantity:");
 
-        txt_title.addActionListener(new java.awt.event.ActionListener() {
+        txtBookTitle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_titleActionPerformed(evt);
+                txtBookTitleActionPerformed(evt);
             }
         });
 
-        txt_author.addActionListener(new java.awt.event.ActionListener() {
+        txtBookAuthor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_authorActionPerformed(evt);
+                txtBookAuthorActionPerformed(evt);
             }
         });
 
-        txt_genre.addActionListener(new java.awt.event.ActionListener() {
+        txtBookQuantity.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_genreActionPerformed(evt);
-            }
-        });
-
-        txt_quantity.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_quantityActionPerformed(evt);
-            }
-        });
-
-        id_cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        id_cb.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                id_cbActionPerformed(evt);
+                txtBookQuantityActionPerformed(evt);
             }
         });
 
@@ -500,27 +549,12 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
             }
         });
 
-        btn_search.setBackground(new java.awt.Color(25, 25, 112));
-        btn_search.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btn_search.setForeground(new java.awt.Color(255, 255, 255));
-        btn_search.setText("Search");
-        btn_search.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_searchActionPerformed(evt);
-            }
-        });
-        btn_search.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                btn_searchKeyTyped(evt);
-            }
-        });
-
         isbn.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
         isbn.setText("ISBN:");
 
-        txt_isbn.addActionListener(new java.awt.event.ActionListener() {
+        txtBookIsbn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_isbnActionPerformed(evt);
+                txtBookIsbnActionPerformed(evt);
             }
         });
 
@@ -534,84 +568,71 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
             }
         });
 
+        bookGenreComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txt_g, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txt_bk)
-                            .addComponent(txt_brrwr)
-                            .addComponent(isbn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txt_genre)
-                            .addComponent(txt_author)
-                            .addGroup(jPanel6Layout.createSequentialGroup()
-                                .addComponent(txt_title, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(txt_isbn)))
+                        .addGap(87, 87, 87)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btn_add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn_update, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
+                            .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel6Layout.createSequentialGroup()
-                                .addComponent(txt_trnscID)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(id_cb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(12, 12, 12)
-                                .addComponent(btn_search))
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txt_g, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txt_bk)
+                                    .addComponent(txt_brrwr)
+                                    .addComponent(isbn, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(31, 31, 31)
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtBookAuthor)
+                                    .addComponent(txtBookIsbn)
+                                    .addComponent(bookGenreComboBox, 0, 205, Short.MAX_VALUE)
+                                    .addComponent(txtBookTitle)))
                             .addGroup(jPanel6Layout.createSequentialGroup()
                                 .addComponent(txt_q, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txt_quantity, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btn_add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btn_update, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(15, 15, 15))
+                                .addGap(18, 18, 18)
+                                .addComponent(txtBookQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel6Layout.createSequentialGroup()
-                            .addComponent(txt_trnscID)
-                            .addGap(5, 5, 5))
-                        .addComponent(id_cb, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(54, 54, 54)
+                .addGap(23, 23, 23)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_brrwr)
-                    .addComponent(txt_title, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtBookTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_bk)
-                    .addComponent(txt_author, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtBookAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_g)
-                    .addComponent(txt_genre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(bookGenreComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_isbn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtBookIsbn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(isbn))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_q)
-                    .addComponent(txt_quantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(txtBookQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(70, 70, 70)
                 .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(25, 25, 25)
                 .addComponent(btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(26, 26, 26)
                 .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 120, -1, 490));
@@ -677,43 +698,39 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         dispose();
     }//GEN-LAST:event_btn_AccActionPerformed
 
-    private void txt_titleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_titleActionPerformed
+    private void txtBookTitleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBookTitleActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txt_titleActionPerformed
+    }//GEN-LAST:event_txtBookTitleActionPerformed
 
-    private void txt_authorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_authorActionPerformed
+    private void txtBookAuthorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBookAuthorActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txt_authorActionPerformed
+    }//GEN-LAST:event_txtBookAuthorActionPerformed
 
-    private void txt_genreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_genreActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_genreActionPerformed
+    private void txtBookQuantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBookQuantityActionPerformed
 
-    private void txt_quantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_quantityActionPerformed
-
-    }//GEN-LAST:event_txt_quantityActionPerformed
+    }//GEN-LAST:event_txtBookQuantityActionPerformed
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         try {
             StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
             boolean error = false;
-            if (txt_title.getText().trim().isEmpty()) {
+            if (txtBookTitle.getText().trim().isEmpty()) {
                 errorMessage.append("Title field is empty!\n");
                 error = true;//confirm error.
             }
-            if (txt_author.getText().trim().isEmpty()) {
+            if (txtBookAuthor.getText().trim().isEmpty()) {
                 errorMessage.append("Author field is empty!\n");
                 error = true;
             }
-            if (txt_genre.getText().trim().isEmpty()) {
+            if (bookGenreComboBox.getSelectedItem() == null) {
                 errorMessage.append("Genre field is empty!\n");
                 error = true;
             }
-            if (txt_isbn.getText().trim().isEmpty()) {
+            if (txtBookIsbn.getText().trim().isEmpty()) {
                 errorMessage.append("ISBN field is empty!\n");
                 error = true;
             }
-            if (txt_quantity.getText().trim().isEmpty()) {
+            if (txtBookQuantity.getText().trim().isEmpty()) {
                 errorMessage.append("Quantity firld is empty!");
                 error = true;
             }
@@ -721,34 +738,35 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);//error message for a specific field.
                 return;
             }
-            Object selectedID = id_cb.getSelectedItem();
-            int bookId = (selectedID != null) ? Integer.parseInt(selectedID.toString()) : 0;
-            String title = txt_title.getText().trim();
-            String author = txt_author.getText().trim();
-            String genre = txt_genre.getText().trim();
-            String isbn = txt_isbn.getText().trim();
-            if (!Books.isbnValidation(isbn)) {
-                JOptionPane.showMessageDialog(this, "Invalid ISBN! Please enter the right 13-digit code.", "Error", JOptionPane.ERROR_MESSAGE);
+            String title = txtBookTitle.getText().trim();
+            String author = txtBookAuthor.getText().trim();
+            String genre = bookGenreComboBox.getSelectedItem().toString();
+            String isbn = txtBookIsbn.getText().trim();
+
+            // Ensure the input is exactly 13 digits and numeric
+            if (!isbn.matches("\\d{13}")) {
+                JOptionPane.showMessageDialog(this, "Invalid ISBN! Must be a 13-digit number.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             int quantity;
             try {
-                quantity = Integer.parseInt(txt_quantity.getText().trim());
+                quantity = Integer.parseInt(txtBookQuantity.getText().trim());
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Quantity'.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            Books b = new Books(bookId, title, author, genre, isbn, quantity);
+            Books b = new Books(selectedBookId,title, author, genre, isbn, quantity);
             boolean success = BooksController.addBook(b);
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "Book added successfully!");
-                txt_title.setText("");
-                txt_author.setText("");
-                txt_genre.setText("");
-                txt_isbn.setText("");
-                txt_quantity.setText("");
+                txtBookTitle.setText("");
+                txtBookAuthor.setText("");
+                bookGenreComboBox.setSelectedIndex(0);
+                txtBookIsbn.setText("");
+                txtBookQuantity.setText("");
                 table("");
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to add book.");
@@ -761,117 +779,82 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
 
     }//GEN-LAST:event_btn_addActionPerformed
 
-    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
-        try {
-            //validation
-            if (id_cb.getSelectedItem() == null || id_cb.getSelectedItem().toString().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please select a Book ID", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            int selectedBookID = Integer.parseInt(id_cb.getSelectedItem().toString());
-            //fetch data from database.
-            List<Books> bookList = BooksController.getBooks();
-
-            Books matchBook = bookList.stream()
-                    .filter(book -> book.getBookId() == selectedBookID).findFirst().orElse(null);
-
-            //display details
-            if (matchBook != null) {
-                txt_title.setText(matchBook.getTitle());
-                txt_author.setText(matchBook.getAuthor());
-                txt_genre.setText(matchBook.getGenre());
-                txt_isbn.setText(matchBook.getIsbn());
-                txt_quantity.setText(Integer.toString(matchBook.getQuantity()));
-            } else {
-                JOptionPane.showMessageDialog(this, "No record detected.");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-
-    }//GEN-LAST:event_btn_searchActionPerformed
-
-    private void id_cbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_id_cbActionPerformed
+    private void txtBookIsbnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBookIsbnActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_id_cbActionPerformed
-
-    private void txt_isbnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_isbnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_isbnActionPerformed
+    }//GEN-LAST:event_txtBookIsbnActionPerformed
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
         try {
-            StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
+            StringBuilder errorMessage = new StringBuilder("Error:");
             boolean error = false;
-            if (txt_title.getText().trim().isEmpty()) {
-                errorMessage.append("Title field is empty!\n");
-                error = true;//confirm error.
-            }
-            if (txt_author.getText().trim().isEmpty()) {
-                errorMessage.append("Author field is empty!\n");
+            
+            if (txtBookTitle.getText().trim().isEmpty()) {
+                errorMessage.append(" Title field is empty!\n");
                 error = true;
             }
-            if (txt_genre.getText().trim().isEmpty()) {
-                errorMessage.append("Genre field is empty!\n");
+            if (txtBookAuthor.getText().trim().isEmpty()) {
+                errorMessage.append(" Author field is empty!\n");
                 error = true;
             }
-            if (txt_isbn.getText().trim().isEmpty()) {
-                errorMessage.append("ISBN field is empty!\n");
+            if (bookGenreComboBox.getSelectedItem() == null) {
+                errorMessage.append(" Genre field is empty!\n");
                 error = true;
             }
-            if (txt_quantity.getText().trim().isEmpty()) {
-                errorMessage.append("Quantity field is empty!");
+            if (txtBookIsbn.getText().trim().isEmpty()) {
+                errorMessage.append(" ISBN field is empty!\n");
                 error = true;
             }
+            if (txtBookQuantity.getText().trim().isEmpty()) {
+                errorMessage.append(" Quantity field is empty!");
+                error = true;
+            }
+
             if (error) {
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);//error message for a specific field.
+                JOptionPane.showMessageDialog(this, errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            Object selectedID = id_cb.getSelectedItem();
-            int bookId = (selectedID != null) ? Integer.parseInt(selectedID.toString()) : 0;
-            String title = txt_title.getText().trim();
-            String author = txt_author.getText().trim();
-            String genre = txt_genre.getText().trim();
-            String isbn = txt_isbn.getText().trim();
-            if (!Books.isbnValidation(isbn)) {
-                JOptionPane.showMessageDialog(this, "Invalid ISBN! Please enter the right 13-digit code.", "Error", JOptionPane.ERROR_MESSAGE);
+
+            String title = txtBookTitle.getText().trim();
+            String author = txtBookAuthor.getText().trim();
+            String genre = bookGenreComboBox.getSelectedItem().toString();
+            String isbn = txtBookIsbn.getText().trim();
+
+            if (!isbn.matches("\\d{13}")) {
+                JOptionPane.showMessageDialog(this, "Invalid ISBN! Must be a 13-digit number.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             int quantity;
             try {
-                quantity = Integer.parseInt(txt_quantity.getText().trim());
+                quantity = Integer.parseInt(txtBookQuantity.getText().trim());
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Quantity'.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            Books b = new Books(bookId, title, author, genre, isbn, quantity);
+            if (selectedBookId == -1 || selectedBookId == 0) {
+                JOptionPane.showMessageDialog(this, "No valid book selected for update!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Books b = new Books(selectedBookId, title, author, genre, isbn, quantity);
             boolean success = BooksController.updateBook(b);
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "Book updated successfully!");
-                txt_title.setText("");
-                txt_author.setText("");
-                txt_genre.setText("");
-                txt_isbn.setText("");
-                txt_quantity.setText("");
+                txtBookTitle.setText("");
+                txtBookAuthor.setText("");
+                bookGenreComboBox.setSelectedIndex(0);
+                txtBookIsbn.setText("");
+                txtBookQuantity.setText("");
                 table("");
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to update book.");
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Error! Numeric value only for 'Quantity'.");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred." + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
-
     }//GEN-LAST:event_btn_updateActionPerformed
-
-    private void btn_searchKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btn_searchKeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_searchKeyTyped
 
     private void txt_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_searchActionPerformed
         // TODO add your handling code here:
@@ -885,71 +868,75 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
         try {
-            StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
+            StringBuilder errorMessage = new StringBuilder("Error:");
             boolean error = false;
-            if (txt_title.getText().trim().isEmpty()) {
-                errorMessage.append("Title field is empty!\n");
-                error = true;//confirm error.
-            }
-            if (txt_author.getText().trim().isEmpty()) {
-                errorMessage.append("Author field is empty!\n");
+            
+            if (txtBookTitle.getText().trim().isEmpty()) {
+                errorMessage.append(" Title field is empty!\n");
                 error = true;
             }
-            if (txt_genre.getText().trim().isEmpty()) {
-                errorMessage.append("Genre field is empty!\n");
+            if (txtBookAuthor.getText().trim().isEmpty()) {
+                errorMessage.append(" Author field is empty!\n");
                 error = true;
             }
-            if (txt_isbn.getText().trim().isEmpty()) {
-                errorMessage.append("ISBN field is empty!\n");
+            if (bookGenreComboBox.getSelectedItem() == null) {
+                errorMessage.append(" Genre field is empty!\n");
                 error = true;
             }
-            if (txt_quantity.getText().trim().isEmpty()) {
-                errorMessage.append("Quantity field is empty!");
+            if (txtBookIsbn.getText().trim().isEmpty()) {
+                errorMessage.append(" ISBN field is empty!\n");
                 error = true;
             }
+            if (txtBookQuantity.getText().trim().isEmpty()) {
+                errorMessage.append(" Quantity field is empty!");
+                error = true;
+            }
+
             if (error) {
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);//error message for a specific field.
+                JOptionPane.showMessageDialog(this, errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            Object selectedID = id_cb.getSelectedItem();
-            int bookId = (selectedID != null) ? Integer.parseInt(selectedID.toString()) : 0;
-            String title = txt_title.getText().trim();
-            String author = txt_author.getText().trim();
-            String genre = txt_genre.getText().trim();
-            String isbn = txt_isbn.getText().trim();
-            if (!Books.isbnValidation(isbn)) {
-                JOptionPane.showMessageDialog(this, "Invalid ISBN! Please enter the right 13-digit code.", "Error", JOptionPane.ERROR_MESSAGE);
+
+            String title = txtBookTitle.getText().trim();
+            String author = txtBookAuthor.getText().trim();
+            String genre = bookGenreComboBox.getSelectedItem().toString();
+            String isbn = txtBookIsbn.getText().trim();
+
+            if (!isbn.matches("\\d{13}")) {
+                JOptionPane.showMessageDialog(this, "Invalid ISBN! Must be a 13-digit number.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             int quantity;
             try {
-                quantity = Integer.parseInt(txt_quantity.getText().trim());
+                quantity = Integer.parseInt(txtBookQuantity.getText().trim());
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Invalid! Whole numbers only for 'Quantity'.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            Books b = new Books(bookId, title, author, genre, isbn, quantity);
+            if (selectedBookId == -1 || selectedBookId == 0) {
+                JOptionPane.showMessageDialog(this, "No valid book selected for update!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Books b = new Books(selectedBookId, title, author, genre, isbn, quantity);
             boolean success = BooksController.deleteBook(b);
 
             if (success) {
-                JOptionPane.showMessageDialog(this, "Book deleted successfully!");
-                txt_title.setText("");
-                txt_author.setText("");
-                txt_genre.setText("");
-                txt_isbn.setText("");
-                txt_quantity.setText("");
+                JOptionPane.showMessageDialog(this, "Book updated successfully!");
+                txtBookTitle.setText("");
+                txtBookAuthor.setText("");
+                bookGenreComboBox.setSelectedIndex(0);
+                txtBookIsbn.setText("");
+                txtBookQuantity.setText("");
                 table("");
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to delete book.");
+                JOptionPane.showMessageDialog(this, "Failed to update book.");
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Error! Numeric value only for 'Quantity'.");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred." + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
-
     }//GEN-LAST:event_btn_deleteActionPerformed
 
     /**
@@ -992,6 +979,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     private javax.swing.JLabel AccIcon;
     private javax.swing.JLabel BrrwrIcon;
     private javax.swing.JLabel TrnsactIcon;
+    private javax.swing.JComboBox<String> bookGenreComboBox;
     private javax.swing.JLabel bookIcon;
     private javax.swing.JTable bookRecordsTable;
     private javax.swing.JButton btn_Acc;
@@ -1000,12 +988,10 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_dshbrd;
-    private javax.swing.JButton btn_search;
     private javax.swing.JButton btn_search2;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.JButton btn_update;
     private javax.swing.JLabel dbIcon;
-    private javax.swing.JComboBox<String> id_cb;
     private javax.swing.JLabel isbn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
@@ -1022,16 +1008,14 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JLabel jlbl_wlcm;
     private javax.swing.JLabel logo;
-    private javax.swing.JTextField txt_author;
+    private javax.swing.JTextField txtBookAuthor;
+    private javax.swing.JTextField txtBookIsbn;
+    private javax.swing.JTextField txtBookQuantity;
+    private javax.swing.JTextField txtBookTitle;
     private javax.swing.JLabel txt_bk;
     private javax.swing.JLabel txt_brrwr;
     private javax.swing.JLabel txt_g;
-    private javax.swing.JTextField txt_genre;
-    private javax.swing.JTextField txt_isbn;
     private javax.swing.JLabel txt_q;
-    private javax.swing.JTextField txt_quantity;
     private javax.swing.JTextField txt_search;
-    private javax.swing.JTextField txt_title;
-    private javax.swing.JLabel txt_trnscID;
     // End of variables declaration//GEN-END:variables
 }

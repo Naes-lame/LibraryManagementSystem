@@ -10,7 +10,9 @@ import Controller.BorrowersController;
 import Models.Borrowers;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.swing.JFrame;
@@ -19,19 +21,36 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class BorrowerRecords extends javax.swing.JFrame implements imagesNbuttons{
-
+    private int selectedBorrowerId = -1;
+    
     public BorrowerRecords() {
         initComponents();
         scaleImages();
         initializeButtons();
         table("");
-        getId();
         
         txt_search.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 String searchText = txt_search.getText().trim();
                 table(searchText);
+            }
+        });
+        
+        borrowerRecordsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) { 
+                    int selectedRow = borrowerRecordsTable.getSelectedRow();
+
+                    if (selectedRow != -1) { 
+                        selectedBorrowerId = Integer.parseInt(borrowerRecordsTable.getValueAt(selectedRow, 0).toString());
+                        txtName.setText(borrowerRecordsTable.getValueAt(selectedRow, 1).toString());
+                        txtAddress.setText(borrowerRecordsTable.getValueAt(selectedRow, 2).toString());
+                        txtPhoneNumber.setText(borrowerRecordsTable.getValueAt(selectedRow, 3).toString());
+                        txtEmail.setText(borrowerRecordsTable.getValueAt(selectedRow, 4).toString()); // ✅ Fixed missing `.toString()`
+                    }
+                }
             }
         });
     }
@@ -66,24 +85,14 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         }
     borrowerRecordsTable.setModel(model);
     borrowerRecordsTable.revalidate();
+    
+    borrowerRecordsTable.getColumnModel().getColumn(0).setMinWidth(0);
+    borrowerRecordsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+    borrowerRecordsTable.getColumnModel().getColumn(0).setWidth(0);
     }
 
     
-    private void getId(){
-        List<Borrowers> borrowerList = BorrowersController.getBorrower();
-        
-       if(borrowerList.isEmpty()){
-                JOptionPane.showMessageDialog(this, "Borrower Records is currently empty.","Info",JOptionPane.INFORMATION_MESSAGE);
-            }
-            
-            //remove existing row to add id
-            cb_id.removeAllItems();
-            
-            //store new id
-            for(Borrowers b : borrowerList){
-                cb_id.addItem(String.valueOf(b.getBorrowerId()));
-            }   
-    }
+
         
      
      
@@ -130,6 +139,7 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         jPanel15 = new javax.swing.JPanel();
         jlbl_wlcm7 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -153,25 +163,20 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         borrowerRecordsTable = new javax.swing.JTable();
-        jPanel17 = new javax.swing.JPanel();
-        txt_trnscID = new javax.swing.JLabel();
-        txt_brrwr = new javax.swing.JLabel();
-        txt_bk = new javax.swing.JLabel();
-        txt_trasctnDate = new javax.swing.JLabel();
-        txt_dd = new javax.swing.JLabel();
-        btn_add = new javax.swing.JButton();
-        btn_update = new javax.swing.JButton();
-        txt_name = new javax.swing.JTextField();
-        txt_address = new javax.swing.JTextField();
-        txt_phone = new javax.swing.JTextField();
-        txt_email = new javax.swing.JTextField();
-        cb_id = new javax.swing.JComboBox<>();
-        btn_update1 = new javax.swing.JButton();
-        btn_add1 = new javax.swing.JButton();
-        btn_search = new javax.swing.JButton();
-        btn_delete = new javax.swing.JButton();
         txt_search = new javax.swing.JTextField();
         btn_search2 = new javax.swing.JButton();
+        jPanel17 = new javax.swing.JPanel();
+        txt_brrwr = new javax.swing.JLabel();
+        txt_bk = new javax.swing.JLabel();
+        txt_q = new javax.swing.JLabel();
+        txtName = new javax.swing.JTextField();
+        txtAddress = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
+        btn_update = new javax.swing.JButton();
+        btn_add = new javax.swing.JButton();
+        isbn = new javax.swing.JLabel();
+        txtPhoneNumber = new javax.swing.JTextField();
+        btn_delete = new javax.swing.JButton();
 
         jPanel2.setBackground(new java.awt.Color(25, 25, 112));
 
@@ -467,11 +472,12 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
 
+        jLabel10.setText("jLabel10");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel3.setBackground(new java.awt.Color(224, 255, 255));
 
@@ -679,8 +685,6 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 .addContainerGap(349, Short.MAX_VALUE))
         );
 
-        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, -1, -1));
-
         jPanel16.setBackground(new java.awt.Color(25, 25, 112));
 
         jlbl_wlcm8.setFont(new java.awt.Font("Century Gothic", 0, 18)); // NOI18N
@@ -709,11 +713,8 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel1.add(jPanel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
-
         jLabel1.setFont(new java.awt.Font("Calibri", 3, 24)); // NOI18N
         jLabel1.setText("BORROWER RECORDS");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 80, -1, -1));
 
         borrowerRecordsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -745,94 +746,78 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
             borrowerRecordsTable.getColumnModel().getColumn(5).setResizable(false);
         }
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 313, 820, 300));
+        txt_search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_searchActionPerformed(evt);
+            }
+        });
+
+        btn_search2.setBackground(new java.awt.Color(25, 25, 112));
+        btn_search2.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
+        btn_search2.setForeground(new java.awt.Color(255, 255, 255));
+        btn_search2.setText("Search");
+        btn_search2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_search2ActionPerformed(evt);
+            }
+        });
 
         jPanel17.setBackground(new java.awt.Color(224, 255, 255));
         jPanel17.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(25, 25, 112)));
 
-        txt_trnscID.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        txt_trnscID.setText("Borrower ID:");
-
         txt_brrwr.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        txt_brrwr.setText("Name: ");
+        txt_brrwr.setText("Name:");
 
         txt_bk.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
         txt_bk.setText("Address:");
 
-        txt_trasctnDate.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        txt_trasctnDate.setText("Phone:");
+        txt_q.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        txt_q.setText("Email:");
 
-        txt_dd.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        txt_dd.setText("Email:");
+        txtName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNameActionPerformed(evt);
+            }
+        });
 
-        btn_add.setBackground(new java.awt.Color(25, 25, 112));
-        btn_add.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btn_add.setForeground(new java.awt.Color(255, 255, 255));
-        btn_add.setText("Add");
+        txtAddress.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAddressActionPerformed(evt);
+            }
+        });
+
+        txtEmail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtEmailActionPerformed(evt);
+            }
+        });
 
         btn_update.setBackground(new java.awt.Color(25, 25, 112));
         btn_update.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
         btn_update.setForeground(new java.awt.Color(255, 255, 255));
         btn_update.setText("Update");
-
-        txt_name.addActionListener(new java.awt.event.ActionListener() {
+        btn_update.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_nameActionPerformed(evt);
+                btn_updateActionPerformed(evt);
             }
         });
 
-        txt_address.addActionListener(new java.awt.event.ActionListener() {
+        btn_add.setBackground(new java.awt.Color(25, 25, 112));
+        btn_add.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        btn_add.setForeground(new java.awt.Color(255, 255, 255));
+        btn_add.setText("Add");
+        btn_add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_addressActionPerformed(evt);
+                btn_addActionPerformed(evt);
             }
         });
 
-        txt_phone.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_phoneActionPerformed(evt);
-            }
-        });
+        isbn.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        isbn.setText("Phone No. :");
 
-        txt_email.addActionListener(new java.awt.event.ActionListener() {
+        txtPhoneNumber.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_emailActionPerformed(evt);
-            }
-        });
-
-        cb_id.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cb_id.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cb_idActionPerformed(evt);
-            }
-        });
-
-        btn_update1.setBackground(new java.awt.Color(25, 25, 112));
-        btn_update1.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btn_update1.setForeground(new java.awt.Color(255, 255, 255));
-        btn_update1.setText("Update");
-        btn_update1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_update1ActionPerformed(evt);
-            }
-        });
-
-        btn_add1.setBackground(new java.awt.Color(25, 25, 112));
-        btn_add1.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btn_add1.setForeground(new java.awt.Color(255, 255, 255));
-        btn_add1.setText("Add");
-        btn_add1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_add1ActionPerformed(evt);
-            }
-        });
-
-        btn_search.setBackground(new java.awt.Color(25, 25, 112));
-        btn_search.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btn_search.setForeground(new java.awt.Color(255, 255, 255));
-        btn_search.setText("Search");
-        btn_search.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_searchActionPerformed(evt);
+                txtPhoneNumberActionPerformed(evt);
             }
         });
 
@@ -853,101 +838,107 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
             .addGroup(jPanel17Layout.createSequentialGroup()
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel17Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel17Layout.createSequentialGroup()
-                                .addComponent(txt_bk)
-                                .addGap(37, 37, 37)
-                                .addComponent(txt_address))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel17Layout.createSequentialGroup()
-                                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txt_trnscID)
-                                    .addComponent(txt_brrwr))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel17Layout.createSequentialGroup()
-                                        .addComponent(cb_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(12, 12, 12)
-                                        .addComponent(btn_search)))))
-                        .addGap(60, 60, 60)
-                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txt_trasctnDate, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txt_dd, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txt_phone, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(40, 40, 40)
-                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btn_update1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_add1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(87, 87, 87)
+                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btn_add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn_update, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
+                            .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel17Layout.createSequentialGroup()
-                        .addGap(93, 93, 93)
-                        .addComponent(btn_update)
-                        .addGap(33, 33, 33)
-                        .addComponent(btn_add)))
-                .addContainerGap(72, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txt_bk)
+                            .addComponent(txt_brrwr))
+                        .addGap(31, 31, 31)
+                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
+                            .addComponent(txtName)))
+                    .addGroup(jPanel17Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(isbn, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel17Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(txt_q, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel17Layout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txt_brrwr)
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txt_bk)
+                    .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(isbn))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel17Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(jPanel17Layout.createSequentialGroup()
-                                    .addComponent(txt_trnscID)
-                                    .addGap(5, 5, 5))
-                                .addComponent(cb_id, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txt_brrwr)
-                            .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txt_trasctnDate)
-                            .addComponent(txt_phone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(30, 30, 30)
-                        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txt_address, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txt_bk)
-                            .addComponent(txt_dd)
-                            .addComponent(txt_email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel17Layout.createSequentialGroup()
-                        .addGap(47, 47, 47)
-                        .addComponent(btn_add1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btn_update1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btn_delete)))
-                .addGap(476, 476, 476)
-                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btn_update)
-                    .addComponent(btn_add))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(txt_q)
+                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(106, 106, 106)
+                .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25)
+                .addComponent(btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
-        jPanel1.add(jPanel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(238, 122, -1, 185));
-
-        txt_search.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_searchActionPerformed(evt);
-            }
-        });
-        jPanel1.add(txt_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 80, 380, -1));
-
-        btn_search2.setBackground(new java.awt.Color(25, 25, 112));
-        btn_search2.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
-        btn_search2.setForeground(new java.awt.Color(255, 255, 255));
-        btn_search2.setText("Search");
-        btn_search2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_search2ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(btn_search2, new org.netbeans.lib.awtextra.AbsoluteConstraints(936, 80, -1, -1));
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(50, 50, 50)
+                                .addComponent(jLabel1))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(22, 22, 22)
+                                .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(16, 16, 16)
+                                .addComponent(btn_search2))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 538, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jPanel16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txt_search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btn_search2))
+                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane1))))))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -992,185 +983,6 @@ Dashboard db = new Dashboard();
         dispose();
     }//GEN-LAST:event_btn_AccActionPerformed
 
-    private void txt_nameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_nameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_nameActionPerformed
-
-    private void txt_addressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_addressActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_addressActionPerformed
-
-    private void txt_phoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_phoneActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_phoneActionPerformed
-
-    private void txt_emailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_emailActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_emailActionPerformed
-
-    private void cb_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_idActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cb_idActionPerformed
-
-    private void btn_add1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_add1ActionPerformed
-        try{
-            Object selectedID = cb_id.getSelectedItem();
-            int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
-            String name = txt_name.getText();
-            String address = txt_address.getText();
-            
-            long phone;
-            try{
-                phone = Long.parseLong(txt_phone.getText());
-            }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(this, "Invalid whole numbers only for 'Phone'.","Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            String email = txt_email.getText();
-            Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
-        
-            StringBuilder errorMessage = new StringBuilder("Error: ");
-            boolean error = false;
-            if(txt_name.getText().trim().isEmpty()){
-                errorMessage.append("Title field is empty!\n");
-                error = true;
-            }if(txt_address.getText().trim().isEmpty()){
-                errorMessage.append("Address field is empty!\n");
-                error = true;
-            }if(txt_phone.getText().trim().isEmpty()){
-                errorMessage.append("Phone number field is empty!\n");
-                error = true;
-            }else if(!txt_phone.getText().matches("\\d+")){
-                errorMessage.append("Invalid input! Whole numbers only.\n");
-                error = true;
-            } else if (txt_phone.getText().trim().length() != 11) {
-                errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
-                error = true;
-            }if (txt_email.getText().trim().isEmpty()) {
-                errorMessage.append("Email field is empty!\n");
-                error = true;
-            } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
-                errorMessage.append("Invalid email input! Please try again.\n");
-                error = true;
-            }if(error){
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
-                return;      
-            }
-            
-            
-            
-            Borrowers b = new Borrowers (borrowerId, name, address, phone, email, membershipDate);
-            boolean success = BorrowersController.addBorrower(b);
-            
-            if (success){
-                JOptionPane.showMessageDialog(this, "Borrower added successfully!");
-                txt_name.setText("");
-                txt_address.setText("");
-                txt_phone.setText("");
-                txt_email.setText("");
-                table("");
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to add borrower. Please try again");
-            }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-
-    }//GEN-LAST:event_btn_add1ActionPerformed
-
-    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
-        try{
-            //validation
-            if(cb_id.getSelectedItem() == null || cb_id.getSelectedItem().toString().isEmpty()){
-                JOptionPane.showMessageDialog(this, "Please select book id.","Error", JOptionPane.ERROR_MESSAGE);
-            }
-            
-            int selectedID = Integer.parseInt(cb_id.getSelectedItem().toString());
-            
-            List<Borrowers> borrowerList = BorrowersController.getBorrower();
-            
-            Borrowers matchBorrower = borrowerList.stream()
-                    .filter(borrower -> borrower.getBorrowerId() == selectedID).findFirst().orElse(null);
-            if(matchBorrower != null){
-                txt_name.setText(matchBorrower.getName());
-                txt_address.setText(matchBorrower.getAddress());
-                txt_phone.setText(Long.toString(matchBorrower.getPhone()));
-                txt_email.setText(matchBorrower.getEmail());   
-            } else{
-                JOptionPane.showMessageDialog(this, "No record detected!","Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-
-    }//GEN-LAST:event_btn_searchActionPerformed
-
-    private void btn_update1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_update1ActionPerformed
-        try{
-            Object selectedID = cb_id.getSelectedItem();
-            int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
-            String name = txt_name.getText();
-            String address = txt_address.getText();
-            
-            long phone;
-            try{
-                phone = Long.parseLong(txt_phone.getText());
-            }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(this, "Invalid whole numbers only for 'Phone'.","Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            String email = txt_email.getText();
-            Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
-        
-            StringBuilder errorMessage = new StringBuilder("Error: ");
-            boolean error = false;
-            if(txt_name.getText().trim().isEmpty()){
-                errorMessage.append("Title field is empty!\n");
-                error = true;
-            }if(txt_address.getText().trim().isEmpty()){
-                errorMessage.append("Address field is empty!\n");
-                error = true;
-            }if(txt_phone.getText().trim().isEmpty()){
-                errorMessage.append("Phone number field is empty!\n");
-                error = true;
-            }else if(!txt_phone.getText().matches("\\d+")){
-                errorMessage.append("Invalid input! Whole numbers only.\n");
-                error = true;
-            } else if (txt_phone.getText().trim().length() != 11) {
-                errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
-                error = true;
-            } if (txt_email.getText().trim().isEmpty()) {
-                errorMessage.append("Email field is empty!\n");
-                error = true;
-            } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
-                errorMessage.append("Invalid email input! Please try again.\n");
-                error = true;
-            }if(error){
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
-                return;      
-            }
-            
-            Borrowers b = new Borrowers (borrowerId, name, address, phone, email, membershipDate);
-            boolean success = BorrowersController.updateBorrower(b);
-            
-            if (success){
-                JOptionPane.showMessageDialog(this, "Borrower update successfully!");
-                txt_name.setText("");
-                txt_address.setText("");
-                txt_phone.setText("");
-                txt_email.setText("");
-                table("");
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to update borrower. Please try again");
-            }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }//GEN-LAST:event_btn_update1ActionPerformed
-
     private void txt_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_searchActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_searchActionPerformed
@@ -1181,67 +993,211 @@ Dashboard db = new Dashboard();
 
     }//GEN-LAST:event_btn_search2ActionPerformed
 
-    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
-         try{
-               Object selectedID = cb_id.getSelectedItem();
-                int borrowerId =(selectedID != null) ? Integer.parseInt(selectedID.toString()): 0;
-                String name = txt_name.getText();
-                String address = txt_address.getText();
+    private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNameActionPerformed
 
-                long phone;
-                try{
-                    phone = Long.parseLong(txt_phone.getText());
-                }catch(NumberFormatException e){
-                    JOptionPane.showMessageDialog(this, "Invalid whole numbers only for 'Phone'.","Error",JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                String email = txt_email.getText();
-                Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
+    private void txtAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAddressActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAddressActionPerformed
 
-                StringBuilder errorMessage = new StringBuilder("Error: ");
-                boolean error = false;
-                if(txt_name.getText().trim().isEmpty()){
-                    errorMessage.append("Title field is empty!\n");
-                    error = true;
-                }if(txt_address.getText().trim().isEmpty()){
-                    errorMessage.append("Address field is empty!\n");
-                    error = true;
-                }if(txt_phone.getText().trim().isEmpty()){
-                    errorMessage.append("Phone number field is empty!\n");
-                    error = true;
-                }else if(!txt_phone.getText().matches("\\d+")){
-                    errorMessage.append("Invalid input! Whole numbers only.\n");
-                    error = true;
-                } else if (txt_phone.getText().trim().length() != 11) {
-                    errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
-                    error = true;
-                } if (txt_email.getText().trim().isEmpty()) {
-                    errorMessage.append("Email field is empty!\n");
-                    error = true;
-                } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
-                    errorMessage.append("Invalid email input! Please try again.\n");
-                    error = true;
-                }if(error){
-                    JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(),"Error",JOptionPane.ERROR_MESSAGE);
-                    return;      
-                }
+    private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmailActionPerformed
 
+    }//GEN-LAST:event_txtEmailActionPerformed
+
+    private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
+        try {
+            String name = txtName.getText().trim();
+            String address = txtAddress.getText().trim();
+            String email = txtEmail.getText().trim();
+            String phoneNum = txtPhoneNumber.getText().trim();
             
-            Borrowers b = new Borrowers (borrowerId, name, address, phone, email, membershipDate);
-            boolean success = BorrowersController.deleteBorrowers(b);
-            
-            if (success){
-                JOptionPane.showMessageDialog(this, "Borrower deleted successfully!");
-                txt_name.setText("");
-                txt_address.setText("");
-                txt_phone.setText("");
-                txt_email.setText("");
+            StringBuilder errorMessage = new StringBuilder("Error:");
+            boolean error = false;
+
+            if (txtName.getText().trim().isEmpty()) {
+                errorMessage.append(" Name field is empty!\n");
+                error = true;
+            }
+            if (txtAddress.getText().trim().isEmpty()) {
+                errorMessage.append(" Address field is empty!\n");
+                error = true;
+            }
+            if (txtPhoneNumber.getText().trim().isEmpty()) {
+                errorMessage.append("Phone Number field is empty!\n");
+                error = true;
+            } else if (!txtPhoneNumber.getText().matches("\\d+")) {
+                errorMessage.append("Invalid input! Whole numbers only.\n");
+                error = true;
+            } else if (txtPhoneNumber.getText().trim().length() != 11) {
+                errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
+                error = true;
+            }
+            if (txtEmail.getText().trim().isEmpty()) {
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
+                errorMessage.append("Invalid email input! Please try again.\n");
+                error = true;
+            }
+
+            if (error) {
+                JOptionPane.showMessageDialog(this, errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (selectedBorrowerId == -1 || selectedBorrowerId == 0) {
+                JOptionPane.showMessageDialog(this, "No valid borrower selected for update!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Timestamp membershipDate = new Timestamp(System.currentTimeMillis()); 
+
+            Borrowers b = new Borrowers(selectedBorrowerId, name, address, phoneNum, email, membershipDate);
+            boolean success = BorrowersController.updateBorrower(b); // ✅ Ensure update method is called instead of addBorrower
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Borrower updated successfully!");
+                txtName.setText("");
+                txtAddress.setText("");
+                txtPhoneNumber.setText("");
+                txtEmail.setText("");
                 table("");
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to delete borrower. Please try again");
+                JOptionPane.showMessageDialog(this, "Failed to update borrower.");
             }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btn_updateActionPerformed
+
+    private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
+        try {
+            String name = txtName.getText().trim();
+            String address = txtAddress.getText().trim();
+            String email = txtEmail.getText().trim();
+            String phoneNum = txtPhoneNumber.getText().trim();
+            
+            StringBuilder errorMessage = new StringBuilder("Error:");
+            boolean error = false;
+
+            if (txtName.getText().trim().isEmpty()) {
+                errorMessage.append(" Name field is empty!\n");
+                error = true;
+            }
+            if (txtAddress.getText().trim().isEmpty()) {
+                errorMessage.append(" Address field is empty!\n");
+                error = true;
+            }
+            if (txtPhoneNumber.getText().trim().isEmpty()) {
+                errorMessage.append("Phone Number field is empty!\n");
+                error = true;
+            } else if (!txtPhoneNumber.getText().matches("\\d+")) {
+                errorMessage.append("Invalid input! Whole numbers only.\n");
+                error = true;
+            } else if (txtPhoneNumber.getText().trim().length() != 11) {
+                errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
+                error = true;
+            }
+            if (txtEmail.getText().trim().isEmpty()) {
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
+                errorMessage.append("Invalid email input! Please try again.\n");
+                error = true;
+            }
+
+            if (error) {
+                JOptionPane.showMessageDialog(this, errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            Timestamp membershipDate = new Timestamp(System.currentTimeMillis()); 
+            Borrowers b = new Borrowers(selectedBorrowerId, name, address, phoneNum, email, membershipDate);
+            boolean success = BorrowersController.addBorrower(b);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Borrower updated successfully!");
+                txtName.setText("");
+                txtAddress.setText("");
+                txtPhoneNumber.setText("");
+                txtEmail.setText("");
+                table("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update borrower.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btn_addActionPerformed
+
+    private void txtPhoneNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPhoneNumberActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPhoneNumberActionPerformed
+
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        try {
+            String name = txtName.getText().trim();
+            String address = txtAddress.getText().trim();
+            String email = txtEmail.getText().trim();
+            String phoneNum = txtPhoneNumber.getText().trim();
+            
+            StringBuilder errorMessage = new StringBuilder("Error:");
+            boolean error = false;
+
+            if (txtName.getText().trim().isEmpty()) {
+                errorMessage.append(" Name field is empty!\n");
+                error = true;
+            }
+            if (txtAddress.getText().trim().isEmpty()) {
+                errorMessage.append(" Address field is empty!\n");
+                error = true;
+            }
+            if (txtPhoneNumber.getText().trim().isEmpty()) {
+                errorMessage.append("Phone Number field is empty!\n");
+                error = true;
+            } else if (!txtPhoneNumber.getText().matches("\\d+")) {
+                errorMessage.append("Invalid input! Whole numbers only.\n");
+                error = true;
+            } else if (txtPhoneNumber.getText().trim().length() != 11) {
+                errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
+                error = true;
+            }
+            if (txtEmail.getText().trim().isEmpty()) {
+                errorMessage.append("Email field is empty!\n");
+                error = true;
+            } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
+                errorMessage.append("Invalid email input! Please try again.\n");
+                error = true;
+            }
+
+            if (error) {
+                JOptionPane.showMessageDialog(this, errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (selectedBorrowerId == -1 || selectedBorrowerId == 0) {
+                JOptionPane.showMessageDialog(this, "No valid book selected for update!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Timestamp membershipDate = new Timestamp(System.currentTimeMillis()); 
+            Borrowers b = new Borrowers(selectedBorrowerId, name, address, phoneNum, email, membershipDate);
+            boolean success = BorrowersController.deleteBorrowers(b);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Borrower deleted successfully!");
+                txtName.setText("");
+                txtAddress.setText("");
+                txtPhoneNumber.setText("");
+                txtEmail.setText("");
+                table("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to delete borrower.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }//GEN-LAST:event_btn_deleteActionPerformed
@@ -1291,17 +1247,15 @@ Dashboard db = new Dashboard();
     private javax.swing.JButton btn_BRecords;
     private javax.swing.JButton btn_BrwrRecords;
     private javax.swing.JButton btn_add;
-    private javax.swing.JButton btn_add1;
     private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_dshbrd;
-    private javax.swing.JButton btn_search;
     private javax.swing.JButton btn_search2;
     private javax.swing.JButton btn_trnsct;
     private javax.swing.JButton btn_update;
-    private javax.swing.JButton btn_update1;
-    private javax.swing.JComboBox<String> cb_id;
     private javax.swing.JLabel dbIcon;
+    private javax.swing.JLabel isbn;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1338,15 +1292,13 @@ Dashboard db = new Dashboard();
     private javax.swing.JLabel jlbl_wlcm7;
     private javax.swing.JLabel jlbl_wlcm8;
     private javax.swing.JLabel logo;
-    private javax.swing.JTextField txt_address;
+    private javax.swing.JTextField txtAddress;
+    private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtName;
+    private javax.swing.JTextField txtPhoneNumber;
     private javax.swing.JLabel txt_bk;
     private javax.swing.JLabel txt_brrwr;
-    private javax.swing.JLabel txt_dd;
-    private javax.swing.JTextField txt_email;
-    private javax.swing.JTextField txt_name;
-    private javax.swing.JTextField txt_phone;
+    private javax.swing.JLabel txt_q;
     private javax.swing.JTextField txt_search;
-    private javax.swing.JLabel txt_trasctnDate;
-    private javax.swing.JLabel txt_trnscID;
     // End of variables declaration//GEN-END:variables
 }

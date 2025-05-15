@@ -48,8 +48,8 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
            
             model.addRow(new Object[]{
                 issued.getTransactionId(),
-                issued.getBorrowerId(),
-                issued.getBookId(),
+                issued.getBorrowerName(),
+                issued.getBookTitle(),
                 issueDate,
                 dueDate,
                 issued.getStatus()
@@ -332,7 +332,7 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Transaction ID", "Borrower ID", "Book ID", "Issue Date", "Due Date", "Status"
+                "Transaction ID", "Borrower Name", "Book Title", "Issue Date", "Due Date", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {

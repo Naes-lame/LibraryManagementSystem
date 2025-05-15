@@ -27,6 +27,8 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
         
         JLabel[] labels = { bgPic, jlbl_wlcmMssg2 };
         scaleImages(paths, labels);
+        
+        initializeButtons(btn_register);
     }
 
     @SuppressWarnings("unchecked")
@@ -43,6 +45,8 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
         bgPic = new javax.swing.JLabel();
         jlbl_wlcmMssg2 = new javax.swing.JLabel();
         txt_password = new javax.swing.JPasswordField();
+        jtxt_mssg1 = new javax.swing.JLabel();
+        btn_register = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -91,6 +95,22 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
         jlbl_wlcmMssg2.setForeground(new java.awt.Color(72, 209, 204));
         jPanel1.add(jlbl_wlcmMssg2, new org.netbeans.lib.awtextra.AbsoluteConstraints(539, 20, 40, 28));
         jPanel1.add(txt_password, new org.netbeans.lib.awtextra.AbsoluteConstraints(627, 165, 302, -1));
+
+        jtxt_mssg1.setFont(new java.awt.Font("Calibri", 2, 12)); // NOI18N
+        jtxt_mssg1.setText("New here?");
+        jPanel1.add(jtxt_mssg1, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 310, 60, -1));
+
+        btn_register.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
+        btn_register.setText("Create an account");
+        btn_register.setBorderPainted(false);
+        btn_register.setContentAreaFilled(false);
+        btn_register.setFocusPainted(false);
+        btn_register.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_registerActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btn_register, new org.netbeans.lib.awtextra.AbsoluteConstraints(761, 302, 130, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -159,6 +179,12 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
         }
     }//GEN-LAST:event_btn_loginActionPerformed
 
+    private void btn_registerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_registerActionPerformed
+        RegisterForm rf = new RegisterForm();
+        rf.show();
+        dispose();
+    }//GEN-LAST:event_btn_registerActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -197,12 +223,14 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel bgPic;
     private javax.swing.JButton btn_login;
+    private javax.swing.JButton btn_register;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel jlbl_wlcm;
     private javax.swing.JLabel jlbl_wlcmMssg2;
+    private javax.swing.JLabel jtxt_mssg1;
     private javax.swing.JPasswordField txt_password;
     private javax.swing.JTextField txt_username;
     // End of variables declaration//GEN-END:variables
