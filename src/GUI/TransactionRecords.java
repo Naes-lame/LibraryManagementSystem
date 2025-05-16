@@ -13,16 +13,40 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.ImageIcon;
 
 public class TransactionRecords extends javax.swing.JFrame implements imagesNbuttons {
-        private int transactionId = -1;
-        
+
+    private int transactionId = -1;
+
     public TransactionRecords() {
         initComponents();
         ScaleImages();
         table("");
-        populateComboBoxes();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
+        KeyAdapter preventLeadingSpaces = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                if (field.getText().isEmpty() && e.getKeyChar() == ' ') {
+                    e.consume();
+                }
+            }
+        };
+
+        txt_searchfield.addKeyListener(preventLeadingSpaces);
         
+        populateComboBoxes();
+        String aP = "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
+        ImageIcon icon = new ImageIcon(aP);
+        setIconImage(icon.getImage());
         txt_searchfield.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -30,24 +54,24 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 table(searchText); // Call your table function with the search text
             }
         });
-        
-        transactionRecordsTable.addMouseListener(new MouseAdapter(){
+
+        transactionRecordsTable.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e){
-                if(e.getClickCount() == 2){
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
                     int selectedRow = transactionRecordsTable.getSelectedRow();
-                    
-                    if (selectedRow != -1){
+
+                    if (selectedRow != -1) {
                         transactionId = Integer.parseInt(transactionRecordsTable.getValueAt(selectedRow, 0).toString());
                         borrowerNameComboBox.setSelectedItem(transactionRecordsTable.getValueAt(selectedRow, 1).toString());
                         bookTitleComboBox.setSelectedItem(transactionRecordsTable.getValueAt(selectedRow, 2).toString());
-                        System.out.println("selected transac id: "+ transactionId);
+                        System.out.println("selected transac id: " + transactionId);
                     }
                 }
             }
         });
     }
-    
+
     private void populateComboBoxes() {
         TransactionsComboBoxHelper.populateComboBox(bookTitleComboBox, "SELECT book_title FROM bookrecords WHERE deleted_at IS NULL", "book_title", "-- Select Book Title --");
         TransactionsComboBoxHelper.populateComboBox(borrowerNameComboBox, "SELECT borrower_name FROM borrowerrecords WHERE deleted_at IS NULL", "borrower_name", "-- Select Borrower Name --");
@@ -80,14 +104,11 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         }
         transactionRecordsTable.setModel(model);
         transactionRecordsTable.revalidate();
-        
+
         transactionRecordsTable.getColumnModel().getColumn(0).setMinWidth(0);
         transactionRecordsTable.getColumnModel().getColumn(0).setMaxWidth(0);
         transactionRecordsTable.getColumnModel().getColumn(0).setWidth(0);
     }
-
-
-    
 
     private void ScaleImages() {
         String[] paths = {
@@ -143,7 +164,8 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         jScrollPane1 = new javax.swing.JScrollPane();
         transactionRecordsTable = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("SCC Library Management System");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -415,6 +437,11 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         });
 
         borrowerNameComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        borrowerNameComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                borrowerNameComboBoxActionPerformed(evt);
+            }
+        });
 
         bookTitleComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -614,11 +641,11 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             // Validation of required fields.
             StringBuilder errorMessage = new StringBuilder("Error: ");
             boolean error = false;
-            if (borrowerNameComboBox.getSelectedItem()== null) {
+            if (borrowerNameComboBox.getSelectedItem() == null) {
                 errorMessage.append("Borrower Name field is empty!\n");
                 error = true;
             }
-            if (bookTitleComboBox.getSelectedItem()== null) {
+            if (bookTitleComboBox.getSelectedItem() == null) {
                 errorMessage.append("Book Title field is empty!\n");
                 error = true;
             }
@@ -626,7 +653,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             String borrowerName = borrowerNameComboBox.getSelectedItem().toString();
             String bookTitle = bookTitleComboBox.getSelectedItem().toString();
 
@@ -641,7 +668,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "Book was issued successfully!");
-                
+
                 table("");  // Refresh or update table view
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to issue book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -673,8 +700,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             }
 
             String fetchBookIdQuery = "SELECT book_id FROM bookrecords WHERE book_title = ?";
-            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms_database", "root", "");
-                 PreparedStatement stmt = conn.prepareStatement(fetchBookIdQuery)) {
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/lms_database", "root", ""); PreparedStatement stmt = conn.prepareStatement(fetchBookIdQuery)) {
 
                 stmt.setString(1, bookTitle);
                 ResultSet rs = stmt.executeQuery();
@@ -690,8 +716,6 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 e.printStackTrace();
             }
 
-            
-
             //generating timestamps
             Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
 
@@ -701,14 +725,14 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
             String status = transactions.isEmpty() ? "No Transactions Found" : transactions.get(0).getStatus();
 
             //grouping transaction details into object for easier manage.
-            Transactions tr = new Transactions(transactionId,  borrowerName, bookTitle, transactionDate, dueDate, status);
+            Transactions tr = new Transactions(transactionId, borrowerName, bookTitle, transactionDate, dueDate, status);
 
             //calling the returnBooks method through the controller.
             boolean success = TransactionsController.returnBooks(tr);
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "Book was returned successfully!");
-                
+
                 table("");
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to return book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -719,6 +743,10 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         }
 
     }//GEN-LAST:event_btn_returnActionPerformed
+
+    private void borrowerNameComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrowerNameComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_borrowerNameComboBoxActionPerformed
 
     /**
      * @param args the command line arguments

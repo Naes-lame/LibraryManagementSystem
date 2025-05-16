@@ -7,16 +7,36 @@ package GUI;
 
 import Controller.UsersController;
 import Models.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 public class LoginForm extends javax.swing.JFrame implements imagesNbuttons {
 
     public LoginForm() {
         initComponents();
         scaleImage();
+        String aP = "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
+        ImageIcon icon = new ImageIcon(aP);
+        setIconImage(icon.getImage());
+
+        KeyAdapter preventLeadingSpaces = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                if (field.getText().isEmpty() && e.getKeyChar() == ' ') {
+                    e.consume();
+                }
+            }
+        };
+
+        txt_username.addKeyListener(preventLeadingSpaces);
+        txt_password.addKeyListener(preventLeadingSpaces);
     }
 
     private void scaleImage() {
@@ -49,6 +69,7 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons {
         btn_register = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("SCC Library Management System");
         setResizable(false);
         setSize(new java.awt.Dimension(0, 0));
 
@@ -128,60 +149,55 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
-    try {
-        // Retrieve input values.
-        String username = txt_username.getText();
-        String password = txt_password.getText();
+        try {
+            // Retrieve input values
+            String username = txt_username.getText();
+            String password = txt_password.getText();
 
-        // Check if either field is empty.
-        StringBuilder errorMessage = new StringBuilder("Error: ");
-        boolean error = false;
-        if (username.trim().isEmpty()) {
-            errorMessage.append("Username field is empty!\n");
-            error = true;
-        }
-        if (password.trim().isEmpty()) {
-            errorMessage.append("Password field is empty!\n");
-            error = true;
-        }
-        if (error) {
-            JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Retrieve all Users and iterate to find a matching user.
-        List<Users> allUser = UsersController.getUser();
-        Users matchUser = null;
-        for (Users s : allUser) {
-            // Compare username and password.
-            if (s.getUsername().equals(username) && s.getPassword().equals(password)) {
-                matchUser = s;
-                break;
+            // Check if either field is empty
+            StringBuilder errorMessage = new StringBuilder("Error: ");
+            boolean error = false;
+            if (username.trim().isEmpty()) {
+                errorMessage.append("Username field is empty!\n");
+                error = true;
             }
+            if (password.trim().isEmpty()) {
+                errorMessage.append("Password field is empty!\n");
+                error = true;
+            }
+            if (error) {
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Retrieve the user based on the username
+            Users matchUser = UsersController.getUserByUsername(username);
+
+            if (matchUser != null) {
+                int userId = matchUser.getUserId();  // Get userId for session tracking
+                String storedHash = matchUser.getPassword();  // Hashed password from database
+
+                if (Account.comparePasswords(password, storedHash)) {  // Validate password
+                    // Store userId instead of username for session
+                    SessionManager.setLoggedInUserId(userId);
+
+                    JOptionPane.showMessageDialog(this, "User login successful!");
+                    Users users = new Users();
+                    users.setPassword(storedHash);
+                    Dashboard db = new Dashboard();
+                    db.show();
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Invalid username or password!", "Login Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "User not found!", "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
 
-        // If a match was found, set the session and move to Dashboard.
-        if (matchUser != null) {
-            // Store the user's unique ID in the session.
-            SessionManager.setLoggedInUserId(matchUser.getUserId());
-            // (Optionally, store the username if still needed.)
-            //SessionManager.setLoggedInUsername(matchUser.getUsername());
-            
-            JOptionPane.showMessageDialog(this, "User login successfully!");
-            Dashboard db = new Dashboard();
-            db.show();
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid username or password!", "Login Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-    } catch (NullPointerException e) {
-        JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.", "Error", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }
 
     }//GEN-LAST:event_btn_loginActionPerformed
 

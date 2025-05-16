@@ -6,17 +6,53 @@ package GUI;
 
 //all goods
 import Controller.*;
+import static GUI.Account.hashPasswordSHA256;
 import Models.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
     private int id;
     public RegisterForm() {
         initComponents();
         scaleImage();
-        initializeButtons();
+        initializeButtons();String aP ="C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
+        ImageIcon icon = new ImageIcon(aP);
+        setIconImage(icon.getImage());
+        
+        KeyAdapter preventLeadingSpaces = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                if (field.getText().isEmpty() && e.getKeyChar() == ' ') {
+                    e.consume();
+                }
+            }
+        };
+
+        txt_fullname.addKeyListener(preventLeadingSpaces);
+        txt_email.addKeyListener(preventLeadingSpaces);
+        txt_phonenumber.addKeyListener(preventLeadingSpaces);
+        txt_address.addKeyListener(preventLeadingSpaces);
+        txt_username.addKeyListener(preventLeadingSpaces);
+        txt_password.addKeyListener(preventLeadingSpaces);
+        
+        KeyAdapter preventLetters = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                }
+            }
+        };
+
+        txt_phonenumber.addKeyListener(preventLetters);
     }
 
     private void scaleImage() {
@@ -56,6 +92,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
         txt_address = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("SCC Library Management System");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -258,8 +295,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
     }//GEN-LAST:event_txt_passwordActionPerformed
 
     private void jbtn_signUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtn_signUpActionPerformed
-
-        try {
+try {
             String name = txt_fullname.getText();
             String email = txt_email.getText();
             long phoneNum = Long.parseLong(txt_phonenumber.getText().trim());
@@ -267,13 +303,15 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
             String username = txt_username.getText();
             String password = txt_password.getText();
 
-            StringBuilder errorMessage = new StringBuilder("Error: ");//catching empty fields.
+            StringBuilder errorMessage = new StringBuilder("Error: ");
             boolean error = false;
-            if (txt_fullname.getText().trim().isEmpty()) {
+
+            // Validate fields
+            if (name.trim().isEmpty()) {
                 errorMessage.append("Full Name field is empty!\n");
-                error = true;//confirm error.
+                error = true;
             }
-            if (txt_email.getText().trim().isEmpty()) {
+            if (email.trim().isEmpty()) {
                 errorMessage.append("Email field is empty!\n");
                 error = true;
             } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|yahoo\\.com|icloud\\.com)$")) {
@@ -286,43 +324,46 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
             } else if (!txt_phonenumber.getText().matches("\\d+")) {
                 errorMessage.append("Invalid input! Whole numbers only.\n");
                 error = true;
-
             } else if (txt_phonenumber.getText().trim().length() != 11) {
                 errorMessage.append("Invalid input! Phone Number must be 11 digits\n");
                 error = true;
-            }if (txt_address.getText().trim().isEmpty()) {
+            }
+            if (address.trim().isEmpty()) {
                 errorMessage.append("Address field is empty!\n");
                 error = true;
             }
-            if (txt_username.getText().trim().isEmpty()) {
+            if (username.trim().isEmpty()) {
                 errorMessage.append("Username field is empty!\n");
                 error = true;
             }
-            if (txt_password.getText().trim().isEmpty()) {
+            if (password.trim().isEmpty()) {
                 errorMessage.append("Password field is empty!\n");
                 error = true;
-            }else if(txt_password.getText().trim().length() < 6){
+            } else if (password.trim().length() < 6) {
                 errorMessage.append("Invalid input! Password must be more than 6 characters.\n");
                 error = true;
             }
+
             if (error) {
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);//error message for a specific field.
+                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            Users users = new Users(id, name, email, phoneNum, address, username, password);
+            // Hash the password before saving
+            String hashedPassword = hashPasswordSHA256(password);
+
+            Users users = new Users(id, name, email, phoneNum, address, username, hashedPassword);
             boolean success = UsersController.addUser(users);
 
             if (success) {
-                JOptionPane.showMessageDialog(this, "User registered seccessfully!");
+                JOptionPane.showMessageDialog(this, "User registered successfully!");
                 LoginForm lf = new LoginForm();
                 lf.show();
                 dispose();
-
             } else {
                 JOptionPane.showMessageDialog(this, "Error. User failed to register. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();

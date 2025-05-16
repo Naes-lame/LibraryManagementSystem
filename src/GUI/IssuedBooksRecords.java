@@ -8,17 +8,31 @@ import javax.swing.JLabel;
 import java.util.List;
 import Controller.IssuedBooksController;
 import Models.IssuedBooks;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
+import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 
-public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbuttons{
+public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbuttons {
 
     public IssuedBooksRecords() {
         initComponents();
         scaleImages();
         table("");
+        String aP = "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
+        ImageIcon icon = new ImageIcon(aP);
+        setIconImage(icon.getImage());
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
     }
-    
+
     private void scaleImages() {
         String[] paths = {
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png",
@@ -28,24 +42,24 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\exchange_3583309.png",
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\avatar_7610196.png"
         };
-        JLabel[] labels = { logo, dbIcon2, bookIcon, BrrwrIcon, TrnsactIcon, AccIcon};
+        JLabel[] labels = {logo, dbIcon2, bookIcon, BrrwrIcon, TrnsactIcon, AccIcon};
         scaleImages(paths, labels);
-        
-        initializeButtons(btn_dshbrd2, btn_BRecords, btn_BrwrRecords, btn_trnsct, btn_Acc );
+
+        initializeButtons(btn_dshbrd2, btn_BRecords, btn_BrwrRecords, btn_trnsct, btn_Acc);
     }
-    
-    private void table(String keyword){
+
+    private void table(String keyword) {
         List<IssuedBooks> issuedBooks = IssuedBooksController.getIssuedBooks();
-        
-        DefaultTableModel model = (DefaultTableModel)issuedBooksRecordsTable.getModel();
+
+        DefaultTableModel model = (DefaultTableModel) issuedBooksRecordsTable.getModel();
         model.setRowCount(0);
-        
+
         SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
-        
-        for(IssuedBooks issued : issuedBooks){
+
+        for (IssuedBooks issued : issuedBooks) {
             String issueDate = df.format(issued.getIssueDate());
             String dueDate = df.format(issued.getDueDate());
-           
+
             model.addRow(new Object[]{
                 issued.getTransactionId(),
                 issued.getBorrowerName(),
@@ -85,7 +99,8 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
         issuedBooksRecordsTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("SCC Library Management System");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));

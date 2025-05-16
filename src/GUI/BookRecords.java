@@ -13,7 +13,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -22,15 +25,26 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
+
     private int selectedBookId = -1;
-    
+
     public BookRecords() {
         initComponents();
         scaleImages();
         initializeButtons();
         table("");
         Genres();
-
+        String aP = "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
+        ImageIcon icon = new ImageIcon(aP);
+        setIconImage(icon.getImage());
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
         txt_search.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -42,7 +56,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         bookRecordsTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) { 
+                if (e.getClickCount() == 2) {
                     int selectedRow = bookRecordsTable.getSelectedRow();
 
                     if (selectedRow != -1) {
@@ -58,9 +72,22 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 }
             }
         });
+        KeyAdapter preventLeadingSpaces = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                if (field.getText().isEmpty() && e.getKeyChar() == ' ') {
+                    e.consume();
+                }
+            }
+        };
 
+        txt_search.addKeyListener(preventLeadingSpaces);
+        txtBookTitle.addKeyListener(preventLeadingSpaces);
+        txtBookAuthor.addKeyListener(preventLeadingSpaces);
+        txtBookIsbn.addKeyListener(preventLeadingSpaces);
+        txtBookQuantity.addKeyListener(preventLeadingSpaces);
     }
-
 
     private void table(String keyword) {
         List<Books> books = BooksController.getBooks();
@@ -68,12 +95,11 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         model.setRowCount(0);
 
         for (Books book : books) {
-            System.out.println("DEBUG - Adding to Table: Book ID = " + book.getBookId());
-            if (keyword == null || keyword.trim().isEmpty() ||
-                book.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
-                book.getAuthor().toLowerCase().contains(keyword.toLowerCase()) ||
-                book.getGenre().toLowerCase().contains(keyword.toLowerCase()) ||
-                book.getIsbn().toLowerCase().contains(keyword.toLowerCase())) {
+            if (keyword == null || keyword.trim().isEmpty()
+                    || book.getTitle().toLowerCase().contains(keyword.toLowerCase())
+                    || book.getAuthor().toLowerCase().contains(keyword.toLowerCase())
+                    || book.getGenre().toLowerCase().contains(keyword.toLowerCase())
+                    || book.getIsbn().toLowerCase().contains(keyword.toLowerCase())) {
 
                 model.addRow(new Object[]{
                     book.getBookId(),
@@ -95,7 +121,6 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         bookRecordsTable.getColumnModel().getColumn(0).setWidth(0);
     }
 
-    
     private void Genres() {
         bookGenreComboBox.removeAllItems();
         bookGenreComboBox.setEditable(true); // Make combo box editable
@@ -143,9 +168,6 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         bookGenreComboBox.showPopup();
         SwingUtilities.invokeLater(() -> textField.setText(input));
     }
-
-
-
 
     private void scaleImages() {
         String[] paths = {
@@ -212,7 +234,8 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         jTextArea1.setRows(5);
         jScrollPane2.setViewportView(jTextArea1);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("SCC Library Management System");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -757,7 +780,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
                 return;
             }
 
-            Books b = new Books(selectedBookId,title, author, genre, isbn, quantity);
+            Books b = new Books(selectedBookId, title, author, genre, isbn, quantity);
             boolean success = BooksController.addBook(b);
 
             if (success) {
@@ -787,7 +810,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         try {
             StringBuilder errorMessage = new StringBuilder("Error:");
             boolean error = false;
-            
+
             if (txtBookTitle.getText().trim().isEmpty()) {
                 errorMessage.append(" Title field is empty!\n");
                 error = true;
@@ -870,7 +893,7 @@ public class BookRecords extends javax.swing.JFrame implements imagesNbuttons {
         try {
             StringBuilder errorMessage = new StringBuilder("Error:");
             boolean error = false;
-            
+
             if (txtBookTitle.getText().trim().isEmpty()) {
                 errorMessage.append(" Title field is empty!\n");
                 error = true;

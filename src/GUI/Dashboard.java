@@ -20,23 +20,46 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public class Dashboard extends javax.swing.JFrame implements imagesNbuttons {
 
-  //  private JPanel histogramPanel; // Ensure it's defined
-
+    //  private JPanel histogramPanel; // Ensure it's defined
     public Dashboard() {
         initComponents();
         scaleImages();
         initializeButtons();
         getRecordCount("");
-
+        String aP = "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
+        ImageIcon icon = new ImageIcon(aP);
+        setIconImage(icon.getImage());
         setupHistogram(); // Call setupHistogram in constructor to display the chart
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int response = JOptionPane.showConfirmDialog(
+                        Dashboard.this,
+                        "Are you sure you want to log out?",
+                        "Logout Confirmation",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (response == JOptionPane.YES_OPTION) {
+                    LoginForm loginFrom = new LoginForm();
+                    loginFrom.show();
+                    dispose();
+                }
+            }
+        });
     }
 
     private void setupHistogram() {
@@ -45,14 +68,12 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         // Query to count books added and borrower memberships per month
-        String query = "SELECT MONTH(DateAdded) AS month, COUNT(*) AS books_added, 0 AS borrower_memberships FROM bookrecords GROUP BY month " +
-                       "UNION " +
-                       "SELECT MONTH(membership_date) AS month, 0 AS books_added, COUNT(*) AS borrower_memberships FROM borrowerrecords GROUP BY month " +
-                       "ORDER BY month";
+        String query = "SELECT MONTH(DateAdded) AS month, COUNT(*) AS books_added, 0 AS borrower_memberships FROM bookrecords GROUP BY month "
+                + "UNION "
+                + "SELECT MONTH(membership_date) AS month, 0 AS books_added, COUNT(*) AS borrower_memberships FROM borrowerrecords GROUP BY month "
+                + "ORDER BY month";
 
-        try (Connection conn = SQLDatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = SQLDatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 int month = rs.getInt("month");
@@ -83,16 +104,16 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons {
         renderer.setItemMargin(0.05); // Adjusts spacing between bars for clarity
 
         // Apply gradient colors for a modern look
-        renderer.setSeriesPaint(0, new Color(224,255,255)); // Books Added - Dark Blue Gradient
-        renderer.setSeriesPaint(1, new Color(25,25,112)); // Borrower Memberships - Green Gradient
+        renderer.setSeriesPaint(0, new Color(224, 255, 255)); // Books Added - Dark Blue Gradient
+        renderer.setSeriesPaint(1, new Color(25, 25, 112)); // Borrower Memberships - Green Gradient
 
         // Optional: Slight transparency for smoother rendering
         plot.setBackgroundAlpha(0.8f);
 
-        ChartPanel chartPanel = new ChartPanel(chart, false); 
-chartPanel.setMouseWheelEnabled(false); 
-chartPanel.setPopupMenu(null); 
-chartPanel.setFocusable(false);
+        ChartPanel chartPanel = new ChartPanel(chart, false);
+        chartPanel.setMouseWheelEnabled(false);
+        chartPanel.setPopupMenu(null);
+        chartPanel.setFocusable(false);
         chartPanel.setPreferredSize(histogramPanel.getSize());
 
         histogramPanel.removeAll();
@@ -104,10 +125,9 @@ chartPanel.setFocusable(false);
     // Helper method to convert month numbers to names
     private String getMonthName(int month) {
         String[] months = {"January", "February", "March", "April", "May", "June",
-                           "July", "August", "September", "October", "November", "December"};
+            "July", "August", "September", "October", "November", "December"};
         return months[month - 1];
     }
-
 
     //count for each status.
     private void getRecordCount(String tableName) {
@@ -195,7 +215,8 @@ chartPanel.setFocusable(false);
 
         jLabel13.setText("jLabel13");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("SCC Library Management System");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -675,9 +696,7 @@ chartPanel.setFocusable(false);
     }//GEN-LAST:event_btn_BRecordsActionPerformed
 
     private void btn_dshbrdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dshbrdActionPerformed
-        Dashboard db = new Dashboard();
-        db.show();
-        dispose();
+       
     }//GEN-LAST:event_btn_dshbrdActionPerformed
 
     private void btn_rtrndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_rtrndActionPerformed

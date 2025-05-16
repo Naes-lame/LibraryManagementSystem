@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 //All Goods!
 package GUI;
 
@@ -12,23 +11,38 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-public class BorrowerRecords extends javax.swing.JFrame implements imagesNbuttons{
+public class BorrowerRecords extends javax.swing.JFrame implements imagesNbuttons {
+
     private int selectedBorrowerId = -1;
-    
+
     public BorrowerRecords() {
         initComponents();
         scaleImages();
         initializeButtons();
         table("");
-        
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
+        String aP = "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
+        ImageIcon icon = new ImageIcon(aP);
+        setIconImage(icon.getImage());
         txt_search.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -36,14 +50,14 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 table(searchText);
             }
         });
-        
+
         borrowerRecordsTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) { 
+                if (e.getClickCount() == 2) {
                     int selectedRow = borrowerRecordsTable.getSelectedRow();
 
-                    if (selectedRow != -1) { 
+                    if (selectedRow != -1) {
                         selectedBorrowerId = Integer.parseInt(borrowerRecordsTable.getValueAt(selectedRow, 0).toString());
                         txtName.setText(borrowerRecordsTable.getValueAt(selectedRow, 1).toString());
                         txtAddress.setText(borrowerRecordsTable.getValueAt(selectedRow, 2).toString());
@@ -53,49 +67,58 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
                 }
             }
         });
+
+        KeyAdapter preventLeadingSpaces = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                if (field.getText().isEmpty() && e.getKeyChar() == ' ') {
+                    e.consume();
+                }
+            }
+        };
+
+        txt_search.addKeyListener(preventLeadingSpaces);
+        txtName.addKeyListener(preventLeadingSpaces);
+        txtAddress.addKeyListener(preventLeadingSpaces);
+        txtPhoneNumber.addKeyListener(preventLeadingSpaces);
+        txtEmail.addKeyListener(preventLeadingSpaces);
     }
-    
 
-    
-   private void table(String keyword) {
-    List<Borrowers> borrowers = BorrowersController.getBorrower();
+    private void table(String keyword) {
+        List<Borrowers> borrowers = BorrowersController.getBorrower();
 
-    DefaultTableModel model = (DefaultTableModel) borrowerRecordsTable.getModel();
-    model.setRowCount(0);
+        DefaultTableModel model = (DefaultTableModel) borrowerRecordsTable.getModel();
+        model.setRowCount(0);
 
-    SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
 
-    for (Borrowers b : borrowers) {  // Loop through each Borrowers object
-        String formattedDate = df.format(b.getMembershipDate());
+        for (Borrowers b : borrowers) {  // Loop through each Borrowers object
+            String formattedDate = df.format(b.getMembershipDate());
 
-        if (keyword == null || keyword.trim().isEmpty() ||
-            b.getName().toLowerCase().contains(keyword.toLowerCase()) ||
-            b.getAddress().toLowerCase().contains(keyword.toLowerCase()) ||
-            b.getEmail().toLowerCase().contains(keyword.toLowerCase())) {
+            if (keyword == null || keyword.trim().isEmpty()
+                    || b.getName().toLowerCase().contains(keyword.toLowerCase())
+                    || b.getAddress().toLowerCase().contains(keyword.toLowerCase())
+                    || b.getEmail().toLowerCase().contains(keyword.toLowerCase())) {
 
-            model.addRow(new Object[]{
-                b.getBorrowerId(), 
-                b.getName(),
-                b.getAddress(),
-                b.getPhone(),
-                b.getEmail(),
-                formattedDate
+                model.addRow(new Object[]{
+                    b.getBorrowerId(),
+                    b.getName(),
+                    b.getAddress(),
+                    b.getPhone(),
+                    b.getEmail(),
+                    formattedDate
                 });
             }
         }
-    borrowerRecordsTable.setModel(model);
-    borrowerRecordsTable.revalidate();
-    
-    borrowerRecordsTable.getColumnModel().getColumn(0).setMinWidth(0);
-    borrowerRecordsTable.getColumnModel().getColumn(0).setMaxWidth(0);
-    borrowerRecordsTable.getColumnModel().getColumn(0).setWidth(0);
+        borrowerRecordsTable.setModel(model);
+        borrowerRecordsTable.revalidate();
+
+        borrowerRecordsTable.getColumnModel().getColumn(0).setMinWidth(0);
+        borrowerRecordsTable.getColumnModel().getColumn(0).setMaxWidth(0);
+        borrowerRecordsTable.getColumnModel().getColumn(0).setWidth(0);
     }
 
-    
-
-        
-     
-     
     private void scaleImages() {
         String[] paths = {
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png",
@@ -105,12 +128,12 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\exchange_3583309.png",
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\avatar_7610196.png"
         };
-        JLabel[] labels = { logo, dbIcon, bookIcon, BrrwrIcon, TrnsactIcon, AccIcon};
+        JLabel[] labels = {logo, dbIcon, bookIcon, BrrwrIcon, TrnsactIcon, AccIcon};
         scaleImages(paths, labels);
-        
-        initializeButtons(btn_dshbrd, btn_BRecords, btn_BrwrRecords, btn_trnsct, btn_Acc );
+
+        initializeButtons(btn_dshbrd, btn_BRecords, btn_BrwrRecords, btn_trnsct, btn_Acc);
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -474,7 +497,8 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
 
         jLabel10.setText("jLabel10");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("SCC Library Management System");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -956,9 +980,9 @@ public class BorrowerRecords extends javax.swing.JFrame implements imagesNbutton
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_dshbrdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dshbrdActionPerformed
-Dashboard db = new Dashboard();
+        Dashboard db = new Dashboard();
         db.show();
-        dispose();        
+        dispose();
     }//GEN-LAST:event_btn_dshbrdActionPerformed
 
     private void btn_BRecordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BRecordsActionPerformed
@@ -1011,7 +1035,7 @@ Dashboard db = new Dashboard();
             String address = txtAddress.getText().trim();
             String email = txtEmail.getText().trim();
             String phoneNum = txtPhoneNumber.getText().trim();
-            
+
             StringBuilder errorMessage = new StringBuilder("Error:");
             boolean error = false;
 
@@ -1051,7 +1075,7 @@ Dashboard db = new Dashboard();
                 return;
             }
 
-            Timestamp membershipDate = new Timestamp(System.currentTimeMillis()); 
+            Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
 
             Borrowers b = new Borrowers(selectedBorrowerId, name, address, phoneNum, email, membershipDate);
             boolean success = BorrowersController.updateBorrower(b); // ✅ Ensure update method is called instead of addBorrower
@@ -1078,7 +1102,7 @@ Dashboard db = new Dashboard();
             String address = txtAddress.getText().trim();
             String email = txtEmail.getText().trim();
             String phoneNum = txtPhoneNumber.getText().trim();
-            
+
             StringBuilder errorMessage = new StringBuilder("Error:");
             boolean error = false;
 
@@ -1112,8 +1136,8 @@ Dashboard db = new Dashboard();
                 JOptionPane.showMessageDialog(this, errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
-            Timestamp membershipDate = new Timestamp(System.currentTimeMillis()); 
+
+            Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
             Borrowers b = new Borrowers(selectedBorrowerId, name, address, phoneNum, email, membershipDate);
             boolean success = BorrowersController.addBorrower(b);
 
@@ -1143,7 +1167,7 @@ Dashboard db = new Dashboard();
             String address = txtAddress.getText().trim();
             String email = txtEmail.getText().trim();
             String phoneNum = txtPhoneNumber.getText().trim();
-            
+
             StringBuilder errorMessage = new StringBuilder("Error:");
             boolean error = false;
 
@@ -1182,7 +1206,7 @@ Dashboard db = new Dashboard();
                 JOptionPane.showMessageDialog(this, "No valid book selected for update!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            Timestamp membershipDate = new Timestamp(System.currentTimeMillis()); 
+            Timestamp membershipDate = new Timestamp(System.currentTimeMillis());
             Borrowers b = new Borrowers(selectedBorrowerId, name, address, phoneNum, email, membershipDate);
             boolean success = BorrowersController.deleteBorrowers(b);
 

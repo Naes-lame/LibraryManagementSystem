@@ -7,8 +7,14 @@ package GUI;
 import javax.swing.JLabel;
 import Controller.ReturnedBooksController;
 import Models.ReturnedBooks;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNbuttons{
@@ -16,7 +22,28 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
     public ReturnedBooksRecords() {
         initComponents();
         imagesNbuttons();
-        table();
+        table();String aP ="C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
+        ImageIcon icon = new ImageIcon(aP);
+        setIconImage(icon.getImage());
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
+        KeyAdapter preventLeadingSpaces = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                if (field.getText().isEmpty() && e.getKeyChar() == ' ') {
+                    e.consume();
+                }
+            }
+        };
+
+        txt_search.addKeyListener(preventLeadingSpaces);
     }
     
     private void imagesNbuttons(){
@@ -85,7 +112,8 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
         jScrollPane1 = new javax.swing.JScrollPane();
         returnedBooksRecordsTable = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("SCC Library Management System");
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
