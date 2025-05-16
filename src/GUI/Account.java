@@ -1,10 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI;
 
-//DOESN'T REFRESH UI AFTER UPDATING 
 import Controller.UsersController;
 import Database.SQLDatabaseManager;
 import Models.*;
@@ -466,7 +461,7 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
                     .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -577,7 +572,6 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
 
         addressTextField.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
 
-        passTextField.setEditable(false);
         passTextField.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
 
         adress3.setFont(new java.awt.Font("Calibri", 1, 12)); // NOI18N
@@ -772,10 +766,6 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
                 errorMessage.append("Address field is empty!\n");
                 error = true;
             }
-//            if (passwordTextField.getText().trim().isEmpty()) {
-//                errorMessage.append("Password field is empty!\n");
-//                error = true;
-//            }
 
             // If there is any validation error, show message and exit.
             if (error) {
@@ -789,21 +779,51 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
             long phoneNumber = Long.parseLong(phoneNumberTextField.getText().trim());
             String address = addressTextField.getText().trim();
             String username = usernameTextField.getText().trim();
-           //fix so password can be read
-            if (hashPass == null) {
-                Users users = new Users();
-                String password = users.getPassword();
+
+            // Fix password retrieval: get password from database if hashPass is null
+            String password;
+            int userId = SessionManager.getLoggedInUserId();
+
+            if (hashPass == null || hashPass.isEmpty()) {
+                password = UsersController.getHashedPassword(userId);  // New method to fetch password
             } else {
-                String password = hashPass;
+                password = hashPass;
             }
 
-            
+            // Create an updated user object
+            Users updatedUser = new Users(userId, fullname, email, phoneNumber, address, username, password);
+
+            // Attempt to update the user info.
+            boolean success = UsersController.updateUserInfo(updatedUser);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Admin info updated successfully!");
+
+                // Refresh user data from the database
+                Users refreshedUser = UsersController.getLoggedInUser(userId);
+                if (refreshedUser != null) {
+                    // Update the UI fields.
+                    SessionManager.setLoggedInUserId(refreshedUser.getUserId());
+                    txt_username.setText(refreshedUser.getUsername());
+                    txt_email.setText(refreshedUser.getEmail());
+                    usernameTextField.setText(refreshedUser.getUsername());
+                    fullNameTextField.setText(refreshedUser.getFullName());
+                    phoneNumberTextField.setText("0" + refreshedUser.getPhoneNum());
+                    emailTextField.setText(refreshedUser.getEmail());
+                    addressTextField.setText(refreshedUser.getAddress());
+                } else {
+                    System.out.println("User not found! Ensure the user_id exists in the database.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update admin info!", "Update Error", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
-
     }
+
+
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
         update();
     }//GEN-LAST:event_updateBtnActionPerformed
