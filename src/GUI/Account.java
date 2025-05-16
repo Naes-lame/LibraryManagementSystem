@@ -9,6 +9,7 @@ import Controller.UsersController;
 import Models.*;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import Models.Users;
 
 public class Account extends javax.swing.JFrame implements imagesNbuttons {
 
@@ -16,48 +17,39 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
         initComponents();
         scaleImages();
         loadUserData();
+
     }
 
     private void loadUserData() {
-        String username = SessionManager.getLoggedInUsername();
+        int userId = SessionManager.getLoggedInUserId();
 
-        if (username == null || username.isEmpty()) {
+        // A userId of 0 (or any invalid default value you choose) indicates no user is logged in.
+        if (userId == 0) {
             System.out.println("No user logged in!");
             return;
         }
-        Users user = UsersController.getLoggedInUser(username);
+
+        // Retrieve user data by userId.
+        Users user = UsersController.getLoggedInUser(userId);
 
         if (user != null) {
+            // Update session, if needed.
             SessionManager.setLoggedInUserId(user.getUserId());
-            SessionManager.setLoggedInUsername(user.getUsername());
+            // Optionally, if you still want to maintain the username, you can set it too.
+            // SessionManager.setLoggedInUsername(user.getUsername());
 
+            // Update the UI fields.
             txt_username.setText(user.getUsername());
             txt_email.setText(user.getEmail());
-
             usernameTextField.setText(user.getUsername());
             fullNameTextField.setText(user.getFullName());
-            phoneNumberTextField.setText(String.valueOf(user.getPhoneNum()));
+            phoneNumberTextField.setText(0+String.valueOf(user.getPhoneNum()));
             emailTextField.setText(user.getEmail());
             addressTextField.setText(user.getAddress());
             passwordTextField.setText(user.getPassword());
         } else {
-            System.out.println("User not found! Make sure database contains this username.");
+            System.out.println("User not found! Make sure the database contains this user_id.");
         }
-    }
-
-    private void refreshData() {
-        String username = SessionManager.getLoggedInUsername();
-
-        Users user = UsersController.getLoggedInUser(username);
-
-        txt_username.setText(user.getUsername());
-        txt_email.setText(user.getEmail());
-        usernameTextField.setText(user.getUsername());
-        fullNameTextField.setText(user.getFullName());
-        phoneNumberTextField.setText(String.valueOf(user.getPhoneNum()));
-        emailTextField.setText(user.getEmail());
-        addressTextField.setText(user.getAddress());
-        passwordTextField.setText(user.getPassword());
     }
 
     private void scaleImages() {
@@ -505,6 +497,7 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
             StringBuilder errorMessage = new StringBuilder("Error:\n");
             boolean error = false;
 
+            // Validate the fields.
             if (usernameTextField.getText().trim().isEmpty()) {
                 errorMessage.append("Username field is empty!\n");
                 error = true;
@@ -514,7 +507,7 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
                 error = true;
             }
             if (phoneNumberTextField.getText().trim().isEmpty()) {
-                errorMessage.append("Phone Number field is empty!");
+                errorMessage.append("Phone Number field is empty!\n");
                 error = true;
             } else if (!phoneNumberTextField.getText().matches("\\d+")) {
                 errorMessage.append("Invalid input! Whole numbers only.\n");
@@ -539,6 +532,13 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
                 error = true;
             }
 
+            // If there is any validation error, show message and exit.
+            if (error) {
+                JOptionPane.showMessageDialog(this, errorMessage.toString(), "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Retrieve and convert the input values.
             String fullname = fullNameTextField.getText().trim();
             String email = emailTextField.getText().trim();
             long phoneNumber = Long.parseLong(phoneNumberTextField.getText().trim());
@@ -547,27 +547,40 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
             String password = passwordTextField.getText().trim();
 
             int userId = SessionManager.getLoggedInUserId();
-            Users users = new Users(userId, fullname, email, phoneNumber, address, username, password);
-            boolean success = UsersController.updateUserInfo(users);
+            // Create an updated user object using the current user id.
+            Users updatedUser = new Users(userId, fullname, email, phoneNumber, address, username, password);
+
+            // Attempt to update the user info.
+            boolean success = UsersController.updateUserInfo(updatedUser);
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "Admin info updated successfully!");
 
-                Users user = new Users();
-
-                user.setFullName(fullname);
-                user.setEmail(email);
-                user.setPhoneNum(phoneNumber);
-                user.setAddress(address);
-                user.setUsername(username);
-                user.setPassword(password);
-                loadUserData();}
-           
-
+                // Re-fetch the user from database after update.
+                Users refreshedUser = UsersController.getLoggedInUser(userId);
+                if (refreshedUser != null) {
+                    // Update the session (if needed) and the UI fields.
+                    SessionManager.setLoggedInUserId(refreshedUser.getUserId());
+                    txt_username.setText(refreshedUser.getUsername());
+                    txt_email.setText(refreshedUser.getEmail());
+                    usernameTextField.setText(refreshedUser.getUsername());
+                    fullNameTextField.setText(refreshedUser.getFullName());
+                    phoneNumberTextField.setText(0+String.valueOf(refreshedUser.getPhoneNum()));
+                    emailTextField.setText(refreshedUser.getEmail());
+                    addressTextField.setText(refreshedUser.getAddress());
+                    passwordTextField.setText(refreshedUser.getPassword());
+                } else {
+                    System.out.println("User not found! Make sure the database contains this user_id.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to update admin info!", "Update Error", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+
+
     }//GEN-LAST:event_updateBtnActionPerformed
 
     private void btn_logout1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logout1ActionPerformed

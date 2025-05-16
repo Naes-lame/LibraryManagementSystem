@@ -1,28 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Controller;
 
 import Database.DatabaseOperations;
-import Models.*;
+import Models.Users;
 import java.util.List;
+
 public class UsersController {
-    private  static DatabaseOperations dbo = new DatabaseOperations();
+    private static DatabaseOperations dbo = new DatabaseOperations();
     
-    public static boolean addUser(Users users){
+    public static boolean addUser(Users users) {
         return dbo.addUser(users);
     }
    
-     public static List<Users> getUser(){
-       return dbo.getUser();
-   }
-     
-   public static Users getLoggedInUser(String username) {
-        return dbo.getLoggedInUser(username);
+    public static List<Users> getUser() {
+        return dbo.getUser();
     }
-    public static boolean updateUserInfo(Users users){
+     
+    // Updated method: accepts an int userId rather than a String.
+    public static Users getLoggedInUser(int userId) {
+        return dbo.getLoggedInUser(userId);
+    }
+    
+    public static boolean updateUserInfo(Users users) {
         return dbo.updateUserInfo(users);
     }  
-    
 }

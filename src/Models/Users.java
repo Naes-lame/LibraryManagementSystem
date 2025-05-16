@@ -23,15 +23,6 @@ public class Users {
         this.username = username;
         this.password = password;
     }
-     public Users() {
-        this.userId = userId;
-        this.fullName = fullName;
-        this.email = email;
-        this.phoneNum = phoneNum;
-        this.address = address;
-        this.username = username;
-        this.password = password;
-    }
     
     public  int getUserId(){
         return userId;

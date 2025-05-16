@@ -131,7 +131,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
             ps.setString(3, books.getGenre());
             ps.setString(4, books.getIsbn());
             ps.setInt(5, books.getQuantity());
-            ps.setInt(6, books.getBookId()); 
+            ps.setInt(6, books.getBookId());
 
             System.out.println("Executing update query for book_id: " + books.getBookId()); // Debugging print
 
@@ -144,7 +144,6 @@ public class DatabaseOperations extends SQLDatabaseManager {
             return false;
         }
     }
-
 
     //books SOFT DELETE
     @Override
@@ -182,7 +181,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
                 String isbn = rs.getString("ISBN");
                 int quantity = rs.getInt("Quantity");
 
-                bookList.add(new Books(id, title, author, genre, isbn, quantity)); 
+                bookList.add(new Books(id, title, author, genre, isbn, quantity));
             }
 
         } catch (SQLException e) {
@@ -191,7 +190,6 @@ public class DatabaseOperations extends SQLDatabaseManager {
         }
         return bookList;
     }
-
 
     //borrower ADD.
     @Override
@@ -336,10 +334,9 @@ public class DatabaseOperations extends SQLDatabaseManager {
             JOptionPane.showMessageDialog(null, "Error in the Database occurred!", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
-        return false;                                      
+        return false;
     }
 
-    
     @Override
     public boolean updateStatToReturn(int transactionId) {
         try (Connection con = getConnection()) {
@@ -389,6 +386,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
         }
         return false;
     }
+
     @Override
     public boolean deleteFromIssuedTbl(int transactionId) {
         try (Connection con = getConnection()) {
@@ -405,6 +403,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
         }
         return false;
     }
+
     @Override
     public boolean returnBook(Transactions transactions) {
         try (Connection con = getConnection()) {
@@ -428,9 +427,6 @@ public class DatabaseOperations extends SQLDatabaseManager {
         }
         return false;
     }
-
-
-
 
     //transactions FETCH DATA.
     public List<Transactions> getTransaction() {
@@ -534,55 +530,55 @@ public class DatabaseOperations extends SQLDatabaseManager {
         return count;
     }
 
-    public Users getLoggedInUser(String username) {
+    public static Users getLoggedInUser(int userId) {
         Users user = null;
         try (Connection con = getConnection()) {
-            String query = "SELECT * FROM user WHERE username = ?";
+            String query = "SELECT * FROM user WHERE user_id = ?";
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, username);
+            ps.setInt(1, userId); // Use setInt because userId is an int.
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
                 user = new Users(
-                    rs.getInt("user_id"),
-                    rs.getString("full_name"),
-                    rs.getString("email"),
-                    rs.getLong("phone"),
-                    rs.getString("address"),
-                    rs.getString("username"),
-                    rs.getString("password")
+                        rs.getInt("user_id"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getLong("phone"),
+                        rs.getString("address"),
+                        rs.getString("username"),
+                        rs.getString("password")
                 );
-
-                SessionManager.setLoggedInUserId(rs.getInt("user_id"));
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error retrieving user data!", "Database Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error retrieving user data!",
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         return user;
     }
-    
-    public boolean updateUserInfo(Users users){
-        try(Connection con = getConnection()){
+
+    public boolean updateUserInfo(Users users) {
+        try (Connection con = getConnection()) {
             String updateQuery = "UPDATE user SET full_name = ?, email = ?, phone = ?, address = ?,username = ?, password = ? WHERE user_id = ? ";
             PreparedStatement ps = con.prepareStatement(updateQuery);
-            
+
             ps.setString(1, users.getFullName());
             ps.setString(2, users.getEmail());
-            ps.setLong(3, users.getPhoneNum());  // Phone should be a long/int
+            ps.setLong(3, users.getPhoneNum());
             ps.setString(4, users.getAddress());
             ps.setString(5, users.getUsername());
             ps.setString(6, users.getPassword());
             ps.setInt(7, users.getUserId());
             System.out.println("Executing query: " + ps);
             int result = ps.executeUpdate();
-            
+
             return result > 0;
-            
-        } catch(SQLException e) {
+
+        } catch (SQLException e) {
             e.printStackTrace();  // Prints full error details in the terminal
-            JOptionPane.showMessageDialog(null, "Failed to update admin info!\nError: " + e.getMessage(), 
-            "Database Error", JOptionPane.ERROR_MESSAGE);
-        }   return false;
+            JOptionPane.showMessageDialog(null, "Failed to update admin info!\nError: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
     }
 }

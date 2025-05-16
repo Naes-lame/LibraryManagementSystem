@@ -12,22 +12,22 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
+public class LoginForm extends javax.swing.JFrame implements imagesNbuttons {
 
     public LoginForm() {
         initComponents();
         scaleImage();
     }
-          
-    private void scaleImage(){
+
+    private void scaleImage() {
         String[] paths = {
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\freepik3.jpg",
             "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png"
         };
-        
-        JLabel[] labels = { bgPic, jlbl_wlcmMssg2 };
+
+        JLabel[] labels = {bgPic, jlbl_wlcmMssg2};
         scaleImages(paths, labels);
-        
+
         initializeButtons(btn_register);
     }
 
@@ -128,55 +128,61 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons{
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
-        try{
-            
-            String username = txt_username.getText();
-            String password = txt_password.getText();
-            
-            StringBuilder errorMessage = new StringBuilder("Error: ");
-            boolean error = false;
-             if (txt_username.getText().trim().isEmpty()) {
-                errorMessage.append("Username field is empty!\n");
-                error = true;
-            }
-            if (txt_password.getText().trim().isEmpty()) {
-                errorMessage.append("Password field is empty!\n");
-                error = true;
-            }
-            if (error) {
-                JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);//error message for a specific field.
-                return;
-            }
-            
-            
-            
-            List<Users> allUser = UsersController.getUser();
-            Users matchUser = null;
-            for (Users s : allUser){
-                if(s.getUsername().equals(username)&& s.getPassword().equals(password)){
-                    matchUser = s;
-                    break;
-                }
-            }
-                
-                if(matchUser !=null){
-                    SessionManager.setLoggedInUsername(matchUser.getUsername());
-                    JOptionPane.showMessageDialog(this, "User login successfully!");
-                    Dashboard db = new Dashboard();
-                    db.show();
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Invalid username or password!", "Login Error", JOptionPane.ERROR_MESSAGE);
-                }
+    try {
+        // Retrieve input values.
+        String username = txt_username.getText();
+        String password = txt_password.getText();
 
-            
-         }catch(NullPointerException e){
-            JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred.","Error",JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+        // Check if either field is empty.
+        StringBuilder errorMessage = new StringBuilder("Error: ");
+        boolean error = false;
+        if (username.trim().isEmpty()) {
+            errorMessage.append("Username field is empty!\n");
+            error = true;
         }
+        if (password.trim().isEmpty()) {
+            errorMessage.append("Password field is empty!\n");
+            error = true;
+        }
+        if (error) {
+            JOptionPane.showMessageDialog(new JFrame(), errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Retrieve all Users and iterate to find a matching user.
+        List<Users> allUser = UsersController.getUser();
+        Users matchUser = null;
+        for (Users s : allUser) {
+            // Compare username and password.
+            if (s.getUsername().equals(username) && s.getPassword().equals(password)) {
+                matchUser = s;
+                break;
+            }
+        }
+
+        // If a match was found, set the session and move to Dashboard.
+        if (matchUser != null) {
+            // Store the user's unique ID in the session.
+            SessionManager.setLoggedInUserId(matchUser.getUserId());
+            // (Optionally, store the username if still needed.)
+            //SessionManager.setLoggedInUsername(matchUser.getUsername());
+            
+            JOptionPane.showMessageDialog(this, "User login successfully!");
+            Dashboard db = new Dashboard();
+            db.show();
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid username or password!", "Login Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    } catch (NullPointerException e) {
+        JOptionPane.showMessageDialog(this, "Unexpected system issue. Please contact support.", "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "An unexpected error occurred.", "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
+
     }//GEN-LAST:event_btn_loginActionPerformed
 
     private void btn_registerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_registerActionPerformed
