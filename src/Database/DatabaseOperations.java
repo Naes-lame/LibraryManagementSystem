@@ -303,13 +303,13 @@ public class DatabaseOperations extends SQLDatabaseManager {
     @Override
     public boolean issueBook(Transactions transactions) {
         try (Connection con = getConnection()) {
+            // Check if book is already issued and not returned
             String checkQuery = "SELECT status FROM transactions WHERE borrower_name = ? AND book_title = ? ORDER BY transaction_date DESC LIMIT 1";
-            PreparedStatement check = con.prepareStatement(checkQuery);
+            PreparedStatement checkStmt = con.prepareStatement(checkQuery);
+            checkStmt.setString(1, transactions.getBorrowerName());
+            checkStmt.setString(2, transactions.getBookTitle());
 
-            check.setString(1, transactions.getBorrowerName());
-            check.setString(2, transactions.getBookTitle());
-
-            ResultSet rs = check.executeQuery();
+            ResultSet rs = checkStmt.executeQuery();
 
             if (rs.next()) {
                 String status = rs.getString("status");
@@ -322,111 +322,169 @@ public class DatabaseOperations extends SQLDatabaseManager {
                 }
             }
 
-            String query = "INSERT INTO transactions (borrower_name, book_title, transaction_date, due_date, status) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'Issued');";
-            PreparedStatement ps = con.prepareStatement(query);
+            // Issue book
+            String issueQuery = "INSERT INTO transactions (borrower_name, book_title, transaction_date, due_date, status) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'Issued')";
+            PreparedStatement issueStmt = con.prepareStatement(issueQuery);
+            issueStmt.setString(1, transactions.getBorrowerName());
+            issueStmt.setString(2, transactions.getBookTitle());
 
-            ps.setString(1, transactions.getBorrowerName());
-            ps.setString(2, transactions.getBookTitle());
+            int issueResult = issueStmt.executeUpdate();
 
-            int result = ps.executeUpdate();
-            return result > 0;
+            if (issueResult > 0) {
+                 // Add the issued book to `issuedbooks`
+                String insertIssuedQuery = "INSERT INTO issuedbooks (borrower_name, book_title, issue_date, due_date, status) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'Issued')";
+                PreparedStatement issuedStmt = con.prepareStatement(insertIssuedQuery);
+                issuedStmt.setString(1, transactions.getBorrowerName());
+                issuedStmt.setString(2, transactions.getBookTitle());
+                issuedStmt.executeUpdate();
+
+                // Reduce book quantity
+                String updateQuantityQuery = "UPDATE bookrecords SET quantity = quantity - 1 WHERE book_title = ?";
+                PreparedStatement updateStmt = con.prepareStatement(updateQuantityQuery);
+                updateStmt.setString(1, transactions.getBookTitle());
+                updateStmt.executeUpdate();
+
+            return true;
+            }
+
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error in the Database occurred!", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         return false;
     }
-
+    
+    
     @Override
     public boolean updateStatToReturn(int transactionId) {
         try (Connection con = getConnection()) {
-            // Check if transaction is already marked as "Returned"
-            String checkQuery = "SELECT status FROM transactions WHERE transaction_id = ?";
-            PreparedStatement checkPs = con.prepareStatement(checkQuery);
-            checkPs.setInt(1, transactionId);
-
-            ResultSet rs = checkPs.executeQuery();
-            if (rs.next() && "Returned".equals(rs.getString("status"))) {
-                return false; // Prevent unnecessary update
-            }
-
-            // Proceed with update
-            String query = "UPDATE transactions SET status = ? WHERE transaction_id = ?";
+            String query = "UPDATE transactions SET status = 'Returned' WHERE transaction_id = ?";
             PreparedStatement ps = con.prepareStatement(query);
-
-            ps.setString(1, "Returned");
-            ps.setInt(2, transactionId);
-
-            int result = ps.executeUpdate();
-            return result > 0;
-
+            ps.setInt(1, transactionId);
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
 
+//    @Override
+//    public boolean updateStatToReturn(int transactionId) {
+//        try (Connection con = getConnection()) {
+//            // Check if transaction is already marked as "Returned"
+//            String checkQuery = "SELECT status FROM transactions WHERE transaction_id = ?";
+//            PreparedStatement checkPs = con.prepareStatement(checkQuery);
+//            checkPs.setInt(1, transactionId);
+//
+//            ResultSet rs = checkPs.executeQuery();
+//            if (rs.next() && "Returned".equals(rs.getString("status"))) {
+//                return false; // Prevent unnecessary update
+//            }
+//
+//            // Proceed with update
+//            String query = "UPDATE transactions SET status = ? WHERE transaction_id = ?";
+//            PreparedStatement ps = con.prepareStatement(query);
+//
+//            ps.setString(1, "Returned");
+//            ps.setInt(2, transactionId);
+//
+//            int result = ps.executeUpdate();
+//            return result > 0;
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
+    
     @Override
     public boolean transferToReturnTbl(int transactionId) {
         try (Connection con = getConnection()) {
-            String query = "INSERT INTO returned_books (transaction_id, borrower_name, book_title, date_returned, status) "
-                    + "SELECT transaction_id, borrower_name, book_title, NOW(), 'Returned' "
-                    + "FROM transactions t WHERE transaction_id = ? AND NOT EXISTS "
-                    + "(SELECT 1 FROM returned_books rb WHERE rb.transaction_id = t.transaction_id)";
+            String query = "INSERT INTO returnedbooks (borrower_name, book_title, date_returned, status) "
+                    + "SELECT borrower_name, book_title, NOW(), 'Returned' FROM transactions WHERE transaction_id = ?";
 
             PreparedStatement ps = con.prepareStatement(query);
-
             ps.setInt(1, transactionId);
-
-            int result = ps.executeUpdate();
-            return result > 0;
-
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-
+            e.printStackTrace();
         }
         return false;
     }
+
+
+//    @Override
+//    public boolean transferToReturnTbl(int transactionId) {
+//        try (Connection con = getConnection()) {
+//            String query = "INSERT INTO returnedbooks ( borrower_name, book_title, date_returned, status) "
+//                    + "SELECT borrower_name, book_title, NOW(), 'Returned' "
+//                    + "FROM transactions t WHERE transaction_id = ? AND NOT EXISTS "
+//                    + "(SELECT 1 FROM returned_books rb WHERE rb.transaction_id = t.transaction_id)";
+//
+//            PreparedStatement ps = con.prepareStatement(query);
+//
+//            ps.setInt(1, transactionId);
+//
+//            int result = ps.executeUpdate();
+//            return result > 0;
+//
+//        } catch (SQLException e) {
+//
+//        }
+//        return false;
+//    }
 
     @Override
     public boolean deleteFromIssuedTbl(int transactionId) {
         try (Connection con = getConnection()) {
-            String query = "DELETE FROM issuedbooks WHERE transaction_id = ?";
+            String query = "DELETE FROM issuedbooks WHERE book_title = (SELECT book_title FROM transactions WHERE transaction_id = ?)";
             PreparedStatement ps = con.prepareStatement(query);
-
             ps.setInt(1, transactionId);
-
-            int result = ps.executeUpdate();
-            return result > 0;
-
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
-
+    
     @Override
     public boolean returnBook(Transactions transactions) {
         try (Connection con = getConnection()) {
-            String query = "UPDATE transactions SET borrower_name = ?, book_title = ?, transaction_date = ?,status = ? WHERE transaction_id = ?";
-            PreparedStatement ps = con.prepareStatement(query);
-
-            ps.setString(1, transactions.getBorrowerName());
-            ps.setString(2, transactions.getBookTitle());
-            ps.setTimestamp(3, transactions.getTransactionDate());
-            ps.setString(4, "Returned");
-            ps.setInt(5, transactions.getTransactionId());
-
-            int result = ps.executeUpdate();
-            updateStatToReturn(transactions.getTransactionId());
-            transferToReturnTbl(transactions.getTransactionId());
-            deleteFromIssuedTbl(transactions.getTransactionId());
+            if (!updateStatToReturn(transactions.getTransactionId())) return false;
+            if (!transferToReturnTbl(transactions.getTransactionId())) return false;
+            if (!deleteFromIssuedTbl(transactions.getTransactionId())) return false;
             return true;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
+
+
+//    @Override
+//    public boolean returnBook(Transactions transactions) {
+//        try (Connection con = getConnection()) {
+//            String query = "UPDATE transactions SET borrower_name = ?, book_title = ?, transaction_date = ?,status = ? WHERE transaction_id = ?";
+//            PreparedStatement ps = con.prepareStatement(query);
+//
+//            ps.setString(1, transactions.getBorrowerName());
+//            ps.setString(2, transactions.getBookTitle());
+//            ps.setTimestamp(3, transactions.getTransactionDate());
+//            ps.setString(4, "Returned");
+//            ps.setInt(5, transactions.getTransactionId());
+//
+//            int result = ps.executeUpdate();
+//            updateStatToReturn(transactions.getTransactionId());
+//            transferToReturnTbl(transactions.getTransactionId());
+//            deleteFromIssuedTbl(transactions.getTransactionId());
+//            return true;
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
     //transactions FETCH DATA.
     public List<Transactions> getTransaction() {
@@ -469,7 +527,6 @@ public class DatabaseOperations extends SQLDatabaseManager {
 
             while (rs.next()) {
                 IssuedBooks issuedBooks = new IssuedBooks(
-                        rs.getInt("transaction_id"),
                         rs.getString("borrower_name"),
                         rs.getString("book_title"),
                         rs.getTimestamp("issue_date"),
@@ -489,7 +546,7 @@ public class DatabaseOperations extends SQLDatabaseManager {
     //return FETCH RETURNED BOOKS.
     public List<ReturnedBooks> getReturnedBooks() {
         List<ReturnedBooks> returnedBooksList = new ArrayList<>();
-        String query = "SELECT * FROM returned_books";
+        String query = "SELECT * FROM returnedbooks";
 
         try {
             Connection con = getConnection();
@@ -498,7 +555,6 @@ public class DatabaseOperations extends SQLDatabaseManager {
 
             while (rs.next()) {
                 ReturnedBooks returnedBooks = new ReturnedBooks(
-                        rs.getInt("transaction_id"),
                         rs.getString("borrower_name"),
                         rs.getString("book_title"),
                         rs.getTimestamp("date_returned"),

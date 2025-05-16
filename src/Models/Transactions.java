@@ -20,6 +20,11 @@ public class Transactions {
         this.status = status;
     }
     
+    public Transactions( String borrowerName, String bookTitle){
+        this.borrowerName = borrowerName;
+        this.bookTitle = bookTitle;
+    }
+    
     public int getTransactionId(){
         return transactionId;
     }

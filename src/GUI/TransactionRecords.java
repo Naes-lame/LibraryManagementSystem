@@ -638,9 +638,17 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
 
     private void btn_issueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_issueActionPerformed
         try {
-            // Validation of required fields.
+            String borrowerName = borrowerNameComboBox.getSelectedItem().toString();
+            String bookTitle = bookTitleComboBox.getSelectedItem().toString();
+            // Prevent returning if placeholders are selected
+            if (borrowerName.equals("-- Select Borrower Name --") || bookTitle.equals("-- Select Book Title --")) {
+                JOptionPane.showMessageDialog(new JFrame(), "Please select a valid borrower and book title!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            // Validate required fields
             StringBuilder errorMessage = new StringBuilder("Error: ");
             boolean error = false;
+
             if (borrowerNameComboBox.getSelectedItem() == null) {
                 errorMessage.append("Borrower Name field is empty!\n");
                 error = true;
@@ -654,22 +662,14 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
                 return;
             }
 
-            String borrowerName = borrowerNameComboBox.getSelectedItem().toString();
-            String bookTitle = bookTitleComboBox.getSelectedItem().toString();
-
-            // Set timestamps and status.
-            Timestamp transactionDate = new Timestamp(System.currentTimeMillis());
-            Timestamp dueDate = new Timestamp(System.currentTimeMillis());
-            String status = "Issued";
-
-            // Create transaction object.
-            Transactions tr = new Transactions(transactionId, borrowerName, bookTitle, transactionDate, dueDate, status);
+            // Create transaction object
+            Transactions tr = new Transactions(borrowerName, bookTitle);
             boolean success = TransactionsController.issueBook(tr);
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "Book was issued successfully!");
-
-                table("");  // Refresh or update table view
+                populateComboBoxes();
+                table("");  // Refresh table view
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to issue book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -683,6 +683,12 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
         try {
             String borrowerName = borrowerNameComboBox.getSelectedItem().toString();
             String bookTitle = bookTitleComboBox.getSelectedItem().toString();
+            // Prevent returning if placeholders are selected
+            if (borrowerName.equals("-- Select Borrower Name --") || bookTitle.equals("-- Select Book Title --")) {
+                JOptionPane.showMessageDialog(new JFrame(), "Please select a valid borrower and book title!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             //validation
             StringBuilder errorMessage = new StringBuilder("Error: ");
             boolean error = false;
@@ -732,7 +738,7 @@ public class TransactionRecords extends javax.swing.JFrame implements imagesNbut
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "Book was returned successfully!");
-
+                populateComboBoxes();
                 table("");
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to return book. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);

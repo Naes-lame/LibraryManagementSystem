@@ -73,7 +73,6 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
             String dateReturned = df.format(returned.getDateReturned());
             
         model.addRow(new Object[]{
-            returned.getTransactionId(),
             returned.getBorrowerName(),
             returned.getBookTitle(),
             dateReturned,
@@ -372,17 +371,17 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
 
         returnedBooksRecordsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Transaction ID", "Borrower Name", "Book Title", "Date Returned", "Status"
+                "Borrower Name", "Book Title", "Date Returned", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -396,7 +395,6 @@ public class ReturnedBooksRecords extends javax.swing.JFrame implements imagesNb
             returnedBooksRecordsTable.getColumnModel().getColumn(1).setResizable(false);
             returnedBooksRecordsTable.getColumnModel().getColumn(2).setResizable(false);
             returnedBooksRecordsTable.getColumnModel().getColumn(3).setResizable(false);
-            returnedBooksRecordsTable.getColumnModel().getColumn(4).setResizable(false);
         }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

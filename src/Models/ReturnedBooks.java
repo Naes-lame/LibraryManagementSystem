@@ -9,14 +9,13 @@ import java.sql.Timestamp;
 
 public class ReturnedBooks {
     //private int returnedBooksId;
-    private int transactionId;
     private String borrowerName;
     private String bookTitle; 
     private Timestamp dateReturned;
     private String status;
     
-    public ReturnedBooks(int transactionId, String borrowerName,  String bookTitle, Timestamp dateReturned, String status){
-        this.transactionId = transactionId;
+    public ReturnedBooks(String borrowerName,  String bookTitle, Timestamp dateReturned, String status){
+       
         this.borrowerName = borrowerName;
         this.bookTitle = bookTitle;
         this.dateReturned = dateReturned;
@@ -24,9 +23,6 @@ public class ReturnedBooks {
     }
     
     
-    public int getTransactionId(){
-        return transactionId;
-    }
     
     public String getBorrowerName(){
         return borrowerName;

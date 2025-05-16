@@ -61,7 +61,6 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
             String dueDate = df.format(issued.getDueDate());
 
             model.addRow(new Object[]{
-                issued.getTransactionId(),
                 issued.getBorrowerName(),
                 issued.getBookTitle(),
                 issueDate,
@@ -341,17 +340,17 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
 
         issuedBooksRecordsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Transaction ID", "Borrower Name", "Book Title", "Issue Date", "Due Date", "Status"
+                "Borrower Name", "Book Title", "Issue Date", "Due Date", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -366,7 +365,6 @@ public class IssuedBooksRecords extends javax.swing.JFrame implements imagesNbut
             issuedBooksRecordsTable.getColumnModel().getColumn(2).setResizable(false);
             issuedBooksRecordsTable.getColumnModel().getColumn(3).setResizable(false);
             issuedBooksRecordsTable.getColumnModel().getColumn(4).setResizable(false);
-            issuedBooksRecordsTable.getColumnModel().getColumn(5).setResizable(false);
         }
 
         jLabel1.setFont(new java.awt.Font("Calibri", 3, 24)); // NOI18N

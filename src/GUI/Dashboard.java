@@ -132,7 +132,7 @@ public class Dashboard extends javax.swing.JFrame implements imagesNbuttons {
     //count for each status.
     private void getRecordCount(String tableName) {
         int issuedCount = TransactionsController.getRecordCount("issuedbooks");
-        int returnedCount = TransactionsController.getRecordCount("returned_books");
+        int returnedCount = TransactionsController.getRecordCount("returnedbooks");
 
         txt_issued.setText(String.valueOf(issuedCount));
         txt_returned.setText(String.valueOf(returnedCount));
