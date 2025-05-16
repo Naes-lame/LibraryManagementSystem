@@ -8,23 +8,29 @@ package GUI;
 import Controller.*;
 import static GUI.Account.hashPasswordSHA256;
 import Models.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
+
     private int id;
+
     public RegisterForm() {
         initComponents();
         scaleImage();
-        initializeButtons();String aP ="C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
+        initializeButtons();
+        String aP = "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
         ImageIcon icon = new ImageIcon(aP);
         setIconImage(icon.getImage());
-        
+
         KeyAdapter preventLeadingSpaces = new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -41,7 +47,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
         txt_address.addKeyListener(preventLeadingSpaces);
         txt_username.addKeyListener(preventLeadingSpaces);
         txt_password.addKeyListener(preventLeadingSpaces);
-        
+
         KeyAdapter preventLetters = new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -53,6 +59,14 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
         };
 
         txt_phonenumber.addKeyListener(preventLetters);
+
+        txt_password.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enterPressed");
+        txt_password.getActionMap().put("enterPressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                jbtn_signUpActionPerformed(new ActionEvent(jbtn_signUp, ActionEvent.ACTION_PERFORMED, "Enter Key Pressed"));
+            }
+        });
     }
 
     private void scaleImage() {
@@ -295,7 +309,7 @@ public class RegisterForm extends javax.swing.JFrame implements imagesNbuttons {
     }//GEN-LAST:event_txt_passwordActionPerformed
 
     private void jbtn_signUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtn_signUpActionPerformed
-try {
+        try {
             String name = txt_fullname.getText();
             String email = txt_email.getText();
             long phoneNum = Long.parseLong(txt_phonenumber.getText().trim());

@@ -27,11 +27,15 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
 
     public Account() {
         initComponents();
+
         scaleImages();
+
         loadUserData();
+
         String aP = "C:\\Users\\Sean Cole Calixton\\OneDrive\\Pictures\\Camera Roll\\logo-removebg-preview.png";
         ImageIcon icon = new ImageIcon(aP);
         setIconImage(icon.getImage());
+
         passTextField.setText("*******");
         passTextField.addMouseListener(new MouseAdapter() {
             @Override
@@ -49,25 +53,25 @@ public class Account extends javax.swing.JFrame implements imagesNbuttons {
                 int option = JOptionPane.showConfirmDialog(null, message, "Change Password", JOptionPane.OK_CANCEL_OPTION);
 
                 if (option == JOptionPane.OK_OPTION) {
-                    int userId = Users.getUserId();  // Assume user is already authenticated and userId is set
-                    String storedHash = getHashedPassword(userId);  // Retrieve hashed password from database
+                    int userId = Users.getUserId();
+                    String storedHash = getHashedPassword(userId);
                     String currentPass = new String(currentPassField.getPassword());
                     String newPass = new String(newPassField.getPassword());
                     String confirmPass = new String(confirmPassField.getPassword());
 
-                    // Validate new password
                     if (newPass.trim().isEmpty()) {
                         JOptionPane.showMessageDialog(null, "New password cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
                     } else if (newPass.length() < 6) {
                         JOptionPane.showMessageDialog(null, "Password must be at least 6 characters long!", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
 
-                    if (comparePasswords(currentPass, storedHash)) {  // Validate current password
-                        if (newPass.equals(confirmPass)) {  // Ensure new passwords match
+                    if (comparePasswords(currentPass, storedHash)) {
+                        if (newPass.equals(confirmPass)) {
                             int confirmOption = JOptionPane.showConfirmDialog(null, "Are you sure you want to change your password?", "Confirm", JOptionPane.YES_NO_OPTION);
                             if (confirmOption == JOptionPane.YES_OPTION) {
                                 String newHashedPassword = hashPasswordSHA256(newPass);
-                                updatePassword(userId, newHashedPassword);  // Update password in database
+                                updatePassword(userId, newHashedPassword);
                                 Users users = new Users();
                                 users.setPassword(newHashedPassword);
                                 JOptionPane.showMessageDialog(null, "Password changed successfully!");

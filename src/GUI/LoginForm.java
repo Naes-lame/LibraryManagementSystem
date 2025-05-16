@@ -7,14 +7,17 @@ package GUI;
 
 import Controller.UsersController;
 import Models.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 public class LoginForm extends javax.swing.JFrame implements imagesNbuttons {
 
@@ -37,6 +40,14 @@ public class LoginForm extends javax.swing.JFrame implements imagesNbuttons {
 
         txt_username.addKeyListener(preventLeadingSpaces);
         txt_password.addKeyListener(preventLeadingSpaces);
+        
+        txt_password.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enterPressed");
+        txt_password.getActionMap().put("enterPressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                btn_loginActionPerformed(new ActionEvent(btn_login, ActionEvent.ACTION_PERFORMED, "Enter Key Pressed"));
+            }
+        });
     }
 
     private void scaleImage() {
